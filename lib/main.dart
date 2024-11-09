@@ -1,6 +1,4 @@
-import 'package:animate_do/animate_do.dart';
 import 'package:flutter/material.dart';
-import 'presentation/widgets/widgets.dart';
 import 'config/router/app_router.dart';
 
 void main() {
