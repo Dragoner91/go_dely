@@ -1,15 +1,21 @@
 import 'package:flutter/material.dart';
 
-void _pressButton() {
+  /*void _pressButton1(String categoriaBoton) {
+    categoriaActual = categoriaBoton;
+  }*/
+  
+  void _pressButton() {
     
   }
 
-Widget barraCategorias(){
-  return  Row(
-        
-        children:[
-                Expanded(
-                  child: TextButton(
+  int selector = 1;
+  String categoriaActual = 'Todo';
+
+
+ Widget botonProducto(String categoria){
+  //String categoriaBoton = categoria;
+  if (categoriaActual == categoria){
+    return TextButton(
                       style: ButtonStyle(
                         backgroundColor:
                           WidgetStateProperty.all<Color>(const Color.fromARGB(242, 5, 175, 11)),
@@ -18,42 +24,49 @@ Widget barraCategorias(){
                                                   
                       ),
                       onPressed: _pressButton,
-                      child: const Text('Todo',
+                      child: Text(categoria,
                       style: TextStyle(
                         fontWeight: FontWeight.bold,
                         fontSize: 20.0,
                     ),
-                    )),
+                    ));
+  }
+  else {
+    return TextButton(
+                      onPressed: _pressButton,
+                      child: Text(categoria,
+                      style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                        fontSize: 20.0,
+                                        ),
+                                        ));
+  }
+ }
+
+Widget barraCategorias(){
+  return  Row(
+        
+        children:[
+                Expanded(
+                  child:botonProducto('Todo')
+
                 ),
+
+                    
+            
                     Expanded(
-                      child: TextButton(
-                      onPressed: _pressButton,
-                      child: const Text('Comida',
-                      style: TextStyle(
-                        fontWeight: FontWeight.bold,
-                        fontSize: 20.0,
-                                        ),
-                                        )),
+                      child: botonProducto('Comida')
+                      
                     ),
+                                           
+
                     Expanded(
-                      child: TextButton(
-                      onPressed: _pressButton,
-                      child: const Text('Medicina',
-                      style: TextStyle(
-                        fontWeight: FontWeight.bold,  
-                        fontSize: 20.0,
-                                        ),
-                                        )),
+                      child: botonProducto('Medicina')
                     ),
+
+
                     Expanded(
-                      child: TextButton(
-                      onPressed: _pressButton,
-                      child: const Text('Belleza',
-                      style: TextStyle(
-                        fontWeight: FontWeight.bold,
-                        fontSize: 20.0,
-                                        ),
-                                        )),
+                      child: botonProducto('Belleza')
                     ),
               ],
             );
