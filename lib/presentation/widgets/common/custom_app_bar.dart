@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 
 class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
   const CustomAppBar({super.key});
@@ -32,7 +33,7 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
         ),
         actions: [
           IconButton(onPressed: () {}, icon: const Icon(Icons.notifications),),
-          IconButton(onPressed: () {}, icon: const Icon(Icons.shopping_cart))
+          IconButton(onPressed: () {context.push("/cart");}, icon: const Icon(Icons.shopping_cart))
         ],
         bottom: const _ColumnaWidgetsBottom(),
         
@@ -57,13 +58,7 @@ class _ColumnaWidgetsBottomState extends State<_ColumnaWidgetsBottom> with Singl
   Widget build(BuildContext context) {
 
     final tabs = <Tab>[
-      Tab(
-        child: FilledButton(
-          onPressed: () {}, 
-          style: FilledButton.styleFrom(backgroundColor: const Color(0xFF5D9558)), 
-          child: const Text('TODO')
-        ),
-      ),
+      const Tab(child: Text('TODO')),
       const Tab(child: Text('COMIDA'),),
       const Tab(child: Text('MEDICINA'),),
     ];
@@ -79,8 +74,9 @@ class _ColumnaWidgetsBottomState extends State<_ColumnaWidgetsBottom> with Singl
           unselectedLabelColor: Colors.grey,
           controller: tabController,
           tabs: [
-            ...tabs
-        ], )
+            ...tabs,
+          ], 
+        )
       ],
     );
   }

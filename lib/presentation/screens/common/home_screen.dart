@@ -4,11 +4,11 @@ import 'package:go_dely/domain/entities/product/product.dart';
 import 'package:go_dely/presentation/widgets/product/product_horizontal_listview.dart';
 import 'package:go_dely/presentation/widgets/widgets.dart';
 
-class HomeProvisional extends StatelessWidget {
+class HomeScreen extends StatelessWidget {
 
   final String name = "HomeScreen";
 
-  const HomeProvisional({super.key});
+  const HomeScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
