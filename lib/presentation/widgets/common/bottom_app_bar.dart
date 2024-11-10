@@ -1,10 +1,31 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_dely/presentation/providers/bottom_appbar_provider.dart';
 
-class BottomAppBarCustom extends StatelessWidget {
+class BottomAppBarCustom extends ConsumerStatefulWidget {
   const BottomAppBarCustom({super.key});
 
   @override
+  BottomAppBarCustomState createState() => BottomAppBarCustomState();
+  
+  
+}
+
+class BottomAppBarCustomState extends ConsumerState<BottomAppBarCustom> {
+
+
+  @override
+  void initState() {
+    super.initState();
+  }
+
+  @override
   Widget build(BuildContext context) {
+
+    final currentState = ref.watch(currentStateNavBar);
+    const Color currentColor = Color(0xFF5D9558);
+    const Color colorOptions = Colors.black45;
+
     return BottomAppBar(
       height: 90,
       shape: const AutomaticNotchedShape(RoundedRectangleBorder(
@@ -16,9 +37,12 @@ class BottomAppBarCustom extends StatelessWidget {
             child: Column(children: [
               IconButton(
                 icon: const Icon(Icons.discount_outlined),
-                onPressed: () {},
+                onPressed: () { 
+                  ref.read(currentStateNavBar.notifier).update((state) => 0);
+                },
+                color: currentState == 0 ? currentColor : colorOptions,
               ),
-              const Text("Offers")
+              Text("Offers", style: TextStyle(color: currentState == 0 ? currentColor : colorOptions,),)
             ]),
           ),
           const Padding(padding: EdgeInsets.only(left: 25)),
@@ -26,39 +50,57 @@ class BottomAppBarCustom extends StatelessWidget {
             child: Column(children: [
               IconButton(
                 icon: const Icon(Icons.copy_outlined),
-                onPressed: () {},
+                onPressed: () { 
+                  ref.read(currentStateNavBar.notifier).update((state) => 1);
+                },
+                color: currentState == 1 ? currentColor : colorOptions,
               ),
-              const Text("Catalog")
+              Text("Catalog", style: TextStyle(color: currentState == 1 ? currentColor : colorOptions,),)
             ]),
           ),
           const Padding(padding: EdgeInsets.only(left: 20)),
-          CircleAvatar(
-            backgroundColor: const Color(0xFF5D9558),
-            radius: 34,
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.center,
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-              TextButton(
-                child: Container(
-                  alignment: Alignment.center,
-                  child: const Column(children: [
-                    Icon(Icons.home_outlined, color: Colors.white),
-                    Text("Home", style: TextStyle(color: Colors.white, fontSize: 12))
-                  ]),
+          Container(
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(100),
+                color: Colors.white,
+                border: Border.all(
+                  color: currentColor,
+                  width: 2
+                )
+            ),
+            child: CircleAvatar(
+              backgroundColor: currentState == 2 ? currentColor : const Color(0xFFf3ecf4),
+              radius: 30,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                TextButton(
+                  child: Container(
+                    alignment: Alignment.center,
+                    child: Column(children: [
+                      Icon(Icons.home_outlined, color: currentState == 2 ? Colors.white : currentColor,),
+                      Text("Home", style: TextStyle(color: currentState == 2 ? Colors.white : currentColor, fontSize: 12))
+                    ]),
+                  ),
+                  onPressed: () { 
+                    ref.read(currentStateNavBar.notifier).update((state) => 2);
+                  },
                 ),
-                onPressed: () {},
-              ),
-            ]),
+              ]),
+            ),
           ),
-          const Padding(padding: EdgeInsets.only(right: 20)),
+          const Padding(padding: EdgeInsets.only(right: 24)),
           SingleChildScrollView(
             child: Column(children: [
               IconButton(
                 icon: const Icon(Icons.task_outlined),
-                onPressed: () {},
+                onPressed: () { 
+                  ref.read(currentStateNavBar.notifier).update((state) => 3);
+                },
+                color: currentState == 3 ? currentColor : colorOptions,
               ),
-              const Text("Orders")
+              Text("Orders", style: TextStyle(color: currentState == 3 ? currentColor : colorOptions,),)
             ]),
           ),
           const Padding(padding: EdgeInsets.only(right: 25)),
@@ -66,9 +108,12 @@ class BottomAppBarCustom extends StatelessWidget {
             child: Column(children: [
               IconButton(
                 icon: const Icon(Icons.person_outline_outlined),
-                onPressed: () {},
+                onPressed: () { 
+                  ref.read(currentStateNavBar.notifier).update((state) => 4);
+                },
+                color: currentState == 4 ? currentColor : colorOptions,
               ),
-              const Text("Profile")
+              Text("Profile", style: TextStyle(color: currentState == 4 ? currentColor : colorOptions,),)
             ]),
           ),
         ],

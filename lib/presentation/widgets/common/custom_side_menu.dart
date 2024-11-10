@@ -22,7 +22,7 @@ class _CustomSideMenuState extends State<CustomSideMenu> {
       child: NavigationDrawer(
         selectedIndex: navDrawerIndex,
         backgroundColor: const Color(0xff5D9558),
-        indicatorColor: const Color(0xff94ED8C),
+        indicatorColor: const Color.fromARGB(255, 113, 176, 107),
         children: [
           const Padding(
             padding: EdgeInsets.fromLTRB(28, 0, 16, 10),
