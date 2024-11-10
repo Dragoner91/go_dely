@@ -14,7 +14,7 @@ Widget barraBusqueda(){
                         ),
               ),
                       Expanded(
-                        flex: 19,
+                        flex: 9,
                         child: Container(
                           margin: EdgeInsets.fromLTRB(0.0,5.0,50.0,10.0),
                           child: const TextField(

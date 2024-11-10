@@ -30,24 +30,28 @@ class _PrincipalState extends State<Principal> {
       backgroundColor: const Color.fromARGB(255, 233, 229, 229),
       body: Center(
         
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
+    
+          child: ListView(
+            scrollDirection: Axis.vertical,
+            children: <Widget>[
+              
+              barraDireccion(),
+             
+              barraBusqueda(),
+          
+              barraCategorias(),
+             
+              categoriaProducto('Combos de Productos'),
+          
+              categoriaProducto('Ofertas limitadas'),  
+
+              categoriaProducto('Comida'), 
             
-            barraDireccion(),
-           
-            barraBusqueda(),
-
-            barraCategorias(),
-           
-            categoriaProducto('Combos de Productos'),
-
-            categoriaProducto('Ofertas limitadas'),  
-  
-
-
-          ],
-        ),
+              categoriaProducto('Medicina'), 
+          
+            ],
+          ),
+        
       ),
     );
   }

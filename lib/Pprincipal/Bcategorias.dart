@@ -5,8 +5,9 @@ void _pressButton() {
   }
 
 Widget barraCategorias(){
-  return Row(
-              children: [
+  return  Row(
+        
+        children:[
                 Expanded(
                   child: TextButton(
                       style: ButtonStyle(
@@ -20,7 +21,7 @@ Widget barraCategorias(){
                       child: const Text('Todo',
                       style: TextStyle(
                         fontWeight: FontWeight.bold,
-                        fontSize: 24.0,
+                        fontSize: 20.0,
                     ),
                     )),
                 ),
@@ -30,7 +31,7 @@ Widget barraCategorias(){
                       child: const Text('Comida',
                       style: TextStyle(
                         fontWeight: FontWeight.bold,
-                        fontSize: 24.0,
+                        fontSize: 20.0,
                                         ),
                                         )),
                     ),
@@ -40,7 +41,7 @@ Widget barraCategorias(){
                       child: const Text('Medicina',
                       style: TextStyle(
                         fontWeight: FontWeight.bold,  
-                        fontSize: 24.0,
+                        fontSize: 20.0,
                                         ),
                                         )),
                     ),
@@ -50,7 +51,7 @@ Widget barraCategorias(){
                       child: const Text('Belleza',
                       style: TextStyle(
                         fontWeight: FontWeight.bold,
-                        fontSize: 24.0,
+                        fontSize: 20.0,
                                         ),
                                         )),
                     ),
