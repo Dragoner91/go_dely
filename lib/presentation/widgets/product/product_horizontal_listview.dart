@@ -1,5 +1,6 @@
 import 'package:animate_do/animate_do.dart';
 import 'package:flutter/material.dart';
+import 'package:go_dely/config/helpers/human_formats.dart';
 import 'package:go_dely/domain/entities/product/product.dart';
 
 
@@ -42,7 +43,7 @@ class _ProductHorizontalListViewState extends State<ProductHorizontalListView> {
   @override
   Widget build(BuildContext context) {
     return SizedBox(
-      height: 280,
+      height: 260,
       child: Column(
         children: [
 
@@ -79,40 +80,87 @@ class _Slide extends StatelessWidget {
 
     return Container(
       margin: const EdgeInsets.symmetric(horizontal: 8),
+      decoration: BoxDecoration(
+        borderRadius: const BorderRadius.all(Radius.circular(10)),        
+        border: Border.all(color: const Color.fromARGB(136, 186, 186, 186)),
+        shape: BoxShape.rectangle,
+      ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           //*imagen
-          SizedBox(
-            width: 150,
-            child: ClipRRect(
-              borderRadius: BorderRadius.circular(20),
-              child: Image.asset(
-                'assets/combo_hogar.png', //*arreglar cuando este producto listo
-                fit: BoxFit.cover,
-                width: 150,
-                /*
-                loadingBuilder: (context, child, loadingProgress) {
-                  if( loadingProgress != null){
-                    return const Padding(
-                      padding: EdgeInsets.all(8.0),
-                      child: Center(child: CircularProgressIndicator(strokeWidth: 2,)),
-                    );
-                  }
-                  return FadeIn(child: child);
-                },
-                */
+          Container(
+            decoration: BoxDecoration(
+              borderRadius: const BorderRadius.all(Radius.circular(10)),        
+              border: Border.all(color: const Color.fromARGB(136, 186, 186, 186)),
+              shape: BoxShape.rectangle,
+            ),
+            child: SizedBox(
+              width: 150,
+              child: Stack(
+                children: [
+                  ClipRRect(
+                    borderRadius: BorderRadius.circular(20),
+                    child: Image.network(
+                      product.imageUrl[0],  //*siempre se visualiza la primera imagen del arreglo de imagenes
+                      fit: BoxFit.cover,
+                      height: 150,
+                      width: 150,
+                      loadingBuilder: (context, child, loadingProgress) {
+                        if( loadingProgress != null){
+                          return const Padding(
+                            padding: EdgeInsets.all(8.0),
+                            child: Center(child: CircularProgressIndicator(strokeWidth: 2, color: Color(0xFF5D9558),)),
+                          );
+                        }
+                        return FadeIn(child: child);
+                      },
+            
+                    ),
+                  ),
+                  const SizedBox(height: 100,),
+                  Row(
+                    children: [
+                      const Spacer(),
+                      SizedBox(
+                        width: 45,
+                        height: 45,
+                        child: Padding(
+                          padding: const EdgeInsets.all(6),
+                          child: IconButton(
+                            color: Colors.white,
+                            style: ButtonStyle(
+                              backgroundColor: WidgetStateProperty.all(const Color(0xFF5D9558)),
+                            ),
+                            onPressed: () {
+                              //*agregar producto al carrito
+                            }, 
+                            icon: const Icon(Icons.add, size: 14,)
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
               ),
             ),
           ),
-
+          const SizedBox(
+            height: 5,
+          ),
           //*title
           SizedBox(
             width: 150,
-            child: Text(
-              'product.title', //*arreglar cuando este producto listo
-              maxLines: 2,
-              style: textStyles.titleSmall,
+            child: Row(
+              children: [
+                const SizedBox(width: 5,),
+                Text(
+                  product.name, //*arreglar cuando este producto listo
+                  maxLines: 2,
+                  style: textStyles.bodyLarge,
+                ),
+                const SizedBox(width: 5,),
+              ],
             ),
           ),
 
@@ -121,10 +169,12 @@ class _Slide extends StatelessWidget {
             width: 150,
             child: Row( //*arreglar cuando este producto listo
               children: [
-                Icon( Icons.star_half_outlined, color: Colors.yellow.shade800,),
-                const SizedBox(width: 3,), 
-                //const SizedBox(width: 10,),
-                const Spacer(),
+                const SizedBox(width: 5,),
+                Text(
+                  "US\$${HumanFormarts.numberCurrency(product.price)}", //*arreglar cuando este producto listo
+                  style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+                ),
+                const SizedBox(width: 5,), 
                 
               ],
             ),
@@ -159,8 +209,19 @@ class _Title extends StatelessWidget {
 
           const Spacer(),
 
-          if(subtitle != null) FilledButton.tonal(onPressed: () {}, style: ButtonStyle(visualDensity: VisualDensity.compact, backgroundColor: WidgetStateProperty.all(const Color(0xFF5D9558)),),child: Text(subtitle!, style: const TextStyle(color: Colors.white),),),
-          
+          if(subtitle != null) FilledButton.tonal(
+            onPressed: () {}, 
+            style: ButtonStyle(
+              visualDensity: VisualDensity.compact, 
+              backgroundColor: WidgetStateProperty.all(const Color(0xFF5D9558)),
+            ),
+            child: Text(
+              subtitle!, 
+              style: const TextStyle(
+                color: Colors.white
+              ),
+            ),
+          ),
         ],
       ),
     );
