@@ -33,31 +33,27 @@ class BottomAppBarCustomState extends ConsumerState<BottomAppBarCustom> {
       child: Row(
         children: [
           const Padding(padding: EdgeInsets.only(left: 5)),
-          SingleChildScrollView(
-            child: Column(children: [
-              IconButton(
-                icon: const Icon(Icons.discount_outlined),
-                onPressed: () { 
-                  ref.read(currentStateNavBar.notifier).update((state) => 0);
-                },
-                color: currentState == 0 ? currentColor : colorOptions,
-              ),
-              Text("Offers", style: TextStyle(color: currentState == 0 ? currentColor : colorOptions,),)
-            ]),
-          ),
+          Column(children: [
+            IconButton(
+              icon: const Icon(Icons.discount_outlined),
+              onPressed: () { 
+                ref.read(currentStateNavBar.notifier).update((state) => 0);
+              },
+              color: currentState == 0 ? currentColor : colorOptions,
+            ),
+            Text("Offers", style: TextStyle(color: currentState == 0 ? currentColor : colorOptions,),)
+          ]),
           const Padding(padding: EdgeInsets.only(left: 25)),
-          SingleChildScrollView(
-            child: Column(children: [
-              IconButton(
-                icon: const Icon(Icons.copy_outlined),
-                onPressed: () { 
-                  ref.read(currentStateNavBar.notifier).update((state) => 1);
-                },
-                color: currentState == 1 ? currentColor : colorOptions,
-              ),
-              Text("Catalog", style: TextStyle(color: currentState == 1 ? currentColor : colorOptions,),)
-            ]),
-          ),
+          Column(children: [
+            IconButton(
+              icon: const Icon(Icons.copy_outlined),
+              onPressed: () { 
+                ref.read(currentStateNavBar.notifier).update((state) => 1);
+              },
+              color: currentState == 1 ? currentColor : colorOptions,
+            ),
+            Text("Catalog", style: TextStyle(color: currentState == 1 ? currentColor : colorOptions,),)
+          ]),
           const Padding(padding: EdgeInsets.only(left: 20)),
           Container(
             decoration: BoxDecoration(
@@ -91,31 +87,27 @@ class BottomAppBarCustomState extends ConsumerState<BottomAppBarCustom> {
             ),
           ),
           const Padding(padding: EdgeInsets.only(right: 24)),
-          SingleChildScrollView(
-            child: Column(children: [
-              IconButton(
-                icon: const Icon(Icons.task_outlined),
-                onPressed: () { 
-                  ref.read(currentStateNavBar.notifier).update((state) => 3);
-                },
-                color: currentState == 3 ? currentColor : colorOptions,
-              ),
-              Text("Orders", style: TextStyle(color: currentState == 3 ? currentColor : colorOptions,),)
-            ]),
-          ),
+          Column(children: [
+            IconButton(
+              icon: const Icon(Icons.task_outlined),
+              onPressed: () { 
+                ref.read(currentStateNavBar.notifier).update((state) => 3);
+              },
+              color: currentState == 3 ? currentColor : colorOptions,
+            ),
+            Text("Orders", style: TextStyle(color: currentState == 3 ? currentColor : colorOptions,),)
+          ]),
           const Padding(padding: EdgeInsets.only(right: 25)),
-          SingleChildScrollView(
-            child: Column(children: [
-              IconButton(
-                icon: const Icon(Icons.person_outline_outlined),
-                onPressed: () { 
-                  ref.read(currentStateNavBar.notifier).update((state) => 4);
-                },
-                color: currentState == 4 ? currentColor : colorOptions,
-              ),
-              Text("Profile", style: TextStyle(color: currentState == 4 ? currentColor : colorOptions,),)
-            ]),
-          ),
+          Column(children: [
+            IconButton(
+              icon: const Icon(Icons.person_outline_outlined),
+              onPressed: () { 
+                ref.read(currentStateNavBar.notifier).update((state) => 4);
+              },
+              color: currentState == 4 ? currentColor : colorOptions,
+            ),
+            Text("Profile", style: TextStyle(color: currentState == 4 ? currentColor : colorOptions,),)
+          ]),
         ],
       ),
     );

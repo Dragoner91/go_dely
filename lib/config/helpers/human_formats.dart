@@ -9,4 +9,14 @@ class HumanFormarts {
     ).format(number);
     return formattedNumber;
   }
+
+  static String numberCurrency(double number){
+    final formattedNumber = NumberFormat.compactCurrency(
+      decimalDigits: 1,
+      locale: 'en',
+      symbol: ''
+    ).format(number);
+    return formattedNumber;
+  }
+
 }
