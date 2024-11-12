@@ -14,38 +14,55 @@ List<ProductoSimple> productos1 = [
 ];
 
 Widget categoriaProducto(String categoria) {
-  return Column(children: [
-    Row(
-      children: [
-  
-         Text(categoria,
-              style: TextStyle(
-                fontWeight: FontWeight.bold,
-                fontSize: 24.0,
-              )),
-        
-        TextButton(
-              onPressed: _pressButton,
-              child: const Text('Ver todo',
-                  style: TextStyle(
-                    fontSize: 24.0,
-                    color: Color.fromARGB(242, 5, 175, 11),
-                  ))),
-        
-      ],
-    ),
-    //Row(children: productos1.map((ProductoSimple) => cartaProducto(ProductoSimple)).toList()),
-    
-    Container(
-      
-      child: ListView(
-        scrollDirection: Axis.horizontal,
-        children:productos1.map((ProductoSimple) => cartaProducto(ProductoSimple)).toList()
-      ),
-      //Row(children: productos1.map((ProductoSimple) => cartaProducto(ProductoSimple)).toList()),
-      constraints:BoxConstraints.loose(Size(1300, 245.0)),
-      
-    )
-    
-  ]);
+  return Categoriaproducto(categoria: categoria);
 }
+
+class Categoriaproducto extends StatefulWidget {
+  final String categoria;
+  const Categoriaproducto({super.key, required this.categoria});
+
+  @override
+  State<Categoriaproducto> createState() => _CategoriaproductoState();
+}
+
+class _CategoriaproductoState extends State<Categoriaproducto> {
+  @override
+  Widget build(BuildContext context) {
+    return Column(children: [
+      Row(
+        children: [
+
+          Container(
+            width: 250,
+            child: Text(widget.categoria,
+                style: TextStyle(
+                  fontWeight: FontWeight.bold,
+                  fontSize: 24.0,
+                )),
+          ),
+
+          Container(
+            width: 140,
+            child: TextButton(
+                onPressed: _pressButton,
+                child: const Text('Ver todo',
+                    style: TextStyle(
+                      fontSize: 24.0,
+                      color: Color.fromARGB(242, 5, 175, 11),
+                    ))),
+          ),
+        ],
+      ),
+
+
+      Container(
+        child: ListView(
+            scrollDirection: Axis.horizontal,
+            children:productos1.map((ProductoSimple) => cartaProducto(ProductoSimple)).toList()
+        ),
+        constraints:BoxConstraints.loose(Size(1300, 245.0)),
+      )
+    ]);
+  }
+}
+

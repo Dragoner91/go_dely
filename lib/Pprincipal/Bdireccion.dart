@@ -4,41 +4,50 @@ void _pressButton() {
     
   }
 
-Widget barraDireccion(){
-  return const Row(
-              children: [
-                Expanded(
-                  flex: 1,
-                  child: IconButton(
-                      onPressed: _pressButton, icon: Icon(Icons.menu)),
-                ),
-                Expanded(
-                  flex: 7,
-                  child: Text(
-                    'Direccion',
-                    style: TextStyle(
-                      fontSize: 24.0,
-                    ),
-                  ),
-                ),
-                Expanded(
-                  flex: 1,
-                  child: IconButton(
-                      onPressed: _pressButton,
-                      icon: Icon(Icons.expand_more)),
-                ),
-                Expanded(
-                  flex: 1,
-                  child: IconButton(
-                      onPressed: _pressButton,
-                      icon: Icon(Icons.notifications)),
-                ),
-                Expanded(
-                  flex: 1,
-                  child: IconButton(
-                      onPressed: _pressButton,
-                      icon: Icon(Icons.shopping_cart)),
-                ),
-              ],
-            );
+
+class BarraDireccion extends StatefulWidget {
+  const BarraDireccion({super.key});
+
+  @override
+  State<BarraDireccion> createState() => _BarraDireccionState();
+}
+
+class _BarraDireccionState extends State<BarraDireccion> {
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      children: [
+        Container(
+          width: 47,
+          child: IconButton(
+              onPressed: _pressButton, icon: Icon(Icons.menu)),
+        ),
+        Container(
+          width: 220,
+          child: Text(
+            'Direccion',
+            style: TextStyle(
+              fontSize: 24.0,
+            ),),
+        ),
+        Container(
+          width: 40,
+          child: IconButton(
+              onPressed: _pressButton,
+              icon: Icon(Icons.expand_more)),
+        ),
+        Container(
+          width: 40,
+          child: IconButton(
+              onPressed: _pressButton,
+              icon: Icon(Icons.notifications)),
+        ),
+        Container(
+          width: 50,
+          child: IconButton(
+              onPressed: _pressButton,
+              icon: Icon(Icons.shopping_cart)),
+        ),
+      ],);
+  }
 }

@@ -31,25 +31,29 @@ class _PrincipalState extends State<Principal> {
       body: Center(
         
     
-          child: ListView(
-            scrollDirection: Axis.vertical,
-            children: <Widget>[
-              
-              barraDireccion(),
-             
-              barraBusqueda(),
-          
-              barraCategorias(),
-             
-              categoriaProducto('Combos de Productos'),
-          
-              categoriaProducto('Ofertas limitadas'),  
+          child: Container(
+            padding: EdgeInsets.symmetric(vertical: 0, horizontal: 10),
+            margin: EdgeInsets.symmetric(vertical: 0, horizontal: 10),
+            child: ListView(
+              scrollDirection: Axis.vertical,
+              children: <Widget>[
+                
+               
+                BarraDireccion(),
+               
+                barraBusqueda(),
 
-              categoriaProducto('Comida'), 
+                BarraCategorias(),
+               
+
+                Categoriaproducto(categoria: 'Combos de Productos'),
+                Categoriaproducto(categoria: 'Ofertas'),
+                Categoriaproducto(categoria: 'Comida'),
+                Categoriaproducto(categoria: 'Medicina'),
+                Categoriaproducto(categoria: 'Carros')
             
-              categoriaProducto('Medicina'), 
-          
-            ],
+              ],
+            ),
           ),
         
       ),
