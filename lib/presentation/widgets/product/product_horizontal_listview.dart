@@ -1,7 +1,11 @@
 import 'package:animate_do/animate_do.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_dely/config/helpers/human_formats.dart';
 import 'package:go_dely/domain/entities/product/product.dart';
+import 'package:go_dely/presentation/providers/bottom_appbar_provider.dart';
+import 'package:go_dely/presentation/providers/products/current_product_provider.dart';
+import 'package:go_router/go_router.dart';
 
 
 class ProductHorizontalListView extends StatefulWidget {
@@ -67,12 +71,17 @@ class _ProductHorizontalListViewState extends State<ProductHorizontalListView> {
   }
 }
 
-class _Slide extends StatelessWidget {
+class _Slide extends ConsumerStatefulWidget {
   
   final Product product;
 
   const _Slide({required this.product});
 
+  @override
+  ConsumerState<_Slide> createState() => _SlideState();
+}
+
+class _SlideState extends ConsumerState<_Slide> {
   @override
   Widget build(BuildContext context) {
 
@@ -101,21 +110,29 @@ class _Slide extends StatelessWidget {
                 children: [
                   ClipRRect(
                     borderRadius: BorderRadius.circular(20),
-                    child: Image.network(
-                      product.imageUrl[0],  //*siempre se visualiza la primera imagen del arreglo de imagenes
-                      fit: BoxFit.cover,
-                      height: 150,
-                      width: 150,
-                      loadingBuilder: (context, child, loadingProgress) {
-                        if( loadingProgress != null){
-                          return const Padding(
-                            padding: EdgeInsets.all(8.0),
-                            child: Center(child: CircularProgressIndicator(strokeWidth: 2, color: Color(0xFF5D9558),)),
-                          );
-                        }
-                        return FadeIn(child: child);
+                    child: GestureDetector(
+                      onTap: () {
+                        //*colocar el id en el provider de currentProduct
+                        ref.read(currentProduct.notifier).update((state) => [...state, widget.product] );
+                        ref.read(currentStateNavBar.notifier).update((state) => -1);
+                        context.push("/product");
                       },
-            
+                      child: Image.network(
+                        widget.product.imageUrl[0],  //*siempre se visualiza la primera imagen del arreglo de imagenes
+                        fit: BoxFit.cover,
+                        height: 150,
+                        width: 150,
+                        loadingBuilder: (context, child, loadingProgress) {
+                          if( loadingProgress != null){
+                            return const Padding(
+                              padding: EdgeInsets.all(10),
+                              child: Center(child: CircularProgressIndicator(strokeWidth: 2, color: Color(0xFF5D9558),)),
+                            );
+                          }
+                          return FadeIn(child: child);
+                        },
+                                  
+                      ),
                     ),
                   ),
                   const SizedBox(height: 100,),
@@ -155,7 +172,7 @@ class _Slide extends StatelessWidget {
               children: [
                 const SizedBox(width: 5,),
                 Text(
-                  product.name, //*arreglar cuando este producto listo
+                  widget.product.name, //*arreglar cuando este producto listo
                   maxLines: 2,
                   style: textStyles.bodyLarge,
                 ),
@@ -171,7 +188,7 @@ class _Slide extends StatelessWidget {
               children: [
                 const SizedBox(width: 5,),
                 Text(
-                  "US\$${HumanFormarts.numberCurrency(product.price)}", //*arreglar cuando este producto listo
+                  "US\$${HumanFormarts.numberCurrency(widget.product.price)}", //*arreglar cuando este producto listo
                   style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
                 ),
                 const SizedBox(width: 5,), 

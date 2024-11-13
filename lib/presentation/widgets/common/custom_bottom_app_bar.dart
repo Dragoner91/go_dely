@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_dely/presentation/providers/bottom_appbar_provider.dart';
+import 'package:go_dely/presentation/providers/products/current_product_provider.dart';
+import 'package:go_router/go_router.dart';
 
 class BottomAppBarCustom extends ConsumerStatefulWidget {
   const BottomAppBarCustom({super.key});
@@ -38,6 +40,7 @@ class BottomAppBarCustomState extends ConsumerState<BottomAppBarCustom> {
               icon: const Icon(Icons.discount_outlined),
               onPressed: () { 
                 ref.read(currentStateNavBar.notifier).update((state) => 0);
+                ref.read(currentProduct.notifier).update((state) => [] );
               },
               color: currentState == 0 ? currentColor : colorOptions,
             ),
@@ -49,6 +52,7 @@ class BottomAppBarCustomState extends ConsumerState<BottomAppBarCustom> {
               icon: const Icon(Icons.copy_outlined),
               onPressed: () { 
                 ref.read(currentStateNavBar.notifier).update((state) => 1);
+                ref.read(currentProduct.notifier).update((state) => [] );
               },
               color: currentState == 1 ? currentColor : colorOptions,
             ),
@@ -81,6 +85,8 @@ class BottomAppBarCustomState extends ConsumerState<BottomAppBarCustom> {
                   ),
                   onPressed: () { 
                     ref.read(currentStateNavBar.notifier).update((state) => 2);
+                    ref.read(currentProduct.notifier).update((state) => [] );
+                    context.go("/home");
                   },
                 ),
               ]),
@@ -92,6 +98,7 @@ class BottomAppBarCustomState extends ConsumerState<BottomAppBarCustom> {
               icon: const Icon(Icons.task_outlined),
               onPressed: () { 
                 ref.read(currentStateNavBar.notifier).update((state) => 3);
+                ref.read(currentProduct.notifier).update((state) => [] );
               },
               color: currentState == 3 ? currentColor : colorOptions,
             ),
@@ -103,6 +110,7 @@ class BottomAppBarCustomState extends ConsumerState<BottomAppBarCustom> {
               icon: const Icon(Icons.person_outline_outlined),
               onPressed: () { 
                 ref.read(currentStateNavBar.notifier).update((state) => 4);
+                ref.read(currentProduct.notifier).update((state) => [] );
               },
               color: currentState == 4 ? currentColor : colorOptions,
             ),
