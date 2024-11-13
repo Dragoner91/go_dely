@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:animate_do/animate_do.dart';
+//import 'package:animate_do/animate_do.dart';
 import 'package:go_dely/domain/entities/categories/categories.dart';
 
 class CategoryIconListview extends StatefulWidget {
@@ -19,14 +19,15 @@ class _CategoryIconListviewState extends State<CategoryIconListview> {
     return ListView.builder(
       itemCount: widget.categories.length,
       itemBuilder: (context, index) {
-        final category = widget.categories[index];
-        return ListTile(
+        //final category = widget.categories[index];
+        return _SlideCategorias(categorias: widget.categories[index]);
+        /*ListTile(
           leading: Image.network(category.imageUrl, width: 50, height: 50),
           title: Text(category.name),
           onTap: () {
             // Acción al tocar una categoría
           },
-        );
+        );*/
       },
     );
   }
@@ -52,26 +53,26 @@ class _SlideCategorias extends StatelessWidget {
         shape: BoxShape.rectangle,
       ),
       child: ListTile(
-        title: Container(
-          decoration: BoxDecoration(
-            borderRadius: const BorderRadius.all(Radius.circular(10)),
-            border: Border.all(color: const Color.fromARGB(136, 186, 186, 186)),
-            shape: BoxShape.rectangle,
-          ),
-          child: SizedBox(
-            width: 150,
-            child: Stack(
-              children: [
-                ClipRRect(
-                  borderRadius: BorderRadius.circular(20),
-                  child: //Image.network(
-                  Image.asset(
-                    categorias.imageUrl[
-                        0], 
-                    fit: BoxFit.cover,
-                    height: 150,
-                    width: 150,
-                    /*loadingBuilder: (context, child, loadingProgress) {
+          title: Container(
+            decoration: BoxDecoration(
+              borderRadius: const BorderRadius.all(Radius.circular(10)),
+              border:
+                  Border.all(color: const Color.fromARGB(136, 186, 186, 186)),
+              shape: BoxShape.rectangle,
+            ),
+            child: SizedBox(
+              width: 120,
+              child: Stack(
+                children: [
+                  ClipRRect(
+                    borderRadius: BorderRadius.circular(20),
+                    child: //Image.network(
+                        Image.asset(
+                      categorias.imageUrl,
+                      fit: BoxFit.cover,
+                      height: 80,
+                      width: 80,
+                      /*loadingBuilder: (context, child, loadingProgress) {
                       if (loadingProgress != null) {
                         return const Padding(
                           padding: EdgeInsets.all(8.0),
@@ -84,30 +85,32 @@ class _SlideCategorias extends StatelessWidget {
                       }
                       return FadeIn(child: child);
                     },*/
+                    ),
                   ),
-                ),
-                const SizedBox(
-                  height: 100,
-                ),
-              ],
+                  const SizedBox(
+                    height: 100,
+                  ),
+                ],
+              ),
             ),
           ),
-        ),
-        subtitle: Row(
-          children: [
-            const SizedBox(
-              width: 5,
-            ),
-            Text(
-              categorias.name,
-              style: titleStyle,
-            ),
-            const SizedBox(
-              width: 5,
-            ),
-          ],
-        ),
-      ),
+          subtitle: Row(
+            children: [
+              const SizedBox(
+                width: 5,
+              ),
+              Text(
+                categorias.name,
+                style: titleStyle,
+              ),
+              const SizedBox(
+                width: 5,
+              ),
+            ],
+          ),
+          onTap: () {
+            // Acción al tocar una categoría
+          }),
     );
   }
 }

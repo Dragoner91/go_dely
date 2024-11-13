@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+//import 'package:go_dely/presentation/screens/catalog/catalogList.dart';
 import 'package:go_router/go_router.dart';
 
 class CatalogoAppBar extends StatelessWidget implements PreferredSizeWidget {
@@ -22,7 +23,7 @@ class CatalogoAppBar extends StatelessWidget implements PreferredSizeWidget {
           width: 200,
             child: 
                 Text('Todas las categorias', style: TextStyle(
-                  fontSize: 26,
+                  fontSize: 20,
                   fontWeight: FontWeight.bold
                 ),),
         

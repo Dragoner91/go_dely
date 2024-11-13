@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:animate_do/animate_do.dart';
 import 'package:go_dely/presentation/widgets/categories/category_vertical_listview.dart';
+import 'package:go_dely/presentation/widgets/categories/category_icon_listview.dart';
 import 'package:go_dely/presentation/widgets/widgets.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
+//import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_dely/domain/entities/categories/categories.dart';
 
 
@@ -50,9 +51,15 @@ class _ContentCatalogListState extends State<ContentCatalogList> {
     Categories(6,'Heramientas','martillo, destornillador','combo_hogar.png')
   ];
     
-
+ int controller = 1;
   @override
   Widget build(BuildContext context) {
+    if (controller == 1){
     return CategoryVerticalListView(categorias: categorias);
+    }
+    else 
+        return CategoryIconListview(categories: categorias);
+    
+    
   }
 }
