@@ -4,7 +4,7 @@ import 'package:go_router/go_router.dart';
 
 // GoRouter configuration
 final appRouter = GoRouter(
-  initialLocation: '/welcome',
+  initialLocation: '/catalogoList',
   routes: [
     GoRoute(
       path: '/home',
@@ -33,6 +33,14 @@ final appRouter = GoRouter(
     GoRoute(
       path: '/register',
       builder: (context, state) => const RegisterScreen(),
-    ),   
+    ),
+    GoRoute(
+      path: '/catalogoIcon',
+      builder: (context, state) => const Catalogicons(),
+    ),  
+    GoRoute(
+      path: '/catalogoList',
+      builder: (context, state) => const Cataloglist(),
+    ),    
   ],
 );
