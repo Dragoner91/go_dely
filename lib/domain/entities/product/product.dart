@@ -25,6 +25,11 @@ class Product extends ProductAbstract{
     required this.currency,
     required this.stock, 
     required this.category}) : 
-  super(id: id, name: name, price: price, imageUrl: imageUrl,);
+  super(
+    id: id, 
+    name: name, 
+    price: price, 
+    imageUrl: imageUrl,
+  );
 
 }

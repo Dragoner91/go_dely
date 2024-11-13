@@ -96,7 +96,7 @@ class _ContentState extends ConsumerState<_Content> {
                 children: [
                   Row(
                     children: [
-                      const SizedBox(width: 20,),
+                      const SizedBox(width: 10,),
                       const Text("Category: ", style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),),
                       const SizedBox(width: 5,),
                       Text(widget.product!.category, style: const TextStyle(fontSize: 18),),
@@ -146,7 +146,7 @@ class _ContentState extends ConsumerState<_Content> {
           ),
           const SizedBox(height: 20,),
           Padding(
-            padding: const EdgeInsets.all(8.0),
+            padding: const EdgeInsets.symmetric(horizontal: 12),
             child: ProductHorizontalListView(
               products: [
                 ...recomendedProducts,...recomendedProducts,
