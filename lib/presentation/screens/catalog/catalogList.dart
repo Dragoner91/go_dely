@@ -25,7 +25,7 @@ class Cataloglist extends StatelessWidget {
           appBar: const CatalogoAppBar(),
           drawer: FadeInUpBig(duration: const Duration(milliseconds: 400),child: CustomSideMenu(scaffoldkey: scaffoldkey),),
           bottomNavigationBar: const BottomAppBarCustom(),          
-          body: ContentCatalogList(),
+          body: const ContentCatalogList(),
           ),
     );
   }
@@ -49,9 +49,10 @@ class _ContentCatalogListState extends ConsumerState<ContentCatalogList> {
   }
 
 
-  final List<Categories> categorias= [Categories(1,'Comida','Frutas, verduras, Charcuteria','assets/food.png'),
-  Categories(2,'Medicina','Vitaminas, pastillas ','assets/medicine.png'),
-  Categories(3,'Hogar','mesas, sillas','assets/home.png'),
+  final List<Categories> categorias= [
+    Categories(1,'Comida','Frutas, verduras, Charcuteria','assets/food.png'),
+    Categories(2,'Medicina','Vitaminas, pastillas ','assets/medicine.png'),
+    Categories(3,'Hogar','mesas, sillas','assets/home.png'),
     Categories(4,'Bebes','talco, pañales','assets/baby.png'),
     Categories(5,'Mascotas','Comida, juguetes','assets/pets.png'),
     Categories(6,'Limpieza','Aromatizante, deseinfectante','assets/cleaning.png'),
@@ -61,7 +62,6 @@ class _ContentCatalogListState extends ConsumerState<ContentCatalogList> {
     Categories(10,'Carros','Ruedas, repuestos','assets/cars.png')
   ];
     
- int controller = 1;
   @override
   Widget build(BuildContext context) {
     final currentState = ref.watch(CategoryProvider);
@@ -69,7 +69,9 @@ class _ContentCatalogListState extends ConsumerState<ContentCatalogList> {
     if (currentState == true){
     return CategoryVerticalListView(categorias: categorias);
     }
-    else return CategoryIconListview(categories: categorias);
+    else {
+      return CategoryIconListview(categories: categorias);
+    }
     
     
   }

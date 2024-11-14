@@ -17,7 +17,7 @@ class _CategoryIconListviewState extends State<CategoryIconListview> {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
       child: GridView.builder(
         gridDelegate: const
           SliverGridDelegateWithFixedCrossAxisCount(
@@ -71,51 +71,53 @@ class _SlideCategorias extends StatelessWidget {
                 Border.all(color: const Color.fromARGB(136, 186, 186, 186)),
                 shape: BoxShape.rectangle,
               ),
-              child: SizedBox(
-
-                height: 100,
-                width: 100,
-                child: Stack(
-                  children: [
-                    ClipRRect(
-                      //borderRadius: BorderRadius.circular(20),
-                      child: //Image.network(
-                      Center(
-                        child: Image.asset(
-                          categorias.imageUrl,
-                          fit: BoxFit.cover,
-                          height: 80,
-                          width: 80,
-                          /*loadingBuilder: (context, child, loadingProgress) {
-                            if (loadingProgress != null) {
-                              return const Padding(
-                                padding: EdgeInsets.all(8.0),
-                                child: Center(
-                                    child: CircularProgressIndicator(
-                                  strokeWidth: 2,
-                                  color: Color(0xFF5D9558),
-                                )),
-                              );
-                            }
-                            return FadeIn(child: child);
-                          },*/
+              child: Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: SizedBox(
+                  height: 70,
+                  width: 70,
+                  child: Stack(
+                    children: [
+                      ClipRRect(
+                        //borderRadius: BorderRadius.circular(20),
+                        child: //Image.network(
+                        Center(
+                          child: Image.asset(
+                            categorias.imageUrl,
+                            fit: BoxFit.cover,
+                            height: 80,
+                            width: 80,
+                            /*loadingBuilder: (context, child, loadingProgress) {
+                              if (loadingProgress != null) {
+                                return const Padding(
+                                  padding: EdgeInsets.all(8.0),
+                                  child: Center(
+                                      child: CircularProgressIndicator(
+                                    strokeWidth: 2,
+                                    color: Color(0xFF5D9558),
+                                  )),
+                                );
+                              }
+                              return FadeIn(child: child);
+                            },*/
+                          ),
                         ),
                       ),
+                      OutlinedButton(
+                      onPressed: () {
+                    // Acción al presionar el botón
+                    },
+                    style: ButtonStyle(
+                    side: WidgetStateProperty.all(BorderSide.none), // Remueve el borde
                     ),
-                    OutlinedButton(
-                    onPressed: () {
-    // Acción al presionar el botón
-    },
-    style: ButtonStyle(
-    side: WidgetStateProperty.all(BorderSide.none), // Remueve el borde
-    ),
-
-                      child: const SizedBox(
-                        height: 100,
-                        width: 100,
+                
+                        child: const SizedBox(
+                          height: 110,
+                          width: 100,
+                        ),
                       ),
-                    ),
-                  ],
+                    ],
+                  ),
                 ),
               ),
             ),

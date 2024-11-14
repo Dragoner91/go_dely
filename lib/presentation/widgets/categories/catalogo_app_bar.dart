@@ -8,7 +8,7 @@ class CatalogoAppBar extends StatelessWidget implements PreferredSizeWidget {
   const CatalogoAppBar({super.key});
 
   @override
-  Size get preferredSize => const Size.fromHeight(120);
+  Size get preferredSize => const Size.fromHeight(100);
 
   @override
   Widget build(BuildContext context) {
@@ -17,22 +17,14 @@ class CatalogoAppBar extends StatelessWidget implements PreferredSizeWidget {
       width: double.infinity,
       child: AppBar(
         centerTitle: true,
-        title: IconButton(
-          onPressed: () {
-            
-          },
-          icon: const SizedBox(
-          width: 200,
-            child: 
-                Text('Todas las categorias', style: TextStyle(
-                  fontSize: 20,
-                  fontWeight: FontWeight.bold
-                ),),
-        
-          ),
+        title: const Text(
+          'Todas las categorias',
+          style: TextStyle(
+            fontSize: 20,
+            fontWeight: FontWeight.bold
+          )
         ),
         actions: [
-          
           IconButton(onPressed: () {context.push("/cart");}, icon: const Icon(Icons.shopping_cart))
         ],
         bottom: const _ColumnaWidgetsBottom(),
@@ -46,7 +38,7 @@ class _ColumnaWidgetsBottom extends ConsumerStatefulWidget implements PreferredS
   const _ColumnaWidgetsBottom();
 
   @override
-  Size get preferredSize => const Size.fromHeight(80);
+  Size get preferredSize => const Size.fromHeight(20);
 
   @override
   ConsumerState<_ColumnaWidgetsBottom> createState() => _ColumnaWidgetsBottomState();
@@ -57,14 +49,13 @@ class _ColumnaWidgetsBottomState extends ConsumerState<_ColumnaWidgetsBottom> wi
   @override
   Widget build(BuildContext context) {
 
-    
+    final estadoCatalogo = ref.watch(CategoryProvider);
 
     return Row(
       children: [
-        const _SearchButton(),
         Expanded(child: Container()),
-        IconButton(onPressed: () {ref.read(CategoryProvider.notifier).update((estadoCatalogo) => true);}, icon: const Icon(Icons.list_alt)),
-        IconButton(onPressed: () {ref.read(CategoryProvider.notifier).update((estadoCatalogo) => false);}, icon: const Icon(Icons.window))
+        IconButton(onPressed: () {ref.read(CategoryProvider.notifier).update((estadoCatalogo) => true);}, icon: Icon(Icons.list_alt, color: estadoCatalogo == true ? const Color(0xFF5D9558) : Colors.black45,)),
+        IconButton(onPressed: () {ref.read(CategoryProvider.notifier).update((estadoCatalogo) => false);}, icon: Icon(Icons.window, color: estadoCatalogo == true ? Colors.black45 : const Color(0xFF5D9558),))
       ],
     );
   }

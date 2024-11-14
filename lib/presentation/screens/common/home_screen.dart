@@ -54,6 +54,16 @@ class _ContentState extends ConsumerState<_Content> {
     return SingleChildScrollView(
       child: Column(
         children: [
+
+          ProductHorizontalListView(
+            products: [
+              ...products
+            ],
+            title: 'Productos',
+            subTitle: 'Ver todo',
+            loadNextPage: () => ref.read(productsProvider.notifier).loadNextPage(),
+          ),
+
           ComboHorizontalListView(
             combos: [
               ...combos
@@ -68,16 +78,6 @@ class _ContentState extends ConsumerState<_Content> {
               ...products
             ],
             title: 'Ofertas Limitadas',
-            subTitle: 'Ver todo',
-            loadNextPage: () => ref.read(productsProvider.notifier).loadNextPage(),
-          ),
-
-
-          ProductHorizontalListView(
-            products: [
-              ...products
-            ],
-            title: 'Comida',
             subTitle: 'Ver todo',
             loadNextPage: () => ref.read(productsProvider.notifier).loadNextPage(),
           ),

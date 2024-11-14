@@ -1,7 +1,4 @@
-import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-
-bool estadoCatalogo = true;
 
 
 
@@ -11,7 +8,7 @@ bool estadoCatalogo = true;
 );*/
 
 final CategoryProvider = StateProvider<bool>((ref){
-  return estadoCatalogo;
+  return true;
 
 });
 

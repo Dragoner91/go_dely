@@ -75,86 +75,89 @@ class _SlideCategorias extends StatelessWidget {
     final textStyles = Theme.of(context).textTheme;
     final titleStyle =  Theme.of(context).textTheme.titleLarge;
 
-    return Container(
-      margin: const EdgeInsets.symmetric(horizontal: 8),
-      decoration: BoxDecoration(
-        borderRadius: const BorderRadius.all(Radius.circular(10)),        
-        border: Border.all(color: const Color.fromARGB(136, 186, 186, 186)),
-        shape: BoxShape.rectangle,
+    return Padding(
+      padding: const EdgeInsets.all(3),
+      child: Container(
+        margin: const EdgeInsets.symmetric(horizontal: 10),
+        decoration: BoxDecoration(
+          borderRadius: const BorderRadius.all(Radius.circular(10)),        
+          border: Border.all(color: const Color.fromARGB(136, 186, 186, 186)),
+          shape: BoxShape.rectangle,
+        ),
+        child: ListTile(
+      title: SizedBox(
+              child: Row(
+                children: [
+                  const SizedBox(width: 5,),
+                  Text(
+                    categorias.name, 
+                    
+                    style: titleStyle,
+                  ),
+                  const SizedBox(width: 5,),
+                ],
+              ),
+            ),
+      subtitle: SizedBox(
+              child: Row( 
+                children: [
+                  const SizedBox(width: 5,),
+                  Text(
+                    categorias.ejemplos, 
+                    style: textStyles.bodyLarge,
+                  ),
+                  const SizedBox(width: 5,), 
+                  
+                ],
+              ),
+            ),
+      
+      onTap: () {
+      // Acción al tocar una categoría
+        },
+        )
+      
+      
+      
+      
+        /*Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            
+            SizedBox(
+              child: Row(
+                children: [
+                  const SizedBox(width: 5,),
+                  Text(
+                    categorias.name, 
+                    
+                    style: titleStyle,
+                  ),
+                  const SizedBox(width: 5,),
+                ],
+              ),
+            ),
+      
+      
+            SizedBox(
+              child: Row( 
+                children: [
+                  const SizedBox(width: 5,),
+                  Text(
+                    categorias.descripcion, 
+                    style: textStyles.bodyLarge,
+                  ),
+                  const SizedBox(width: 5,), 
+                  
+                ],
+              ),
+            )
+      
+      
+      
+      
+        ]),*/
       ),
-      child: ListTile(
-    title: SizedBox(
-            child: Row(
-              children: [
-                const SizedBox(width: 5,),
-                Text(
-                  categorias.name, 
-                  
-                  style: titleStyle,
-                ),
-                const SizedBox(width: 5,),
-              ],
-            ),
-          ),
-    subtitle: SizedBox(
-            child: Row( 
-              children: [
-                const SizedBox(width: 5,),
-                Text(
-                  categorias.ejemplos, 
-                  style: textStyles.bodyLarge,
-                ),
-                const SizedBox(width: 5,), 
-                
-              ],
-            ),
-          ),
-
-    onTap: () {
-    // Acción al tocar una categoría
-  },
-  )
-
-
-
-
-      /*Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          
-          SizedBox(
-            child: Row(
-              children: [
-                const SizedBox(width: 5,),
-                Text(
-                  categorias.name, 
-                  
-                  style: titleStyle,
-                ),
-                const SizedBox(width: 5,),
-              ],
-            ),
-          ),
-
-
-          SizedBox(
-            child: Row( 
-              children: [
-                const SizedBox(width: 5,),
-                Text(
-                  categorias.descripcion, 
-                  style: textStyles.bodyLarge,
-                ),
-                const SizedBox(width: 5,), 
-                
-              ],
-            ),
-          )
-
-
-
-
-      ]),*/
     );
   }
 }
