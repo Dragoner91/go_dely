@@ -1,3 +1,4 @@
+import 'package:flutter/material.dart';
 import 'package:go_dely/presentation/screens.dart';
 import 'package:go_router/go_router.dart';
 
@@ -8,39 +9,178 @@ final appRouter = GoRouter(
   routes: [
     GoRoute(
       path: '/home',
-      builder: (context, state) => const HomeScreen(),
+      pageBuilder: (context, state) {
+        return  CustomTransitionPage(
+          transitionDuration: const Duration(seconds: 1),
+          key: state.pageKey,
+          child: const HomeScreen(),
+          transitionsBuilder: (context, animation, secondaryAnimation, child) {
+            return FadeTransition(
+              opacity:
+                  CurveTween(curve: Curves.easeInOutCirc).animate(animation),
+              child: child,
+            );
+          },
+        );
+      },
     ),
     GoRoute(
       path: '/welcome',
-      builder: (context, state) => const WelcomeScreen(),
+      pageBuilder: (context, state) {
+        return  CustomTransitionPage(
+          transitionDuration: const Duration(seconds: 1),
+          key: state.pageKey,
+          child: const WelcomeScreen(),
+          transitionsBuilder: (context, animation, secondaryAnimation, child) {
+            return FadeTransition(
+              opacity:
+                  CurveTween(curve: Curves.easeInOutCirc).animate(animation),
+              child: child,
+            );
+          },
+        );
+      },
     ),
     GoRoute(
       path: '/profile',
-      builder: (context, state) => const ProfileScreen(),
+      pageBuilder: (context, state) {
+        return  CustomTransitionPage(
+          transitionDuration: const Duration(seconds: 1),
+          key: state.pageKey,
+          child: const ProfileScreen(),
+          transitionsBuilder: (context, animation, secondaryAnimation, child) {
+            return FadeTransition(
+              opacity:
+                  CurveTween(curve: Curves.easeInOutCirc).animate(animation),
+              child: child,
+            );
+          },
+        );
+      },
     ),
     GoRoute(
       path: '/product',
-      builder: (context, state) => const ProductDetailsScreen(),
+      pageBuilder: (context, state) {
+        return  CustomTransitionPage(
+          transitionDuration: const Duration(milliseconds: 500),
+          key: state.pageKey,
+          child: const ProductDetailsScreen(),
+          transitionsBuilder: (context, animation, secondaryAnimation, child) {
+            return SizeTransition(
+              sizeFactor: Tween<double>(begin: 0.0, end: 1.0).animate(
+                CurvedAnimation(
+                  parent: animation,
+                  curve: Curves.easeInOut,
+                ),
+              ),
+              axisAlignment: 0.0,
+              child: child,
+            );
+          },
+        );
+      },
     ),
     GoRoute(
       path: '/combo',
-      builder: (context, state) => const ComboDetailsScreen(),
+      pageBuilder: (context, state) {
+        return  CustomTransitionPage(
+          transitionDuration: const Duration(seconds: 2),
+          key: state.pageKey,
+          child: const ComboDetailsScreen(),
+          transitionsBuilder: (context, animation, secondaryAnimation, child) {
+            return FadeTransition(
+              opacity:
+                  CurveTween(curve: Curves.decelerate).animate(animation),
+              child: child,
+            );
+          },
+        );
+      },
     ),    
     GoRoute(
       path: '/cart',
-      builder: (context, state) => const CartScreen(),
+      pageBuilder: (context, state) {
+        return  CustomTransitionPage(
+          transitionDuration: const Duration(seconds: 1),
+          key: state.pageKey,
+          child: const CartScreen(),
+          transitionsBuilder: (context, animation, secondaryAnimation, child) {
+            return FadeTransition(
+              opacity:
+                  CurveTween(curve: Curves.easeInOutCirc).animate(animation),
+              child: child,
+            );
+          },
+        );
+      },
     ),  
     GoRoute(
       path: '/checkout',
-      builder: (context, state) => const CheckoutScreen(),
+      pageBuilder: (context, state) {
+        return  CustomTransitionPage(
+          transitionDuration: const Duration(seconds: 1),
+          key: state.pageKey,
+          child: const CheckoutScreen(),
+          transitionsBuilder: (context, animation, secondaryAnimation, child) {
+            return FadeTransition(
+              opacity:
+                  CurveTween(curve: Curves.easeInOutCirc).animate(animation),
+              child: child,
+            );
+          },
+        );
+      },
     ),
     GoRoute(
       path: '/login',
-      builder: (context, state) => const LoginScreen(),
+      pageBuilder: (context, state) {
+        return  CustomTransitionPage(
+          transitionDuration: const Duration(seconds: 1),
+          key: state.pageKey,
+          child: const LoginScreen(),
+          transitionsBuilder: (context, animation, secondaryAnimation, child) {
+            return FadeTransition(
+              opacity:
+                  CurveTween(curve: Curves.easeInOutCirc).animate(animation),
+              child: child,
+            );
+          },
+        );
+      },
     ), 
     GoRoute(
       path: '/register',
-      builder: (context, state) => const RegisterScreen(),
-    ),   
+      pageBuilder: (context, state) {
+        return  CustomTransitionPage(
+          transitionDuration: const Duration(seconds: 1),
+          key: state.pageKey,
+          child: const RegisterScreen(),
+          transitionsBuilder: (context, animation, secondaryAnimation, child) {
+            return FadeTransition(
+              opacity:
+                  CurveTween(curve: Curves.easeInOutCirc).animate(animation),
+              child: child,
+            );
+          },
+        );
+      },
+    ),
+    GoRoute(
+      path: '/categoryList',
+      pageBuilder: (context, state) {
+        return  CustomTransitionPage(
+          transitionDuration: const Duration(seconds: 1),
+          key: state.pageKey,
+          child: const Cataloglist(),
+          transitionsBuilder: (context, animation, secondaryAnimation, child) {
+            return FadeTransition(
+              opacity:
+                  CurveTween(curve: Curves.easeInOutCirc).animate(animation),
+              child: child,
+            );
+          },
+        );
+      },
+    ),    
   ],
 );

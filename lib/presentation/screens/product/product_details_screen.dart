@@ -25,7 +25,7 @@ class _ProductDetailsScreenState extends ConsumerState<ProductDetailsScreen> {
   Widget build(BuildContext context) {
 
     final product = ref.watch(currentProduct).lastOrNull;
-    if(product == null) return const CircularProgressIndicator();
+    if(product == null) return const SizedBox();
 
 
     return Scaffold(

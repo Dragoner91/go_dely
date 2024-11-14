@@ -171,10 +171,12 @@ class _SlideState extends ConsumerState<_Slide> {
             child: Row(
               children: [
                 const SizedBox(width: 5,),
-                Text(
-                  widget.product.name, //*arreglar cuando este producto listo
-                  maxLines: 2,
-                  style: textStyles.bodyLarge,
+                Expanded(
+                  child: Text(
+                    widget.product.name, //*arreglar cuando este producto listo
+                    maxLines: 1,
+                    style: textStyles.bodyLarge,
+                  ),
                 ),
                 const SizedBox(width: 5,),
               ],
@@ -188,7 +190,7 @@ class _SlideState extends ConsumerState<_Slide> {
               children: [
                 const SizedBox(width: 5,),
                 Text(
-                  "US\$${HumanFormarts.numberCurrency(widget.product.price)}", //*arreglar cuando este producto listo
+                  "${widget.product.currency} ${HumanFormarts.numberCurrency(widget.product.price)}", //*arreglar cuando este producto listo
                   style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
                 ),
                 const SizedBox(width: 5,), 
