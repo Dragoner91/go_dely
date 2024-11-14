@@ -34,7 +34,7 @@ class BottomAppBarCustomState extends ConsumerState<BottomAppBarCustom> {
           borderRadius: BorderRadius.all(Radius.circular(25)))),
       child: Row(
         children: [
-          const Padding(padding: EdgeInsets.only(left: 5)),
+          // const Padding(padding: EdgeInsets.only(left: 5)),
           Column(children: [
             IconButton(
               icon: const Icon(Icons.discount_outlined),
@@ -46,19 +46,21 @@ class BottomAppBarCustomState extends ConsumerState<BottomAppBarCustom> {
             ),
             Text("Offers", style: TextStyle(color: currentState == 0 ? currentColor : colorOptions,),)
           ]),
-          const Padding(padding: EdgeInsets.only(left: 25)),
+          const Padding(padding: EdgeInsets.only(left: 15)),
           Column(children: [
             IconButton(
               icon: const Icon(Icons.copy_outlined),
               onPressed: () { 
                 ref.read(currentStateNavBar.notifier).update((state) => 1);
                 ref.read(currentProduct.notifier).update((state) => [] );
+                context.go("/categoryList");
               },
               color: currentState == 1 ? currentColor : colorOptions,
             ),
-            Text("Catalog", style: TextStyle(color: currentState == 1 ? currentColor : colorOptions,),)
+            Text("Categories", style: TextStyle(color: currentState == 1 ? currentColor : colorOptions,),)
           ]),
-          const Padding(padding: EdgeInsets.only(left: 20)),
+          const Spacer(),
+          //const Padding(padding: EdgeInsets.only(left: 20)),
           Container(
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(100),
@@ -92,7 +94,8 @@ class BottomAppBarCustomState extends ConsumerState<BottomAppBarCustom> {
               ]),
             ),
           ),
-          const Padding(padding: EdgeInsets.only(right: 24)),
+          const Spacer(),
+          //const Padding(padding: EdgeInsets.only(right: 20)),
           Column(children: [
             IconButton(
               icon: const Icon(Icons.task_outlined),
@@ -104,7 +107,8 @@ class BottomAppBarCustomState extends ConsumerState<BottomAppBarCustom> {
             ),
             Text("Orders", style: TextStyle(color: currentState == 3 ? currentColor : colorOptions,),)
           ]),
-          const Padding(padding: EdgeInsets.only(right: 25)),
+          const Spacer(),
+          // const Padding(padding: EdgeInsets.only(right: 25)),
           Column(children: [
             IconButton(
               icon: const Icon(Icons.person_outline_outlined),
@@ -116,6 +120,7 @@ class BottomAppBarCustomState extends ConsumerState<BottomAppBarCustom> {
             ),
             Text("Profile", style: TextStyle(color: currentState == 4 ? currentColor : colorOptions,),)
           ]),
+          const Padding(padding: EdgeInsets.only(right: 5)),
         ],
       ),
     );
