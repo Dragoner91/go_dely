@@ -140,7 +140,7 @@ class _ContentState extends ConsumerState<_Content> {
               const SizedBox(width: 20,),
               Container(
                 constraints: const BoxConstraints(minWidth: 100, maxWidth: 350),
-                child: Text(widget.product!.description+widget.product!.description+widget.product!.description+widget.product!.description+widget.product!.description, style: const TextStyle(fontWeight: FontWeight.w200, fontSize: 18), maxLines: 5,),
+                child: Text(widget.product!.description, style: const TextStyle(fontWeight: FontWeight.w200, fontSize: 18), maxLines: 5,),
               ),
               const SizedBox(width: 20,),
             ],
@@ -219,7 +219,7 @@ class _Slide extends StatelessWidget {
         borderRadius: BorderRadius.circular(20),
         child: Image.network(
           image, 
-          fit: BoxFit.cover,
+          fit: BoxFit.contain,
           loadingBuilder: (context, child, loadingProgress) {
             if(loadingProgress != null){
               return const DecoratedBox(decoration: BoxDecoration(color: Colors.black12));
