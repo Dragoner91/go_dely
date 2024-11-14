@@ -6,4 +6,6 @@ export 'screens/common/welcome_screen.dart';
 export 'screens/common/home_screen.dart';
 export 'screens/auth/login_screen.dart';
 export 'screens/auth/register_screen.dart';
+export 'screens/catalog/catalogList.dart';
 export 'screens/combo/combo_details_screen.dart';
+
