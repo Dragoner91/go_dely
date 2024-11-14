@@ -37,4 +37,23 @@ class ProductDBDatasource extends ProductDatasource{
     
   }
 
+  @override
+  Future<Product> getProductById(String id) async {
+    final response = await dio.get('/product/$id',
+      queryParameters: {
+        
+      }
+    );
+
+    final Product product = 
+      response.data.map(
+          (productsJson) => ProductMapper.productToEntity(
+            ProductDB.fromJson(productsJson)
+          )
+        );
+
+    return product;
+  }
+
+
 }

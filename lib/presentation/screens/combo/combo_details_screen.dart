@@ -1,37 +1,39 @@
 import 'package:animate_do/animate_do.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_dely/domain/entities/product/combo.dart';
 import 'package:go_dely/domain/entities/product/product.dart';
 import 'package:go_dely/presentation/providers/bottom_appbar_provider.dart';
+import 'package:go_dely/presentation/providers/combos/combos_provider.dart';
+import 'package:go_dely/presentation/providers/combos/current_combo_provider.dart';
 import 'package:go_dely/presentation/providers/products/current_product_provider.dart';
-import 'package:go_dely/presentation/providers/products/product_provider.dart';
+import 'package:go_dely/presentation/widgets/combo/combo_horizontal_listview.dart';
 import 'package:go_dely/presentation/widgets/common/custom_bottom_app_bar.dart';
-import 'package:go_dely/presentation/widgets/product/product_horizontal_listview.dart';
 import 'package:go_router/go_router.dart';
 import 'package:card_swiper/card_swiper.dart';
 
 
-class ProductDetailsScreen extends ConsumerStatefulWidget {
+class ComboDetailsScreen extends ConsumerStatefulWidget {
 
-  const ProductDetailsScreen({super.key,});
+  const ComboDetailsScreen({super.key,});
 
   @override
-  ConsumerState<ProductDetailsScreen> createState() => _ProductDetailsScreenState();
+  ConsumerState<ComboDetailsScreen> createState() => _ComboDetailsScreenState();
 }
 
-class _ProductDetailsScreenState extends ConsumerState<ProductDetailsScreen> {
+class _ComboDetailsScreenState extends ConsumerState<ComboDetailsScreen> {
 
   @override 
   Widget build(BuildContext context) {
 
-    final product = ref.watch(currentProduct).lastOrNull;
-    if(product == null) return const CircularProgressIndicator();
+    final combo = ref.watch(currentCombo).lastOrNull;
+    if(combo == null) return const CircularProgressIndicator();
 
 
     return Scaffold(
       appBar: AppBar(
         centerTitle: true,
-        title: Text(product.name),
+        title: Text(combo.name),
         leading: IconButton(onPressed: () {
             ref.read(currentProduct.notifier).update((state) {
               state.removeLast();
@@ -44,16 +46,16 @@ class _ProductDetailsScreenState extends ConsumerState<ProductDetailsScreen> {
         ),
       ),
       bottomNavigationBar: const BottomAppBarCustom(),
-      body: _Content(product: product,),
+      body: _Content(combo: combo,),
     );
   }
 }
 
 class _Content extends ConsumerStatefulWidget{
 
-  final Product? product;
+  final Combo? combo;
 
-  const _Content({this.product});
+  const _Content({this.combo});
 
   @override
   ConsumerState<_Content> createState() => _ContentState();
@@ -69,24 +71,24 @@ class _ContentState extends ConsumerState<_Content> {
   @override
   Widget build(BuildContext context) {
 
-    final recomendedProducts = ref.watch(productsProvider); //*cambiar a recomendacion de productos por categoria o algo asi
+    final recomendedCombos = ref.watch(combosProvider); //*cambiar a recomendacion de productos por categoria o algo asi
 
     return SingleChildScrollView(
       child: Column(
         children: [
           Padding(
             padding: const EdgeInsets.all(20),
-            child: _Slider(productImages: [...widget.product!.imageUrl,...widget.product!.imageUrl,...widget.product!.imageUrl,]),
+            child: _Slider(comboImages: [widget.combo!.imageUrl,widget.combo!.imageUrl,widget.combo!.imageUrl,]),
           ),
           Row(
             children: [
               const SizedBox(width: 20,),
               Container(
                 constraints: const BoxConstraints(minWidth: 100, maxWidth: 200),
-                child: Text(widget.product!.name, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 26),maxLines: 3,)
+                child: Text(widget.combo!.name, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 26),maxLines: 3,)
               ),
               const Spacer(),
-              Text("${widget.product!.price} ${widget.product!.currency}", style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 24),),
+              Text("${widget.combo!.price} ${widget.combo!.currency}", style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 24),),
               const SizedBox(width: 20,),
             ],
           ),
@@ -97,19 +99,10 @@ class _ContentState extends ConsumerState<_Content> {
                 children: [
                   Row(
                     children: [
-                      const SizedBox(width: 10,),
+                      const SizedBox(width: 20,),
                       const Text("Category: ", style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),),
                       const SizedBox(width: 5,),
-                      Text(widget.product!.category, style: const TextStyle(fontSize: 18),),
-                      const SizedBox(width: 20,),
-                    ],
-                  ),
-                  Row(
-                    children: [
-                      const SizedBox(width: 20,),
-                      const Text("Presentation: ", style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),),
-                      const SizedBox(width: 5,),
-                      Text(widget.product!.weight, style: const TextStyle(fontSize: 18),),
+                      Text(widget.combo!.category, style: const TextStyle(fontSize: 18),),
                       const SizedBox(width: 20,),
                     ],
                   ),
@@ -133,26 +126,39 @@ class _ContentState extends ConsumerState<_Content> {
               const SizedBox(width: 15,),
             ],
           ),
-          
           const SizedBox(height: 25,),
           Row(
             children: [
               const SizedBox(width: 20,),
               Container(
                 constraints: const BoxConstraints(minWidth: 100, maxWidth: 350),
-                child: Text(widget.product!.description+widget.product!.description+widget.product!.description+widget.product!.description+widget.product!.description, style: const TextStyle(fontWeight: FontWeight.w200, fontSize: 18), maxLines: 5,),
+                child: Text(widget.combo!.description, style: const TextStyle(fontWeight: FontWeight.w200, fontSize: 18), maxLines: 5,),
               ),
               const SizedBox(width: 20,),
             ],
           ),
           const SizedBox(height: 20,),
+          Row(
+            children: [
+              const SizedBox(width: 20,),
+              Container(
+                constraints: const BoxConstraints(minWidth: 100, maxWidth: 200),
+                child: const Text("Products included", style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),maxLines: 3,)
+              ),
+            ],
+          ),
+          const SizedBox(height: 5,),
+          _ListProducts(products: 
+            widget.combo!.products
+          ,),
+          const SizedBox(height: 20,),
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 12),
-            child: ProductHorizontalListView(
-              products: [
-                ...recomendedProducts,...recomendedProducts,
+            child: ComboHorizontalListView(
+              combos: [
+                ...recomendedCombos,
               ],
-              title: 'Recomended Products',
+              title: 'Recomended Combos',
               loadNextPage: () {},
             ),
           ),
@@ -163,11 +169,75 @@ class _ContentState extends ConsumerState<_Content> {
   }
 }
 
+class _ListProducts extends StatelessWidget {
+
+  final List<Product> products;
+
+  const _ListProducts({required this.products});
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      children: [
+        ...products.map((e) => _ProductListItem(product: e)),
+      ],
+    );
+  }
+
+
+}
+
+class _ProductListItem extends StatelessWidget{
+
+  final Product product;
+
+  const _ProductListItem({required this.product});
+
+  @override
+  Widget build(BuildContext context) {
+
+    final decoration = BoxDecoration(
+      borderRadius: BorderRadius.circular(20),
+      border: Border.all(width: 2, color: Colors.black38),
+    );
+
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 5),
+      child: SizedBox(
+        height: 120,
+        child: DecoratedBox(
+          decoration: decoration,
+          child: Row(
+            children: [
+              Padding(
+                padding: const EdgeInsets.all(5),
+                child: SizedBox(
+                  height: 100,
+                  width: 100,
+                  child: Image.network(product.imageUrl[0], fit: BoxFit.cover,)
+                  ),
+              ),
+              Column(
+                mainAxisAlignment: MainAxisAlignment.spaceAround,
+                children: [
+                  Text(product.name, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 18),),
+                  Text(product.description, style: const TextStyle(fontWeight: FontWeight.w200, fontSize: 16),),
+                ],
+              )
+            ],
+          ),
+        )
+        ),
+    );
+  }
+
+}
+
 class _Slider extends StatelessWidget {
 
-  final List<String> productImages;
+  final List<String> comboImages;
 
-  const _Slider({required this.productImages});
+  const _Slider({required this.comboImages});
 
   @override
   Widget build(BuildContext context) {
@@ -192,9 +262,9 @@ class _Slider extends StatelessWidget {
               )
             ),
             loop: false,
-            itemCount: productImages.length,
+            itemCount: comboImages.length,
             itemBuilder: (context, index) {
-              final image = productImages[index];
+              final image = comboImages[index];
               return _Slide(image: image);
             },
           ),

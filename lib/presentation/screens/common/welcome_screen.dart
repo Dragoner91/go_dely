@@ -17,7 +17,7 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
 
   Future<void> changeScreen(BuildContext context) async {
     await Future.delayed(const Duration(milliseconds: 1700));
-    context.go("/welcome");
+    context.go("/home");
   }
 
   bool isAnimating = false;
