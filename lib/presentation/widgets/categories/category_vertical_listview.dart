@@ -38,7 +38,7 @@ class _CategoryVerticalListViewState extends State<CategoryVerticalListView> {
   @override
   Widget build(BuildContext context) {
     return SizedBox(
-      height:550,
+      height:680,
       child: Column(
         children: [
 

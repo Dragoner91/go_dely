@@ -34,10 +34,7 @@ final appRouter = GoRouter(
       path: '/register',
       builder: (context, state) => const RegisterScreen(),
     ),
-    GoRoute(
-      path: '/catalogoIcon',
-      builder: (context, state) => const Catalogicons(),
-    ),  
+    
     GoRoute(
       path: '/catalogoList',
       builder: (context, state) => const Cataloglist(),

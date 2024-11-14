@@ -1,12 +1,14 @@
 import 'package:flutter/material.dart';
-//import 'package:go_dely/presentation/screens/catalog/catalogList.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_dely/presentation/providers/categoria/category_provider.dart';
 import 'package:go_router/go_router.dart';
+
 
 class CatalogoAppBar extends StatelessWidget implements PreferredSizeWidget {
   const CatalogoAppBar({super.key});
 
   @override
-  Size get preferredSize => const Size.fromHeight(150);
+  Size get preferredSize => const Size.fromHeight(120);
 
   @override
   Widget build(BuildContext context) {
@@ -40,17 +42,17 @@ class CatalogoAppBar extends StatelessWidget implements PreferredSizeWidget {
   }
 }
 
-class _ColumnaWidgetsBottom extends StatefulWidget implements PreferredSizeWidget{
+class _ColumnaWidgetsBottom extends ConsumerStatefulWidget implements PreferredSizeWidget{
   const _ColumnaWidgetsBottom();
 
   @override
-  Size get preferredSize => const Size.fromHeight(100);
+  Size get preferredSize => const Size.fromHeight(80);
 
   @override
-  State<_ColumnaWidgetsBottom> createState() => _ColumnaWidgetsBottomState();
+  ConsumerState<_ColumnaWidgetsBottom> createState() => _ColumnaWidgetsBottomState();
 }
 
-class _ColumnaWidgetsBottomState extends State<_ColumnaWidgetsBottom> with SingleTickerProviderStateMixin{
+class _ColumnaWidgetsBottomState extends ConsumerState<_ColumnaWidgetsBottom> with SingleTickerProviderStateMixin{
   
   @override
   Widget build(BuildContext context) {
@@ -60,8 +62,9 @@ class _ColumnaWidgetsBottomState extends State<_ColumnaWidgetsBottom> with Singl
     return Row(
       children: [
         const _SearchButton(),
-        IconButton(onPressed: () {context.push("/catalogoList");}, icon: const Icon(Icons.list_alt)),
-        IconButton(onPressed: () {context.push("/catalogoIcon");}, icon: const Icon(Icons.window))
+        Expanded(child: Container()),
+        IconButton(onPressed: () {ref.read(CategoryProvider.notifier).update((estadoCatalogo) => true);}, icon: const Icon(Icons.list_alt)),
+        IconButton(onPressed: () {ref.read(CategoryProvider.notifier).update((estadoCatalogo) => false);}, icon: const Icon(Icons.window))
       ],
     );
   }
@@ -74,6 +77,7 @@ class _SearchButton extends StatelessWidget implements PreferredSizeWidget{
 
   @override
   Size get preferredSize => const Size.fromHeight(kToolbarHeight);
+
 
   @override
   Widget build(BuildContext context) {
