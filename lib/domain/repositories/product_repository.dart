@@ -7,5 +7,7 @@ abstract class ProductRepository{
 
   Future<List<Product>> getProducts({int page = 1});
 
+  Future<Product> getProductById(String id);
+
 
 }
