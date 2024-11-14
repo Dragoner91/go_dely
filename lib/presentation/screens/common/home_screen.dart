@@ -1,8 +1,9 @@
 import 'package:animate_do/animate_do.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:go_dely/domain/entities/product/product.dart';
+import 'package:go_dely/presentation/providers/combos/combos_provider.dart';
 import 'package:go_dely/presentation/providers/products/product_provider.dart';
+import 'package:go_dely/presentation/widgets/combo/combo_horizontal_listview.dart';
 import 'package:go_dely/presentation/widgets/product/product_horizontal_listview.dart';
 import 'package:go_dely/presentation/widgets/widgets.dart';
 
@@ -41,23 +42,25 @@ class _ContentState extends ConsumerState<_Content> {
   void initState() {
     super.initState();
     final products = ref.read( productsProvider.notifier ).loadNextPage();
+    final combos = ref.read( combosProvider.notifier ).loadNextPage();
   }
 
   @override
   Widget build(BuildContext context) {
 
     final products = ref.watch(productsProvider);
+    final combos = ref.watch(combosProvider);
 
     return SingleChildScrollView(
       child: Column(
         children: [
-          ProductHorizontalListView(
-            products: [
-              ...products,...products,
+          ComboHorizontalListView(
+            combos: [
+              ...combos
             ],
             title: 'Combos de Productos',
             subTitle: 'Ver todo',
-            loadNextPage: () => ref.read(productsProvider.notifier).loadNextPage(),
+            loadNextPage: () => ref.read(combosProvider.notifier).loadNextPage(),
           ),
 
           ProductHorizontalListView(

@@ -34,7 +34,7 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
           FadeInLeftBig(
-            delay: const Duration(milliseconds: 1100),
+            delay: const Duration(milliseconds: 500),
             duration: const Duration(milliseconds: 1000),
             onFinish: (direction) {
               setState(() {
@@ -49,11 +49,17 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
               child: Image.asset('assets/GoDely-Logo.png'),)
             ),
           const SizedBox(height: 10,),
-          FadeInUpBig(
+          FadeInLeftBig(
+            delay: const Duration(milliseconds: 500),
             duration: const Duration(milliseconds: 1000),
-            child: const Text(
-              "Mas que Delivery, experiencias.",
-              style: TextStyle(fontSize: 26, fontWeight: FontWeight.w400, fontStyle: FontStyle.italic),
+            child: FadeOutRightBig(
+              duration: const Duration(milliseconds: 1000),
+              animate: isAnimating,
+              delay: const Duration(milliseconds: 1100),
+              child: const Text(
+                "More than Delivery, Experiences",
+                style: TextStyle(fontSize: 26, fontWeight: FontWeight.w400, fontStyle: FontStyle.italic),
+              ),
             ),
           ),
         ],

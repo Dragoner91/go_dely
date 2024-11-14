@@ -2,26 +2,28 @@ import 'package:animate_do/animate_do.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_dely/config/helpers/human_formats.dart';
+import 'package:go_dely/domain/entities/product/combo.dart';
 import 'package:go_dely/domain/entities/product/product.dart';
 import 'package:go_dely/presentation/providers/bottom_appbar_provider.dart';
+import 'package:go_dely/presentation/providers/combos/current_combo_provider.dart';
 import 'package:go_dely/presentation/providers/products/current_product_provider.dart';
 import 'package:go_router/go_router.dart';
 
 
-class ProductHorizontalListView extends StatefulWidget {
+class ComboHorizontalListView extends StatefulWidget {
 
-  final List<Product> products;
+  final List<Combo> combos;
   final String? title;
   final String? subTitle;
   final VoidCallback? loadNextPage;
 
-  const ProductHorizontalListView({super.key, required this.products, this.title, this.subTitle, this.loadNextPage});
+  const ComboHorizontalListView({super.key, required this.combos, this.title, this.subTitle, this.loadNextPage});
 
   @override
-  State<ProductHorizontalListView> createState() => _ProductHorizontalListViewState();
+  State<ComboHorizontalListView> createState() => _ComboHorizontalListViewState();
 }
 
-class _ProductHorizontalListViewState extends State<ProductHorizontalListView> {
+class _ComboHorizontalListViewState extends State<ComboHorizontalListView> {
   
   final scrollController = ScrollController();
 
@@ -56,11 +58,11 @@ class _ProductHorizontalListViewState extends State<ProductHorizontalListView> {
           Expanded(
             child: ListView.builder(
               controller: scrollController,
-              itemCount: widget.products.length,
+              itemCount: widget.combos.length,
               scrollDirection: Axis.horizontal,
               physics: const BouncingScrollPhysics(),
               itemBuilder: (context, index) {
-                return _Slide(product: widget.products[index]);
+                return _Slide(combo: widget.combos[index]);
               },
             ),
           )
@@ -73,9 +75,9 @@ class _ProductHorizontalListViewState extends State<ProductHorizontalListView> {
 
 class _Slide extends ConsumerStatefulWidget {
   
-  final Product product;
+  final Combo combo;
 
-  const _Slide({required this.product});
+  const _Slide({required this.combo});
 
   @override
   ConsumerState<_Slide> createState() => _SlideState();
@@ -113,12 +115,12 @@ class _SlideState extends ConsumerState<_Slide> {
                     child: GestureDetector(
                       onTap: () {
                         //*colocar el id en el provider de currentProduct
-                        ref.read(currentProduct.notifier).update((state) => [...state, widget.product] );
+                        ref.read(currentCombo.notifier).update((state) => [...state, widget.combo] ); //*arreglar
                         ref.read(currentStateNavBar.notifier).update((state) => -1);
-                        context.push("/product");
+                        context.push("/combo");
                       },
                       child: Image.network(
-                        widget.product.imageUrl[0],  //*siempre se visualiza la primera imagen del arreglo de imagenes
+                        widget.combo.products[0].imageUrl[0],  //*siempre se visualiza la primera imagen del arreglo de imagenes
                         fit: BoxFit.cover,
                         height: 150,
                         width: 150,
@@ -172,7 +174,7 @@ class _SlideState extends ConsumerState<_Slide> {
               children: [
                 const SizedBox(width: 5,),
                 Text(
-                  widget.product.name, //*arreglar cuando este producto listo
+                  widget.combo.name, //*arreglar cuando este producto listo
                   maxLines: 2,
                   style: textStyles.bodyLarge,
                 ),
@@ -188,7 +190,7 @@ class _SlideState extends ConsumerState<_Slide> {
               children: [
                 const SizedBox(width: 5,),
                 Text(
-                  "US\$${HumanFormarts.numberCurrency(widget.product.price)}", //*arreglar cuando este producto listo
+                  "US\$${HumanFormarts.numberCurrency(widget.combo.price)}", //*arreglar cuando este producto listo
                   style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
                 ),
                 const SizedBox(width: 5,), 
