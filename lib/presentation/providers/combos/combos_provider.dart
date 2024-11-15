@@ -28,7 +28,7 @@ class CombosNotifier extends StateNotifier<List<Combo>>{
     isLoading = true;
     currentPage++;
     
-    final List<Combo> combos = await fetchMoreCombos(page: currentPage);
+    final List<Combo> combos = await fetchMoreCombos(page: currentPage*5);
     state = [...state, ...combos];
     await Future.delayed(const Duration(milliseconds: 500));
     isLoading = false;

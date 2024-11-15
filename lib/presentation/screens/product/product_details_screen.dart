@@ -94,10 +94,12 @@ class _ContentState extends ConsumerState<_Content> {
           Row(
             children: [
               Column(
+                mainAxisAlignment: MainAxisAlignment.start,
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Row(
                     children: [
-                      const SizedBox(width: 10,),
+                      const SizedBox(width: 20,),
                       const Text("Category: ", style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),),
                       const SizedBox(width: 5,),
                       Text(widget.product!.category, style: const TextStyle(fontSize: 18),),
@@ -109,7 +111,17 @@ class _ContentState extends ConsumerState<_Content> {
                       const SizedBox(width: 20,),
                       const Text("Presentation: ", style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),),
                       const SizedBox(width: 5,),
-                      Text(widget.product!.weight, style: const TextStyle(fontSize: 18),),
+                      Container(
+                        constraints: const BoxConstraints(maxWidth: 90),
+                        child: Text(
+                          widget.product!.weight, 
+                          style: const TextStyle(
+                            fontSize: 18
+                          ),
+                          maxLines: 2,
+                          overflow: TextOverflow.clip,
+                        ),
+                      ),
                       const SizedBox(width: 20,),
                     ],
                   ),
@@ -125,7 +137,7 @@ class _ContentState extends ConsumerState<_Content> {
                 ),
                 child: const Row(
                   children: [
-                    Text("Add to Cart  "),
+                    Text("Add to Cart "),
                     Icon(Icons.shopping_cart),
                   ],
                 )

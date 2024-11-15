@@ -19,7 +19,7 @@ class ComboDBDatasource extends ComboDatasource{
   @override
   Future<List<Combo>> getCombos({int page = 1}) async{
 
-    final response = await dio.get('/combos',
+    final response = await dio.get('/combos?limit=5&offset=$page',
       queryParameters: {
         //'page': page
       }
