@@ -19,7 +19,7 @@ class ProductDBDatasource extends ProductDatasource{
   @override
   Future<List<Product>> getProducts({int page = 1}) async{
 
-    final response = await dio.get('/products',
+    final response = await dio.get('/products?limit=5&offset=$page',
       queryParameters: {
         //'page': page
       }

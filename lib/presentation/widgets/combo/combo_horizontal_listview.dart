@@ -120,8 +120,8 @@ class _SlideState extends ConsumerState<_Slide> {
                         context.push("/combo");
                       },
                       child: Image.network(
-                        widget.combo.products[0].imageUrl[0],  //*siempre se visualiza la primera imagen del arreglo de imagenes
-                        fit: BoxFit.cover,
+                        widget.combo.imageUrl,  //*siempre se visualiza la primera imagen del arreglo de imagenes
+                        fit: BoxFit.contain,
                         height: 150,
                         width: 150,
                         loadingBuilder: (context, child, loadingProgress) {
@@ -173,10 +173,12 @@ class _SlideState extends ConsumerState<_Slide> {
             child: Row(
               children: [
                 const SizedBox(width: 5,),
-                Text(
-                  widget.combo.name, //*arreglar cuando este producto listo
-                  maxLines: 2,
-                  style: textStyles.bodyLarge,
+                Expanded(
+                  child: Text(
+                    widget.combo.name,
+                    maxLines: 1,
+                    style: textStyles.bodyLarge,
+                  ),
                 ),
                 const SizedBox(width: 5,),
               ],

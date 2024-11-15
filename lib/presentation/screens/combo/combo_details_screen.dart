@@ -6,7 +6,6 @@ import 'package:go_dely/domain/entities/product/product.dart';
 import 'package:go_dely/presentation/providers/bottom_appbar_provider.dart';
 import 'package:go_dely/presentation/providers/combos/combos_provider.dart';
 import 'package:go_dely/presentation/providers/combos/current_combo_provider.dart';
-import 'package:go_dely/presentation/providers/products/current_product_provider.dart';
 import 'package:go_dely/presentation/widgets/combo/combo_horizontal_listview.dart';
 import 'package:go_dely/presentation/widgets/common/custom_bottom_app_bar.dart';
 import 'package:go_router/go_router.dart';
@@ -27,7 +26,7 @@ class _ComboDetailsScreenState extends ConsumerState<ComboDetailsScreen> {
   Widget build(BuildContext context) {
 
     final combo = ref.watch(currentCombo).lastOrNull;
-    if(combo == null) return const CircularProgressIndicator();
+    if(combo == null) return const SizedBox();
 
 
     return Scaffold(
@@ -35,11 +34,11 @@ class _ComboDetailsScreenState extends ConsumerState<ComboDetailsScreen> {
         centerTitle: true,
         title: Text(combo.name),
         leading: IconButton(onPressed: () {
-            ref.read(currentProduct.notifier).update((state) {
+            ref.read(currentCombo.notifier).update((state) {
               state.removeLast();
               return [...state];
             } ) ;
-            if(ref.watch(currentProduct).isEmpty) ref.read(currentStateNavBar.notifier).update((state) => 2);
+            if(ref.watch(currentCombo).isEmpty) ref.read(currentStateNavBar.notifier).update((state) => 2);
             context.pop();
           },
           icon: const Icon(Icons.arrow_back_ios_new),
@@ -148,9 +147,9 @@ class _ContentState extends ConsumerState<_Content> {
             ],
           ),
           const SizedBox(height: 5,),
-          _ListProducts(products: 
-            widget.combo!.products
-          ,),
+          _ListProducts(
+            products: widget.combo!.products
+          ),
           const SizedBox(height: 20,),
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 12),
@@ -214,15 +213,34 @@ class _ProductListItem extends StatelessWidget{
                 child: SizedBox(
                   height: 100,
                   width: 100,
-                  child: Image.network(product.imageUrl[0], fit: BoxFit.cover,)
+                  child: Image.network(product.imageUrl[0], fit: BoxFit.contain,)
                   ),
               ),
-              Column(
-                mainAxisAlignment: MainAxisAlignment.spaceAround,
-                children: [
-                  Text(product.name, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 18),),
-                  Text(product.description, style: const TextStyle(fontWeight: FontWeight.w200, fontSize: 16),),
-                ],
+              Expanded(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.spaceAround,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      product.name, 
+                      style: const TextStyle(
+                        fontWeight: FontWeight.bold, 
+                        fontSize: 18
+                      ),
+                      maxLines: 2,
+                      overflow: TextOverflow.clip,
+                    ),
+                    Text(
+                      product.description, 
+                      style: const TextStyle(
+                        fontWeight: FontWeight.w200, 
+                        fontSize: 16
+                      ),
+                      maxLines: 2,
+                      overflow: TextOverflow.clip,
+                    ),
+                  ],
+                ),
               )
             ],
           ),

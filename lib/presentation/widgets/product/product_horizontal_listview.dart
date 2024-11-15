@@ -119,7 +119,7 @@ class _SlideState extends ConsumerState<_Slide> {
                       },
                       child: Image.network(
                         widget.product.imageUrl[0],  //*siempre se visualiza la primera imagen del arreglo de imagenes
-                        fit: BoxFit.cover,
+                        fit: BoxFit.contain,
                         height: 150,
                         width: 150,
                         loadingBuilder: (context, child, loadingProgress) {
