@@ -126,17 +126,17 @@ class _SlideState extends ConsumerState<_Slide> {
                         width: 150,
                         loadingBuilder: (context, child, loadingProgress) {
                           if( loadingProgress != null){
-                            return const Padding(
-                              padding: EdgeInsets.all(10),
-                              child: Center(
-                                child: SizedBox(
-                                  height: 150,
-                                  width: 150,
+                            return const Center(
+                              child: SizedBox(
+                                height: 150,
+                                width: 150,
+                                child: Padding(
+                                  padding: EdgeInsets.all(45),
                                   child: CircularProgressIndicator(
                                     strokeWidth: 2, 
                                     color: Color(0xFF5D9558),
                                   ),
-                                )
+                                ),
                               ),
                             );
                           }
