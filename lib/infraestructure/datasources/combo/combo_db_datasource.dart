@@ -1,7 +1,7 @@
 import 'package:dio/dio.dart';
 import 'package:go_dely/config/constants/enviroment.dart';
 import 'package:go_dely/domain/datasources/combo_datasource.dart';
-import 'package:go_dely/domain/entities/product/combo.dart';
+import 'package:go_dely/domain/entities/combo/combo.dart';
 import 'package:go_dely/infraestructure/mappers/combo_mapper.dart';
 import 'package:go_dely/infraestructure/models/combo_db.dart';
 
