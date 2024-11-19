@@ -5,6 +5,7 @@ import 'package:go_dely/domain/entities/product/product.dart';
 import 'package:go_dely/presentation/providers/bottom_appbar_provider.dart';
 import 'package:go_dely/presentation/providers/products/current_product_provider.dart';
 import 'package:go_dely/presentation/providers/products/product_provider.dart';
+import 'package:go_dely/presentation/providers/products/product_repository_provider.dart';
 import 'package:go_dely/presentation/widgets/common/custom_bottom_app_bar.dart';
 import 'package:go_dely/presentation/widgets/product/product_horizontal_listview.dart';
 import 'package:go_router/go_router.dart';
@@ -21,17 +22,25 @@ class ProductDetailsScreen extends ConsumerStatefulWidget {
 
 class _ProductDetailsScreenState extends ConsumerState<ProductDetailsScreen> {
 
+  Future<Product> _loadProduct() async {
+    final productId = ref.read(currentProduct).lastOrNull?.id;
+    final product = await ref.read(productRepositoryProvider).getProductById(productId!);
+    return product;
+  }
+
   @override 
   Widget build(BuildContext context) {
 
-    final product = ref.watch(currentProduct).lastOrNull;
-    if(product == null) return const SizedBox();
+    
+    // final productId = ref.watch(currentProduct).lastOrNull?.id;
+    // if(productId == null) return const SizedBox();
+    
 
 
     return Scaffold(
       appBar: AppBar(
         centerTitle: true,
-        title: Text(product.name),
+        title: Text("GoDely!!"),
         leading: IconButton(onPressed: () {
             ref.read(currentProduct.notifier).update((state) {
               state.removeLast();
@@ -44,7 +53,24 @@ class _ProductDetailsScreenState extends ConsumerState<ProductDetailsScreen> {
         ),
       ),
       bottomNavigationBar: const BottomAppBarCustom(),
-      body: _Content(product: product,),
+      body: FutureBuilder(
+  future: _loadProduct(),
+  builder: (context, snapshot) {
+    if (snapshot.connectionState == ConnectionState.waiting) {
+      print('FutureBuilder: Loading...');
+      return const Center(child: CircularProgressIndicator(),);
+    }
+    if (snapshot.hasError) {
+      print('FutureBuilder: Error - ${snapshot.error}');
+      return const Center(child: Text('Error loading product'),);
+    }
+    if (snapshot.hasData) {
+      print('FutureBuilder: Data loaded successfully');
+      return _Content(product: snapshot.data as Product);
+    }
+    return const Center(child: Text('No data available'),);
+  },
+),
     );
   }
 }
