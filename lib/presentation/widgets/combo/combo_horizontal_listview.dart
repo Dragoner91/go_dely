@@ -2,7 +2,7 @@ import 'package:animate_do/animate_do.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_dely/config/helpers/human_formats.dart';
-import 'package:go_dely/domain/entities/product/combo.dart';
+import 'package:go_dely/domain/entities/combo/combo.dart';
 import 'package:go_dely/domain/entities/product/product.dart';
 import 'package:go_dely/presentation/providers/bottom_appbar_provider.dart';
 import 'package:go_dely/presentation/providers/combos/current_combo_provider.dart';
