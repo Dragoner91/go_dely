@@ -16,6 +16,6 @@ class Combo extends ProductAbstract{
   final List<Product> products;
 
   Combo({required this.id, required this.name, required this.price, required this.products, required this.description, required this.category, required this.currency, required this.imageUrl}) :
-   super(id: id, name: name, price: price);
+   super(id: id, name: name, price: price, description: description, category: category, currency: currency);
 
 }

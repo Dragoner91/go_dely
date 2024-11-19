@@ -28,7 +28,10 @@ class Product extends ProductAbstract{
   super(
     id: id, 
     name: name, 
-    price: price
+    price: price,
+    description: description,
+    category: category,
+    currency: currency
   );
 
 }
