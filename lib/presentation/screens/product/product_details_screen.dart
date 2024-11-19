@@ -57,15 +57,21 @@ class _ProductDetailsScreenState extends ConsumerState<ProductDetailsScreen> {
   future: _loadProduct(),
   builder: (context, snapshot) {
     if (snapshot.connectionState == ConnectionState.waiting) {
-      print('FutureBuilder: Loading...');
-      return const Center(child: CircularProgressIndicator(),);
+      return const Center(
+        child: SizedBox(
+          width: 200,
+          height: 200,
+          child: CircularProgressIndicator(
+            strokeWidth: 5, 
+            color: Color(0xFF5D9558),
+          ),
+        )
+      );
     }
     if (snapshot.hasError) {
-      print('FutureBuilder: Error - ${snapshot.error}');
       return const Center(child: Text('Error loading product'),);
     }
     if (snapshot.hasData) {
-      print('FutureBuilder: Data loaded successfully');
       return _Content(product: snapshot.data as Product);
     }
     return const Center(child: Text('No data available'),);
