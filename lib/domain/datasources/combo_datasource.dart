@@ -1,4 +1,4 @@
-import 'package:go_dely/domain/entities/product/combo.dart';
+import 'package:go_dely/domain/entities/combo/combo.dart';
 
 abstract class ComboDatasource{
 
