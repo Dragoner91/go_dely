@@ -72,22 +72,6 @@ class _ContentState extends ConsumerState<_Content> {
               loadNextPage: () => ref.read(productsProvider.notifier).loadNextPage(),
             ),
 
-            ProductHorizontalListView(
-              products: [
-                ...products
-              ],
-              title: 'Productos',
-              subTitle: 'Ver todo',
-              loadNextPage: () => ref.read(productsProvider.notifier).loadNextPage(),
-            ),
-            ProductHorizontalListView(
-              products: [
-                ...products
-              ],
-              title: 'Productos',
-              subTitle: 'Ver todo',
-              loadNextPage: () => ref.read(productsProvider.notifier).loadNextPage(),
-            ),
             /*
             ComboHorizontalListView(
               combos: [
@@ -98,7 +82,7 @@ class _ContentState extends ConsumerState<_Content> {
               loadNextPage: () => ref.read(combosProvider.notifier).loadNextPage(),
             ),
             */
-      
+
             ProductHorizontalListView(
               products: [
                 ...products

@@ -62,10 +62,10 @@ class _ProductDetailsScreenState extends ConsumerState<ProductDetailsScreen> {
     if (snapshot.connectionState == ConnectionState.waiting) {
       return const Center(
         child: SizedBox(
-          width: 200,
-          height: 200,
+          width: 120,
+          height: 120,
           child: CircularProgressIndicator(
-            strokeWidth: 5, 
+            strokeWidth: 4, 
             color: Color(0xFF5D9558),
           ),
         )
@@ -101,10 +101,15 @@ class _ContentState extends ConsumerState<_Content> {
     super.initState();
   }
 
+  Future<bool> checkIfIsInCart() async {
+    return await ref.read(cartItemsProvider.notifier).itemExistsInCart(widget.product!.id);
+  }
+
   @override
   Widget build(BuildContext context) {
 
     final recomendedProducts = ref.watch(productsProvider); //*cambiar a recomendacion de productos por categoria o algo asi
+    final isInCart = checkIfIsInCart();
 
     return SingleChildScrollView(
       child: Column(
@@ -163,23 +168,39 @@ class _ContentState extends ConsumerState<_Content> {
               ],
               ),
               const Spacer(),
-              FilledButton(
-                onPressed: () {
-                  //* agregar al carrito el producto actual, para cuando se haga
-
-                  final cart = ref.watch(cartItemsProvider.notifier).addItemToCart;
-                  cart(CartItemMapper.cartItemToEntity(CartLocal.fromEntity(widget.product!, 1, widget.product!.imageUrl[0])));
-                  
-                }, 
-                style: const ButtonStyle(
-                  backgroundColor: WidgetStatePropertyAll(Color(0xFF5D9558))
-                ),
-                child: const Row(
-                  children: [
-                    Text("Add to Cart "),
-                    Icon(Icons.shopping_cart),
-                  ],
-                )
+              FutureBuilder<bool>(
+                future: isInCart,
+                builder: (context, snapshot) {
+                  final inCart = snapshot.hasData && snapshot.data == true;
+                  return FilledButton(
+                    onPressed: 
+                      inCart 
+                      ? null 
+                      : () async {
+                      //*agregar producto al carrito
+                      final cart = ref.watch(cartItemsProvider.notifier).addItemToCart;
+                      cart(CartItemMapper.cartItemToEntity(CartLocal.fromEntity(widget.product!, 1, widget.product!.imageUrl[0])));
+                    },
+                    style: ButtonStyle(
+                      backgroundColor: WidgetStatePropertyAll(snapshot.data == true ? Colors.black54 : const Color(0xFF5D9558))
+                    ),
+                    child: 
+                        inCart 
+                        ? const Row(
+                            children: [
+                              Text("Already Added ", style: TextStyle(color: Colors.white),),
+                              Icon(Icons.check_circle_outline_outlined, color: Colors.white,),
+                            ],
+                          )
+                        :
+                          const Row(
+                            children: [
+                              Text("Add to Cart "),
+                              Icon(Icons.shopping_cart),
+                            ],
+                          )
+                  );
+                },
               ),
               const SizedBox(width: 15,),
             ],
