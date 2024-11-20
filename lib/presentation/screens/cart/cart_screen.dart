@@ -106,10 +106,13 @@ class _CheckoutInfoState extends ConsumerState<_CheckoutInfo> {
                 if (snapshot.connectionState == ConnectionState.waiting) {
                   return const SizedBox();
                 } else {
-                  return Text('${HumanFormarts.numberCurrency(snapshot.data!)} USD',
-                      style: const TextStyle(
-                          fontSize:
-                              16)); //* Cambiar despues para que traiga el currency
+                  return FadeIn(
+                    duration: const Duration(milliseconds: 200),
+                    child: Text('${HumanFormarts.numberCurrency(snapshot.data!)} USD',
+                        style: const TextStyle(
+                            fontSize:
+                                16)),
+                  ); //* Cambiar despues para que traiga el currency
                 }
               },
             ),
@@ -167,10 +170,13 @@ class _CheckoutInfoState extends ConsumerState<_CheckoutInfo> {
                 if (snapshot.connectionState == ConnectionState.waiting) {
                   return const SizedBox();
                 } else {
-                  return Text('${HumanFormarts.numberCurrency(snapshot.data!)} USD',
-                      style: const TextStyle(
-                          fontSize:
-                              16)); //* Cambiar despues para que traiga el currency
+                  return FadeIn(
+                    duration: const Duration(milliseconds: 200),
+                    child: Text('${HumanFormarts.numberCurrency(snapshot.data!)} USD',
+                        style: const TextStyle(
+                            fontSize:
+                                16)),
+                  ); //* Cambiar despues para que traiga el currency
                 }
               },
             ),
@@ -372,17 +378,18 @@ class _ItemState extends ConsumerState<_Item> {
                               Row(
                                 children: [
                                   IconButton(
+                                    disabledColor: Colors.black26,
+                                    color: const Color(0xFF5D9558),
                                     icon: const Icon(
                                       Icons.remove_circle_outline_outlined,
-                                      color: Color(0xFF5D9558),
                                       size: 30,
                                     ),
-                                    onPressed: () {
-                                      //* decrementar cantidad item
-                                      ref
-                                          .read(cartItemsProvider.notifier)
-                                          .decrementItem(widget.cartItem.id);
-                                    },
+                                    //* decrementar cantidad item
+                                    onPressed: widget.cartItem.quantity == 1 
+                                      ? null 
+                                      : () async {
+                                          await ref.read(cartItemsProvider.notifier).decrementItem(widget.cartItem.id);
+                                        },
                                   ),
                                   Container(
                                       width: 30,
