@@ -18,9 +18,15 @@ class CartItemsNotifier extends StateNotifier<List<CartItem>>{
     required this.repository ,
   }) : super([]);
 
+  Future<bool> itemExistsInCart(String id) async {
+    return repository.itemExistsInCart(id);
+  }
+
   Future<void> addItemToCart(CartItem cartItem) async {
-    await repository.addProductToCart(cartItem);
-    state = await getAllItemsFromCart();
+    if(await itemExistsInCart(cartItem.id) == false){
+      await repository.addProductToCart(cartItem);
+      state = await getAllItemsFromCart();
+    }
   }
 
   Future<void> removeItemFromCart(int id) async {

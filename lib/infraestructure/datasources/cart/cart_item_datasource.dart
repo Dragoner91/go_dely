@@ -22,12 +22,16 @@ class CartItemDatasource {
     return Future.value(Isar.getInstance());
   }
 
+  Future<bool> itemExistsInCart(String id) async {
+    final isar = await db;
+    return await isar.cartItems.where().filter().idEqualTo(id).count() > 0;
+  }
+
   Future<void> addItemToCart(CartItem cartItem) async {
     final isar = await db;
     isar.writeTxn(() async {
       isar.cartItems.put(cartItem);
     });
-    
   }
 
   Future<void> removeItemFromCart(int id) async {

@@ -167,7 +167,7 @@ class _ContentState extends ConsumerState<_Content> {
                 onPressed: () {
                   //* agregar al carrito el producto actual, para cuando se haga
 
-                  final cart = ref.read(cartItemsProvider.notifier).addItemToCart;
+                  final cart = ref.watch(cartItemsProvider.notifier).addItemToCart;
                   cart(CartItemMapper.cartItemToEntity(CartLocal.fromEntity(widget.product!, 1, widget.product!.imageUrl[0])));
                   
                 }, 

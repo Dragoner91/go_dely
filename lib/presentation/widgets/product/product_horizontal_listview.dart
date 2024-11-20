@@ -3,7 +3,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_dely/config/helpers/human_formats.dart';
 import 'package:go_dely/domain/entities/product/product.dart';
+import 'package:go_dely/infraestructure/mappers/cart_item_mapper.dart';
+import 'package:go_dely/infraestructure/models/cart_item_local.dart';
 import 'package:go_dely/presentation/providers/bottom_appbar_provider.dart';
+import 'package:go_dely/presentation/providers/cart/cart_items_provider.dart';
 import 'package:go_dely/presentation/providers/products/current_product_provider.dart';
 import 'package:go_router/go_router.dart';
 
@@ -82,8 +85,16 @@ class _Slide extends ConsumerStatefulWidget {
 }
 
 class _SlideState extends ConsumerState<_Slide> {
+
+  Future<bool> checkIfIsInCart() async {
+    return await ref.read(cartItemsProvider.notifier).itemExistsInCart(widget.product.id);
+  }
+
   @override
   Widget build(BuildContext context) {
+
+    final cartItemsNotifier = ref.watch(cartItemsProvider);
+    final isInCart = checkIfIsInCart();
 
     final textStyles = Theme.of(context).textTheme;
 
@@ -153,15 +164,23 @@ class _SlideState extends ConsumerState<_Slide> {
                         height: 45,
                         child: Padding(
                           padding: const EdgeInsets.all(6),
-                          child: IconButton(
-                            color: Colors.white,
-                            style: ButtonStyle(
-                              backgroundColor: WidgetStateProperty.all(const Color(0xFF5D9558)),
-                            ),
-                            onPressed: () {
-                              //*agregar producto al carrito
-                            }, 
-                            icon: const Icon(Icons.add, size: 14,)
+                          child: FutureBuilder<bool>(
+                            future: isInCart,
+                            builder: (context, snapshot) {
+                              final inCart = snapshot.hasData && snapshot.data == true;
+                              return IconButton(
+                                color: Colors.white,
+                                style: ButtonStyle(
+                                  backgroundColor: WidgetStateProperty.all(snapshot.data == true ? Colors.black54 : const Color(0xFF5D9558)),
+                                ),
+                                onPressed: inCart ? null : () async {
+                                  //*agregar producto al carrito
+                                  final cart = ref.watch(cartItemsProvider.notifier).addItemToCart;
+                                  cart(CartItemMapper.cartItemToEntity(CartLocal.fromEntity(widget.product, 1, widget.product.imageUrl[0])));
+                                },
+                                icon: inCart ? const Icon(Icons.check, size: 14, color: Colors.white,) : const Icon(Icons.add, size: 14, color: Colors.white,),
+                              );
+                            },
                           ),
                         ),
                       ),

@@ -7,6 +7,9 @@ class CartItemRepository {
 
   CartItemRepository({required this.datasource});
 
+  Future<bool> itemExistsInCart(String id) async {
+    return datasource.itemExistsInCart(id);
+  }
 
   Future<void> addProductToCart(CartItem cartItem) async {
     return datasource.addItemToCart(cartItem);
