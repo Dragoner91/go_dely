@@ -34,7 +34,6 @@ class BottomAppBarCustomState extends ConsumerState<BottomAppBarCustom> {
           borderRadius: BorderRadius.all(Radius.circular(25)))),
       child: Row(
         children: [
-          // const Padding(padding: EdgeInsets.only(left: 5)),
           Column(children: [
             IconButton(
               icon: const Icon(Icons.discount_outlined),

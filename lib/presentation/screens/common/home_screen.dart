@@ -72,7 +72,7 @@ class _ContentState extends ConsumerState<_Content> {
               loadNextPage: () => ref.read(productsProvider.notifier).loadNextPage(),
             ),
 
-            /*
+            
             ComboHorizontalListView(
               combos: [
                 ...combos
@@ -81,7 +81,7 @@ class _ContentState extends ConsumerState<_Content> {
               subTitle: 'Ver todo',
               loadNextPage: () => ref.read(combosProvider.notifier).loadNextPage(),
             ),
-            */
+            
 
             ProductHorizontalListView(
               products: [

@@ -13,6 +13,7 @@ import 'package:go_dely/presentation/widgets/common/custom_bottom_app_bar.dart';
 import 'package:go_dely/presentation/widgets/product/product_horizontal_listview.dart';
 import 'package:go_router/go_router.dart';
 import 'package:card_swiper/card_swiper.dart';
+import 'package:sliding_up_panel/sliding_up_panel.dart';
 
 
 class ProductDetailsScreen extends ConsumerStatefulWidget {
@@ -24,6 +25,8 @@ class ProductDetailsScreen extends ConsumerStatefulWidget {
 }
 
 class _ProductDetailsScreenState extends ConsumerState<ProductDetailsScreen> {
+  final PanelController _panelController = PanelController();
+  final ValueNotifier<bool> _isBottomAppBarVisible = ValueNotifier(true);
 
   Future<Product> _loadProduct() async {
     final productId = ref.read(currentProduct).lastOrNull?.id;
@@ -43,7 +46,7 @@ class _ProductDetailsScreenState extends ConsumerState<ProductDetailsScreen> {
     return Scaffold(
       appBar: AppBar(
         centerTitle: true,
-        title: Text("GoDely!!"),
+        title: const Text("GoDely!!"),
         leading: IconButton(onPressed: () {
             ref.read(currentProduct.notifier).update((state) {
               state.removeLast();
@@ -55,31 +58,164 @@ class _ProductDetailsScreenState extends ConsumerState<ProductDetailsScreen> {
           icon: const Icon(Icons.arrow_back_ios_new),
         ),
       ),
-      bottomNavigationBar: const BottomAppBarCustom(),
-      body: FutureBuilder(
-  future: _loadProduct(),
-  builder: (context, snapshot) {
-    if (snapshot.connectionState == ConnectionState.waiting) {
-      return const Center(
-        child: SizedBox(
-          width: 120,
-          height: 120,
-          child: CircularProgressIndicator(
-            strokeWidth: 4, 
-            color: Color(0xFF5D9558),
+      bottomNavigationBar: ValueListenableBuilder<bool>(
+        valueListenable: _isBottomAppBarVisible,
+        builder: (context, isVisible, child) {
+          return isVisible ? const BottomAppBarCustom() : const SizedBox.shrink();
+        },
+      ),
+      body: SlidingUpPanel(
+        controller: _panelController,
+        maxHeight: MediaQuery.of(context).size.height * 0.20,
+        minHeight: 0,
+        color: Colors.transparent,
+        onPanelSlide: (position) {
+          if (position > 0.1) {
+            _isBottomAppBarVisible.value = false;
+          } else {
+            _isBottomAppBarVisible.value = true;
+          }
+        },
+        panel: FutureBuilder(
+          future: _loadProduct(),
+          builder: (context, snapshot) {
+            if (snapshot.connectionState == ConnectionState.waiting) {
+              return const Center(
+                child: SizedBox(
+                  width: 120,
+                  height: 120,
+                  child: CircularProgressIndicator(
+                    strokeWidth: 4, 
+                    color: Color(0xFF5D9558),
+                  ),
+                )
+              );
+            }
+            if (snapshot.hasError) {
+              return const Center(child: Text('Error loading product'),);
+            }
+            if (snapshot.hasData) {
+              return Container(
+                decoration: BoxDecoration(
+                  color: Theme.of(context).scaffoldBackgroundColor,
+                  borderRadius: const BorderRadius.only(topLeft: Radius.circular(20), topRight: Radius.circular(20))
+                ),
+                child: _PanelContent(product: snapshot.data as Product)
+              );
+            }
+            return const Center(child: Text('No data available'),);
+          },
+        ),
+        body: FutureBuilder(
+          future: _loadProduct(),
+          builder: (context, snapshot) {
+            if (snapshot.connectionState == ConnectionState.waiting) {
+              return const Center(
+                child: SizedBox(
+                  width: 120,
+                  height: 120,
+                  child: CircularProgressIndicator(
+                    strokeWidth: 4, 
+                    color: Color(0xFF5D9558),
+                  ),
+                )
+              );
+            }
+            if (snapshot.hasError) {
+              return const Center(child: Text('Error loading product'),);
+            }
+            if (snapshot.hasData) {
+              return _Content(product: snapshot.data as Product, panelController: _panelController,);
+            }
+            return const Center(child: Text('No data available'),);
+          },
+        ),
+      ),
+    );
+  }
+}
+
+class _PanelContent extends ConsumerStatefulWidget {
+  final Product product;
+
+  const _PanelContent({required this.product});
+
+  @override
+  __PanelContentState createState() => __PanelContentState();
+}
+
+class __PanelContentState extends ConsumerState<_PanelContent> {
+  int _quantity = 1;
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      children: [
+        const SizedBox(height: 16),
+        Center(
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              IconButton(
+                disabledColor: Colors.black26,
+                color: const Color(0xFF5D9558),
+                icon: const Icon(
+                  Icons.remove_circle_outline_outlined,
+                  size: 45,
+                ),
+                //* decrementar cantidad item
+                onPressed: () {
+                  setState(() {
+                    if (_quantity > 1) _quantity--;
+                  });
+                },
+              ),
+              Container(
+                  width: 50,
+                  alignment: Alignment.center,
+                  decoration: BoxDecoration(
+                      shape: BoxShape.rectangle,
+                      border: Border.all(
+                          width: 1,
+                          color: const Color(0xFF5D9558))),
+                  child: Text(
+                    _quantity.toString(),
+                    style: const TextStyle(
+                        fontSize: 35,
+                        fontWeight: FontWeight.bold),
+                  )),
+              IconButton(
+                icon: const Icon(
+                  Icons.add_circle_outline_outlined,
+                  color: Color(0xFF5D9558),
+                  size: 45,
+                ),
+                onPressed: () {
+                  setState(() {
+                    _quantity++;
+                  });
+                },
+              )
+            ],
           ),
-        )
-      );
-    }
-    if (snapshot.hasError) {
-      return const Center(child: Text('Error loading product'),);
-    }
-    if (snapshot.hasData) {
-      return _Content(product: snapshot.data as Product);
-    }
-    return const Center(child: Text('No data available'),);
-  },
-),
+        ),
+        const SizedBox(
+          height: 15,
+        ),
+        FilledButton(
+          style: const ButtonStyle(
+            backgroundColor: WidgetStatePropertyAll(Color(0xFF5D9558))
+          ),
+          onPressed: () {
+            final cart = ref.watch(cartItemsProvider.notifier).addItemToCart;
+            cart(CartItemMapper.cartItemToEntity(CartLocal.fromEntity(widget.product, _quantity, widget.product.imageUrl[0])));
+          },
+          child: const SizedBox(
+            width: 100,
+            child: Center(child: Text('Add to Cart'))
+          ),
+        ),
+      ],
     );
   }
 }
@@ -87,8 +223,9 @@ class _ProductDetailsScreenState extends ConsumerState<ProductDetailsScreen> {
 class _Content extends ConsumerStatefulWidget{
 
   final Product? product;
+  final PanelController panelController;
 
-  const _Content({this.product});
+  const _Content({this.product, required this.panelController});
 
   @override
   ConsumerState<_Content> createState() => _ContentState();
@@ -175,12 +312,8 @@ class _ContentState extends ConsumerState<_Content> {
                   return FilledButton(
                     onPressed: 
                       inCart 
-                      ? null 
-                      : () async {
-                      //*agregar producto al carrito
-                      final cart = ref.watch(cartItemsProvider.notifier).addItemToCart;
-                      cart(CartItemMapper.cartItemToEntity(CartLocal.fromEntity(widget.product!, 1, widget.product!.imageUrl[0])));
-                    },
+                      ? null
+                      : widget.panelController.open,
                     style: ButtonStyle(
                       backgroundColor: WidgetStatePropertyAll(snapshot.data == true ? Colors.black54 : const Color(0xFF5D9558))
                     ),
