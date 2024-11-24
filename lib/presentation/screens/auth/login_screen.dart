@@ -35,7 +35,7 @@ class _LogincontentState extends ConsumerState<Logincontent> {
   @override
   Widget build(BuildContext context) {
     final textStyles = Theme.of(context).textTheme;
-    late SharedPreferences prefs;
+    //late SharedPreferences prefs;
     String email = '';
     String password = '';
 
@@ -50,9 +50,9 @@ class _LogincontentState extends ConsumerState<Logincontent> {
       
     }
 
-    void initSharedPref() async{
+    /*void initSharedPref() async{
       prefs = await SharedPreferences.getInstance();
-    }
+    }*/
 
     void Login() async{
       final dio = Dio(
@@ -80,6 +80,7 @@ class _LogincontentState extends ConsumerState<Logincontent> {
       var token = jsonData['token'];
       //prefs.setString('Token', token);
       ref.read(AuthProvider.notifier).update((Token) => token);
+      context.go("/home");
     } else {
       print('Error: ${response.statusCode}');
     }
