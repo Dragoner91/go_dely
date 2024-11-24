@@ -1,7 +1,13 @@
+import 'dart:convert';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:animate_do/animate_do.dart';
+import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
+import 'package:go_dely/config/constants/enviroment.dart';
+import 'package:go_dely/presentation/providers/auth/auth_provider.dart';
 import 'package:go_dely/presentation/widgets/common/textfield.dart';
 import 'package:go_router/go_router.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class LoginScreen extends StatelessWidget {
   const LoginScreen({super.key});
@@ -18,18 +24,73 @@ class LoginScreen extends StatelessWidget {
   }
 }
 
-class Logincontent extends StatefulWidget {
+class Logincontent extends ConsumerStatefulWidget {
   const Logincontent({super.key});
 
   @override
-  State<Logincontent> createState() => _LogincontentState();
+  ConsumerState<Logincontent> createState() => _LogincontentState();
 }
 
-class _LogincontentState extends State<Logincontent> {
+class _LogincontentState extends ConsumerState<Logincontent> {
   @override
   Widget build(BuildContext context) {
     final textStyles = Theme.of(context).textTheme;
-    final titleStyle = Theme.of(context).textTheme.titleLarge;
+    late SharedPreferences prefs;
+    String email = '';
+    String password = '';
+
+
+    void actualizarValores(String nuevoTexto, String variable) {
+      if (variable == 'Email'){
+        email = nuevoTexto;
+      };
+      if (variable == 'Password'){
+        password = nuevoTexto;
+      }
+      
+    }
+
+    void initSharedPref() async{
+      prefs = await SharedPreferences.getInstance();
+    }
+
+    void Login() async{
+      final dio = Dio(
+      BaseOptions(
+      baseUrl: Environment.verdeAPI,
+      queryParameters: {
+        
+      }
+    )
+  );
+      if (email != '' && password != '' ){
+        var user = {
+          "Email":email,
+          "Password":password
+        };
+          final data = {
+          'body': user,
+          };
+  
+    try {
+    final response = await dio.post('/auth/login', data: data);
+    final jsonData = jsonDecode(response.data);
+    if (response.statusCode == 200) {
+      print('Welcome');
+      var token = jsonData['token'];
+      //prefs.setString('Token', token);
+      ref.read(AuthProvider.notifier).update((Token) => token);
+    } else {
+      print('Error: ${response.statusCode}');
+    }
+    } catch (e) {
+    print('Error al enviar la solicitud: $e');
+    }
+
+      }
+    } 
+
+    
     return Container(
       decoration: BoxDecoration(
         image: DecorationImage(
@@ -59,8 +120,8 @@ class _LogincontentState extends State<Logincontent> {
                   padding: EdgeInsets.symmetric(vertical: 50, horizontal: 0),
                   height: 120
               ),
-              Authtextfield(campo: 'Email'),
-              Authtextfield(campo: 'Password'),
+              Authtextfield(campo: 'Email',callback: actualizarValores),
+              Authtextfield(campo: 'Password',callback: actualizarValores),
               Text(
                 'Forgot your password?',
                 style: textStyles.bodyLarge,

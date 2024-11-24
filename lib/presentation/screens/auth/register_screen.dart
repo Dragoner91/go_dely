@@ -1,6 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:animate_do/animate_do.dart';
+import 'package:go_dely/config/constants/enviroment.dart';
+import 'package:go_dely/domain/entities/users/user.dart';
 import 'package:go_router/go_router.dart';
+//import 'package:http/http.dart' as http;
+import 'package:dio/dio.dart';
+
+
 
 import '../../widgets/common/textfield.dart';
 
@@ -31,7 +37,66 @@ class _ContentRegisterState extends State<ContentRegister> {
   @override
   Widget build(BuildContext context) {
     final textStyles = Theme.of(context).textTheme;
-    final titleStyle = Theme.of(context).textTheme.titleLarge;
+    String Email = '';
+    String Password = '';
+    String Fullname = '';
+    String CI = '';
+    String Phone = '';
+    void actualizarValores(String nuevoTexto, String variable) {
+      if (variable == 'Email'){
+        Email = nuevoTexto;
+      };
+      if (variable == 'Password'){
+        Password = nuevoTexto;
+      };
+      if (variable == 'Full name'){
+        Fullname = nuevoTexto;
+      };
+      if (variable == 'CI'){
+        CI = nuevoTexto;
+      };
+      if (variable == 'Phone number'){
+        Phone = nuevoTexto;
+      };
+      
+    }
+
+
+    void registerUser() async{
+      final dio = Dio(
+      BaseOptions(
+      baseUrl: Environment.verdeAPI,
+      queryParameters: {
+        
+      }
+    )
+  );
+      if (Email != '' && Password != '' && Fullname != '' && CI != '' && Phone != ''){
+        var user = {
+          "Email":Email,
+          "name": Fullname,
+          "Password":Password,
+          "Phone":Phone,
+          "CI":CI,
+        };
+          final data = {
+          'cuerpo': user,
+          };
+  
+    try {
+    final response = await dio.post('/auth/register', data: data);
+    if (response.statusCode == 200) {
+      print('Usuario registrado');
+    } else {
+      print('Error al registar el ususario: ${response.statusCode}');
+    }
+    } catch (e) {
+    print('Error al enviar la solicitud: $e');
+    }
+
+      }
+    } 
+
     return Container(
       decoration: BoxDecoration(
         image: DecorationImage(
@@ -58,11 +123,11 @@ class _ContentRegisterState extends State<ContentRegister> {
                 ),
               ),
 
-              Authtextfield(campo: 'Full name'),
-              Authtextfield(campo: 'CI'),
-              Authtextfield(campo: 'Phone number'),
-              Authtextfield(campo: 'Email'),
-              Authtextfield(campo: 'Password'),
+              Authtextfield(campo: 'Full name',callback: actualizarValores),
+              Authtextfield(campo: 'CI',callback: actualizarValores),
+              Authtextfield(campo: 'Phone number',callback: actualizarValores),
+              Authtextfield(campo: 'Email',callback: actualizarValores),
+              Authtextfield(campo: 'Password',callback: actualizarValores),
 
               Padding(
                 padding: EdgeInsets.symmetric(vertical: 5, horizontal: 0),

@@ -2,7 +2,8 @@ import 'package:flutter/material.dart';
 
 class Authtextfield extends StatefulWidget {
   final String campo;
-  const Authtextfield({required this.campo, super.key});
+  final Function(String,String) callback;
+  const Authtextfield({required this.campo,required this.callback, super.key});
 
   @override
   State<Authtextfield> createState() => _AuthtextfieldState();
@@ -12,6 +13,8 @@ class _AuthtextfieldState extends State<Authtextfield> {
   @override
   Widget build(BuildContext context) {
     final textStyles = Theme.of(context).textTheme;
+    final _textController = TextEditingController();
+
     return Container(
       padding: EdgeInsets.symmetric(vertical: 10, horizontal: 0),
       child: Column(children: [
@@ -22,7 +25,11 @@ class _AuthtextfieldState extends State<Authtextfield> {
             Expanded(child: Container())
         ],),
 
-            TextField(decoration: InputDecoration(
+            TextField(
+              controller: _textController,
+              onChanged: (texto) {
+              widget.callback(texto,widget.campo);},
+              decoration: InputDecoration(
               enabledBorder: UnderlineInputBorder(
                 borderSide: BorderSide(color: Colors.black),
               ),
