@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:animate_do/animate_do.dart';
 import 'package:go_dely/config/constants/enviroment.dart';
 import 'package:go_dely/domain/entities/users/user.dart';
+import 'package:go_dely/infraestructure/datasources/auth_db_datasource.dart';
+import 'package:go_dely/infraestructure/repositories/auth_repository_impl.dart';
 import 'package:go_router/go_router.dart';
 //import 'package:http/http.dart' as http;
 import 'package:dio/dio.dart';
@@ -37,26 +39,26 @@ class _ContentRegisterState extends State<ContentRegister> {
   @override
   Widget build(BuildContext context) {
     final textStyles = Theme.of(context).textTheme;
-    String Email = '';
-    String Password = '';
-    String Fullname = '';
-    String CI = '';
-    String Phone = '';
+    String email = '';
+    String password = '';
+    String fullname = '';
+    String ci = '';
+    String phone = '';
     void actualizarValores(String nuevoTexto, String variable) {
       if (variable == 'Email'){
-        Email = nuevoTexto;
+        email = nuevoTexto;
       };
       if (variable == 'Password'){
-        Password = nuevoTexto;
+        password = nuevoTexto;
       };
       if (variable == 'Full name'){
-        Fullname = nuevoTexto;
+        fullname = nuevoTexto;
       };
       if (variable == 'CI'){
-        CI = nuevoTexto;
+        ci = nuevoTexto;
       };
       if (variable == 'Phone number'){
-        Phone = nuevoTexto;
+        phone = nuevoTexto;
       };
       
     }
@@ -71,15 +73,23 @@ class _ContentRegisterState extends State<ContentRegister> {
       }
     )
   );
-      if (Email != '' && Password != '' && Fullname != '' && CI != '' && Phone != ''){
-        var user = {
-          "Email":Email,
-          "name": Fullname,
-          "Password":Password,
-          "Phone":Phone,
-          "CI":CI,
-        };
-          final data = {
+      if (email != '' && password != '' && fullname != '' && ci != '' && phone != ''){
+        user usuario = user( 
+          email,
+          fullname,
+          password,
+          phone,
+          ci,
+        );
+
+        var response = "";
+          response = AuthRepositoryImpl(datasource: AuthDbDatasource()).register(usuario).toString();
+          if (response != ""){
+            print(response);
+
+          }
+        
+          /*final data = {
           'cuerpo': user,
           };
   
@@ -92,7 +102,7 @@ class _ContentRegisterState extends State<ContentRegister> {
     }
     } catch (e) {
     print('Error al enviar la solicitud: $e');
-    }
+    }*/
 
       }
     } 

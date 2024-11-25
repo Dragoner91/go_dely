@@ -1,11 +1,11 @@
-class User{
+class user{
 
-  final int CI;
+  final String CI;
   final String Fullname;
   final String phone;
   final String email;
   final String password;
   
 
- User(this.CI, this.Fullname, this.phone, this.email, this.password);
+ user(this.CI, this.Fullname, this.phone, this.email, this.password,);
    }

@@ -4,10 +4,13 @@ import 'package:animate_do/animate_do.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:go_dely/config/constants/enviroment.dart';
+import 'package:go_dely/domain/entities/users/user.dart';
+import 'package:go_dely/infraestructure/datasources/auth_db_datasource.dart';
+import 'package:go_dely/infraestructure/repositories/auth_repository_impl.dart';
 import 'package:go_dely/presentation/providers/auth/auth_provider.dart';
 import 'package:go_dely/presentation/widgets/common/textfield.dart';
 import 'package:go_router/go_router.dart';
-import 'package:shared_preferences/shared_preferences.dart';
+//import 'package:shared_preferences/shared_preferences.dart';
 
 class LoginScreen extends StatelessWidget {
   const LoginScreen({super.key});
@@ -55,30 +58,38 @@ class _LogincontentState extends ConsumerState<Logincontent> {
     }*/
 
     void Login() async{
-      final dio = Dio(
+      /*final dio = Dio(
       BaseOptions(
       baseUrl: Environment.verdeAPI,
       queryParameters: {
         
       }
     )
-  );
+  );*/
       if (email != '' && password != '' ){
-        var user = {
-          "Email":email,
-          "Password":password
-        };
-          final data = {
-          'body': user,
-          };
+         user usuario = user(    
+          "",
+          "",
+          "",
+          email,
+          password
+          );
+
+          var token = "";
+          token = AuthRepositoryImpl(datasource: AuthDbDatasource()).login(usuario).toString();
+          if (token != ""){
+            ref.read(AuthProvider.notifier).update((Token) => token);
+
+            context.go("/home");
+
+          }
   
-    try {
+    /*try {
     final response = await dio.post('/auth/login', data: data);
     final jsonData = jsonDecode(response.data);
     if (response.statusCode == 200) {
       print('Welcome');
       var token = jsonData['token'];
-      //prefs.setString('Token', token);
       ref.read(AuthProvider.notifier).update((Token) => token);
       context.go("/home");
     } else {
@@ -86,7 +97,7 @@ class _LogincontentState extends ConsumerState<Logincontent> {
     }
     } catch (e) {
     print('Error al enviar la solicitud: $e');
-    }
+    }*/
 
       }
     } 
