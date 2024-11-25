@@ -74,7 +74,7 @@ class _ContentRegisterState extends State<ContentRegister> {
     )
   );
       if (email != '' && password != '' && fullname != '' && ci != '' && phone != ''){
-        user usuario = user( 
+        User usuario = User( 
           email,
           fullname,
           password,

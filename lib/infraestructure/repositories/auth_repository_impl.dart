@@ -1,4 +1,5 @@
 import 'package:go_dely/domain/datasources/auth_datasource.dart';
+import 'package:go_dely/domain/entities/users/auth.dart';
 import 'package:go_dely/domain/entities/users/user.dart';
 import 'package:go_dely/domain/repositories/auth_repository.dart';
 
@@ -11,12 +12,12 @@ class AuthRepositoryImpl extends AuthRepository {
 
 
   @override
-  Future<String> login(user user){
-    return datasource.login(user);
+  Future<String> login(Auth auth){
+    return datasource.login(auth);
   }
 
   @override
-  Future<String> register(user user){
+  Future<String> register(User user){
     return datasource.register(user);
   }
 

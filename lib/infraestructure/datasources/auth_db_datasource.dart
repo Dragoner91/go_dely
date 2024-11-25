@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:dio/dio.dart';
 import 'package:go_dely/config/constants/enviroment.dart';
 import 'package:go_dely/domain/datasources/auth_datasource.dart';
+import 'package:go_dely/domain/entities/users/auth.dart';
 import 'package:go_dely/domain/entities/users/user.dart';
 
 
@@ -18,9 +19,9 @@ class AuthDbDatasource extends AuthDatasource{
   );
 
   @override
-  Future<String> login(user user) async{
+  Future<String> login(Auth auth) async{
 
-    final response = await dio.get('/auth/login',
+    final response = await dio.post('/auth/login',
       queryParameters: {
         //'page': page
       }
@@ -37,8 +38,8 @@ class AuthDbDatasource extends AuthDatasource{
   }
 
   @override
-  Future<String> register(user user) async {
-    final response = await dio.get('/auth/register',
+  Future<String> register(User user) async {
+    final response = await dio.post('/auth/register',
       queryParameters: {
         
       }

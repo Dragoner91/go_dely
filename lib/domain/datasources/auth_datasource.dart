@@ -1,8 +1,9 @@
+import 'package:go_dely/domain/entities/users/auth.dart';
 import 'package:go_dely/domain/entities/users/user.dart';
 
 abstract class AuthDatasource{
 
-  Future<String> login(user user);
+  Future<String> login(Auth auth);
 
-  Future<String> register(user user);
+  Future<String> register(User user);
 }

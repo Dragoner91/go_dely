@@ -4,6 +4,7 @@ import 'package:animate_do/animate_do.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:go_dely/config/constants/enviroment.dart';
+import 'package:go_dely/domain/entities/users/auth.dart';
 import 'package:go_dely/domain/entities/users/user.dart';
 import 'package:go_dely/infraestructure/datasources/auth_db_datasource.dart';
 import 'package:go_dely/infraestructure/repositories/auth_repository_impl.dart';
@@ -67,10 +68,8 @@ class _LogincontentState extends ConsumerState<Logincontent> {
     )
   );*/
       if (email != '' && password != '' ){
-         user usuario = user(    
-          "",
-          "",
-          "",
+         Auth usuario = Auth(    
+          
           email,
           password
           );
