@@ -15,5 +15,12 @@ class ComboRepositoryImpl extends ComboRepository {
   Future<List<Combo>> getCombos({int page = 1}) {
     return datasource.getCombos(page: page);
   }
+  
+  @override
+  Future<Combo> getComboById(String id) {
+    return datasource.getComboById(id);
+  }
+
+  
 
 }

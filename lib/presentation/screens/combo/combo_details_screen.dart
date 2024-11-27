@@ -3,13 +3,18 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_dely/domain/entities/combo/combo.dart';
 import 'package:go_dely/domain/entities/product/product.dart';
+import 'package:go_dely/infraestructure/mappers/cart_item_mapper.dart';
+import 'package:go_dely/infraestructure/models/cart_item_local.dart';
 import 'package:go_dely/presentation/providers/bottom_appbar_provider.dart';
+import 'package:go_dely/presentation/providers/cart/cart_items_provider.dart';
 import 'package:go_dely/presentation/providers/combos/combos_provider.dart';
+import 'package:go_dely/presentation/providers/combos/combos_repository_provider.dart';
 import 'package:go_dely/presentation/providers/combos/current_combo_provider.dart';
 import 'package:go_dely/presentation/widgets/combo/combo_horizontal_listview.dart';
 import 'package:go_dely/presentation/widgets/common/custom_bottom_app_bar.dart';
 import 'package:go_router/go_router.dart';
 import 'package:card_swiper/card_swiper.dart';
+import 'package:sliding_up_panel/sliding_up_panel.dart';
 
 
 class ComboDetailsScreen extends ConsumerStatefulWidget {
@@ -21,6 +26,14 @@ class ComboDetailsScreen extends ConsumerStatefulWidget {
 }
 
 class _ComboDetailsScreenState extends ConsumerState<ComboDetailsScreen> {
+  final PanelController _panelController = PanelController();
+  final ValueNotifier<bool> _isBottomAppBarVisible = ValueNotifier(true);
+
+  Future<Combo> _loadProduct() async {
+    final comboId = ref.read(currentCombo).lastOrNull?.id;
+    final combo = await ref.read(combosRepositoryProvider).getComboById(comboId!);
+    return combo;
+  }
 
   @override 
   Widget build(BuildContext context) {
@@ -44,8 +57,164 @@ class _ComboDetailsScreenState extends ConsumerState<ComboDetailsScreen> {
           icon: const Icon(Icons.arrow_back_ios_new),
         ),
       ),
-      bottomNavigationBar: const BottomAppBarCustom(),
-      body: _Content(combo: combo,),
+      bottomNavigationBar: ValueListenableBuilder<bool>(
+        valueListenable: _isBottomAppBarVisible,
+        builder: (context, isVisible, child) {
+          return isVisible ? const BottomAppBarCustom() : const SizedBox.shrink();
+        },
+      ),
+      body: SlidingUpPanel(
+        controller: _panelController,
+        maxHeight: MediaQuery.of(context).size.height * 0.20,
+        minHeight: 0,
+        color: Colors.transparent,
+        onPanelSlide: (position) {
+          if (position > 0.1) {
+            _isBottomAppBarVisible.value = false;
+          } else {
+            _isBottomAppBarVisible.value = true;
+          }
+        },
+        panel: FutureBuilder(
+          future: _loadProduct(),
+          builder: (context, snapshot) {
+            if (snapshot.connectionState == ConnectionState.waiting) {
+              return const Center(
+                child: SizedBox(
+                  width: 120,
+                  height: 120,
+                  child: CircularProgressIndicator(
+                    strokeWidth: 4, 
+                    color: Color(0xFF5D9558),
+                  ),
+                )
+              );
+            }
+            if (snapshot.hasError) {
+              return const Center(child: Text('Error loading combo'),);
+            }
+            if (snapshot.hasData) {
+              return Container(
+                decoration: BoxDecoration(
+                  color: Theme.of(context).scaffoldBackgroundColor,
+                  borderRadius: const BorderRadius.only(topLeft: Radius.circular(20), topRight: Radius.circular(20))
+                ),
+                child: _PanelContent(combo: snapshot.data as Combo)
+              );
+            }
+            return const Center(child: Text('No data available'),);
+          },
+        ),
+        body: FutureBuilder(
+          future: _loadProduct(),
+          builder: (context, snapshot) {
+            if (snapshot.connectionState == ConnectionState.waiting) {
+              return const Center(
+                child: SizedBox(
+                  width: 120,
+                  height: 120,
+                  child: CircularProgressIndicator(
+                    strokeWidth: 4, 
+                    color: Color(0xFF5D9558),
+                  ),
+                )
+              );
+            }
+            if (snapshot.hasError) {
+              return const Center(child: Text('Error loading combo'),);
+            }
+            if (snapshot.hasData) {
+              return _Content(combo: snapshot.data as Combo, panelController: _panelController,);
+            }
+            return const Center(child: Text('No data available'),);
+          },
+        ),
+      ),
+    );
+  }
+}
+
+class _PanelContent extends ConsumerStatefulWidget {
+  final Combo combo;
+
+  const _PanelContent({required this.combo});
+
+  @override
+  __PanelContentState createState() => __PanelContentState();
+}
+
+class __PanelContentState extends ConsumerState<_PanelContent> {
+  int _quantity = 1;
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      children: [
+        const SizedBox(height: 16),
+        Center(
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              IconButton(
+                disabledColor: Colors.black26,
+                color: const Color(0xFF5D9558),
+                icon: const Icon(
+                  Icons.remove_circle_outline_outlined,
+                  size: 45,
+                ),
+                //* decrementar cantidad item
+                onPressed: () {
+                  setState(() {
+                    if (_quantity > 1) _quantity--;
+                  });
+                },
+              ),
+              Container(
+                  width: 50,
+                  alignment: Alignment.center,
+                  decoration: BoxDecoration(
+                      shape: BoxShape.rectangle,
+                      border: Border.all(
+                          width: 1,
+                          color: const Color(0xFF5D9558))),
+                  child: Text(
+                    _quantity.toString(),
+                    style: const TextStyle(
+                        fontSize: 35,
+                        fontWeight: FontWeight.bold),
+                  )),
+              IconButton(
+                icon: const Icon(
+                  Icons.add_circle_outline_outlined,
+                  color: Color(0xFF5D9558),
+                  size: 45,
+                ),
+                onPressed: () {
+                  setState(() {
+                    _quantity++;
+                  });
+                },
+              )
+            ],
+          ),
+        ),
+        const SizedBox(
+          height: 15,
+        ),
+        FilledButton(
+          style: const ButtonStyle(
+            backgroundColor: WidgetStatePropertyAll(Color(0xFF5D9558))
+          ),
+          onPressed: () {
+            final cart = ref.watch(cartItemsProvider.notifier).addItemToCart;
+            cart(CartItemMapper.cartItemToEntity(CartLocal.fromEntity(widget.combo, _quantity, widget.combo.imageUrl)));
+          },
+          child: const SizedBox(
+            width: 100,
+            child: Center(child: Text('Add to Cart'))
+          ),
+        ),
+      ],
     );
   }
 }
@@ -53,8 +222,9 @@ class _ComboDetailsScreenState extends ConsumerState<ComboDetailsScreen> {
 class _Content extends ConsumerStatefulWidget{
 
   final Combo? combo;
+  final PanelController panelController;
 
-  const _Content({this.combo});
+  const _Content({this.combo, required this.panelController});
 
   @override
   ConsumerState<_Content> createState() => _ContentState();
@@ -67,10 +237,15 @@ class _ContentState extends ConsumerState<_Content> {
     super.initState();
   }
 
+  Future<bool> checkIfIsInCart() async {
+    return await ref.read(cartItemsProvider.notifier).itemExistsInCart(widget.combo!.id);
+  }
+
   @override
   Widget build(BuildContext context) {
 
     final recomendedCombos = ref.watch(combosProvider); //*cambiar a recomendacion de productos por categoria o algo asi
+    final isInCart = checkIfIsInCart();
 
     return SingleChildScrollView(
       child: Column(
@@ -108,19 +283,35 @@ class _ContentState extends ConsumerState<_Content> {
               ],
               ),
               const Spacer(),
-              FilledButton(
-                onPressed: () {
-                  //* agregar al carrito el producto actual, para cuando se haga
-                }, 
-                style: const ButtonStyle(
-                  backgroundColor: WidgetStatePropertyAll(Color(0xFF5D9558))
-                ),
-                child: const Row(
-                  children: [
-                    Text("Add to Cart  "),
-                    Icon(Icons.shopping_cart),
-                  ],
-                )
+              FutureBuilder<bool>(
+                future: isInCart,
+                builder: (context, snapshot) {
+                  final inCart = snapshot.hasData && snapshot.data == true;
+                  return FilledButton(
+                    onPressed: 
+                      inCart 
+                      ? null
+                      : widget.panelController.open,
+                    style: ButtonStyle(
+                      backgroundColor: WidgetStatePropertyAll(snapshot.data == true ? Colors.black54 : const Color(0xFF5D9558))
+                    ),
+                    child: 
+                        inCart 
+                        ? const Row(
+                            children: [
+                              Text("Already Added ", style: TextStyle(color: Colors.white),),
+                              Icon(Icons.check_circle_outline_outlined, color: Colors.white,),
+                            ],
+                          )
+                        :
+                          const Row(
+                            children: [
+                              Text("Add to Cart "),
+                              Icon(Icons.shopping_cart),
+                            ],
+                          )
+                  );
+                },
               ),
               const SizedBox(width: 15,),
             ],

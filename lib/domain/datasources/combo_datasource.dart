@@ -4,5 +4,5 @@ abstract class ComboDatasource{
 
   Future<List<Combo>> getCombos({int page = 1});
 
-
+  Future<Combo> getComboById(String id);
 }
