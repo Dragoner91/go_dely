@@ -352,7 +352,7 @@ class _ContentState extends ConsumerState<_Content> {
               loadNextPage: () {},
             ),
           ),
-          const SizedBox(height: 30,),
+          const SizedBox(height: 200,),
         ],
       ),
     );

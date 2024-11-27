@@ -4,7 +4,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_dely/config/helpers/human_formats.dart';
 import 'package:go_dely/infraestructure/entities/cart/cart_items.dart';
 import 'package:go_dely/presentation/providers/cart/cart_items_provider.dart';
-import 'package:go_dely/presentation/widgets/widgets.dart';
 import 'package:go_router/go_router.dart';
 
 class CartScreen extends StatelessWidget {
@@ -25,10 +24,6 @@ class CartScreen extends StatelessWidget {
             },
             icon: const Icon(Icons.arrow_back_ios_new),
           ),
-        ),
-        drawer: FadeInUpBig(
-          duration: const Duration(milliseconds: 400),
-          child: CustomSideMenu(scaffoldkey: scaffoldkey),
         ),
         bottomNavigationBar: Padding(
           padding: const EdgeInsets.all(5),
@@ -228,37 +223,39 @@ class _ContentState extends ConsumerState<_Content> {
     final cartItemsFuture =
         ref.watch(cartItemsProvider.notifier).watchAllItemsFromCart();
 
-    return SingleChildScrollView(
-        child: Column(children: [
-          FutureBuilder<Stream<List<CartItem>>>(
-            future: cartItemsFuture,
+    return FutureBuilder<Stream<List<CartItem>>>(
+      future: cartItemsFuture,
+      builder: (context, snapshot) {
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return const SizedBox(height: 150 ,child: Center(child: CircularProgressIndicator()));
+        } else {
+          final cartItemsStream = snapshot.data!;
+          return StreamBuilder<List<CartItem>>(
+            stream: cartItemsStream,
             builder: (context, snapshot) {
               if (snapshot.connectionState == ConnectionState.waiting) {
                 return const SizedBox(height: 150 ,child: Center(child: CircularProgressIndicator()));
               } else {
-                final cartItemsStream = snapshot.data!;
-                return StreamBuilder<List<CartItem>>(
-                  stream: cartItemsStream,
-                  builder: (context, snapshot) {
-                    if (snapshot.connectionState == ConnectionState.waiting) {
-                      return const SizedBox(height: 150 ,child: Center(child: CircularProgressIndicator()));
-                    } else {
-                      final items = snapshot.data!;
-                      return ListView.builder(
+                final items = snapshot.data!;
+                return SingleChildScrollView(
+                  child: Column(
+                    children: [
+                      ListView.builder(
                         shrinkWrap: true,
+                        physics: const NeverScrollableScrollPhysics(),
                         itemCount: items.length,
                         itemBuilder: (context, index) {
                           return _Item(cartItem: items[index]);
                         },
-                      );
-                    }
-                  },
+                      ),
+                    ],
+                  ),
                 );
               }
             },
-          )
-        ]
-      )
+          );
+        }
+      },
     );
   }
 }
