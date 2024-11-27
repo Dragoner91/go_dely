@@ -22,7 +22,7 @@ class HomeScreen extends StatelessWidget {
       child: Scaffold(
           key: scaffoldkey,
           appBar: const CustomAppBar(),
-          drawer: FadeInUpBig(duration: const Duration(milliseconds: 400),child: CustomSideMenu(scaffoldkey: scaffoldkey),),
+          drawer: FadeInLeftBig(duration: const Duration(milliseconds: 400),child: CustomSideMenu(scaffoldkey: scaffoldkey),),
           bottomNavigationBar: const BottomAppBarCustom(),
           body: _Content(),
           ),

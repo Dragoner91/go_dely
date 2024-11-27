@@ -100,7 +100,7 @@ class _ProductDetailsScreenState extends ConsumerState<ProductDetailsScreen> {
                   color: Theme.of(context).scaffoldBackgroundColor,
                   borderRadius: const BorderRadius.only(topLeft: Radius.circular(20), topRight: Radius.circular(20))
                 ),
-                child: _PanelContent(product: snapshot.data as Product)
+                child: _PanelContent(product: snapshot.data as Product, panelController: _panelController)
               );
             }
             return const Center(child: Text('No data available'),);
@@ -137,8 +137,9 @@ class _ProductDetailsScreenState extends ConsumerState<ProductDetailsScreen> {
 
 class _PanelContent extends ConsumerStatefulWidget {
   final Product product;
+  final PanelController panelController;
 
-  const _PanelContent({required this.product});
+  const _PanelContent({required this.product, required this.panelController});
 
   @override
   __PanelContentState createState() => __PanelContentState();
@@ -209,6 +210,7 @@ class __PanelContentState extends ConsumerState<_PanelContent> {
           onPressed: () {
             final cart = ref.watch(cartItemsProvider.notifier).addItemToCart;
             cart(CartItemMapper.cartItemToEntity(CartLocal.fromEntity(widget.product, _quantity, widget.product.imageUrl[0])));
+            widget.panelController.close();
           },
           child: const SizedBox(
             width: 100,
@@ -247,6 +249,7 @@ class _ContentState extends ConsumerState<_Content> {
 
     final recomendedProducts = ref.watch(productsProvider); //*cambiar a recomendacion de productos por categoria o algo asi
     final isInCart = checkIfIsInCart();
+    final cartItemsNotifier = ref.watch(cartItemsProvider);
 
     return SingleChildScrollView(
       child: Column(
