@@ -257,7 +257,8 @@ class _ContentState extends ConsumerState<_Content> {
         children: [
           Padding(
             padding: const EdgeInsets.all(20),
-            child: Stack(children: [
+            child: Stack(
+              children: [
                 _Slider(productImages: [...widget.product!.imageUrl]),
                 Row(
                     children: [

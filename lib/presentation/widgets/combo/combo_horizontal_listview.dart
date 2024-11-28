@@ -188,6 +188,23 @@ class _SlideState extends ConsumerState<_Slide> {
                       ),
                     ],
                   ),
+                  Row(
+                    children: [
+                      Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: Container(
+                          decoration: BoxDecoration(
+                            shape: BoxShape.circle,
+                            color: Colors.amber.shade600.withOpacity(0.75)
+                          ),
+                          child: Padding(
+                            padding: const EdgeInsets.all(8.0),
+                            child: Text(HumanFormarts.percentage(widget.combo.discount), style: const TextStyle(fontWeight: FontWeight.bold),),
+                          ),
+                        ),
+                      )
+                    ],
+                  )
                 ],
               ),
             ),
