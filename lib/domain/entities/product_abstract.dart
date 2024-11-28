@@ -5,11 +5,20 @@ abstract class ProductAbstract {
   final String description;
   final String category;
   final double price;
-  final String currency;  
+  final String currency; 
+  final double discount; 
 
 
 
 
-  ProductAbstract({required this.id, required this.name, required this.price, required this.description, required this.category, required this.currency});
+  ProductAbstract({
+    required this.id, 
+    required this.name, 
+    required this.price, 
+    required this.description, 
+    required this.category, 
+    required this.currency,
+    required this.discount
+    });
   
 }

@@ -14,6 +14,7 @@ class Product extends ProductAbstract{
   final String description;
   final int stock;
   final String category;
+  final double discount; 
 
   Product({
     required this.id, 
@@ -24,14 +25,16 @@ class Product extends ProductAbstract{
     required this.weight, 
     required this.currency,
     required this.stock, 
-    required this.category}) : 
-  super(
+    required this.category,
+    required this.discount
+    }) : super(
     id: id, 
     name: name, 
     price: price,
     description: description,
     category: category,
-    currency: currency
+    currency: currency,
+    discount: discount
   );
 
 }

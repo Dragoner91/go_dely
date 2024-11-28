@@ -19,4 +19,9 @@ class HumanFormarts {
     return formattedNumber;
   }
 
+  static String percentage(double number){
+    final formattedNumber = NumberFormat.percentPattern().format(number);
+    return formattedNumber;
+  }
+
 }
