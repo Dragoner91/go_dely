@@ -15,6 +15,7 @@ class ProductMapper{
       weight: productDB.weight, 
       currency: productDB.currency, 
       stock: productDB.stock, 
-      category: productDB.category
+      category: productDB.category,
+      discount: productDB.discount,
     ); 
 }

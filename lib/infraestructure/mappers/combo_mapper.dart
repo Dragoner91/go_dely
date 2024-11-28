@@ -1,6 +1,6 @@
 
 
-import 'package:go_dely/domain/entities/product/combo.dart';
+import 'package:go_dely/domain/entities/combo/combo.dart';
 import 'package:go_dely/infraestructure/models/combo_db.dart';
 
 class ComboMapper{
@@ -14,6 +14,7 @@ class ComboMapper{
       products: comboDB.products, 
       category: comboDB.category, 
       currency: comboDB.currency,
-      imageUrl: comboDB.imageUrl
+      imageUrl: comboDB.imageUrl,
+      discount: comboDB.discount,
     ); 
 }

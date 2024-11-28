@@ -12,10 +12,15 @@ class HumanFormarts {
 
   static String numberCurrency(double number){
     final formattedNumber = NumberFormat.compactCurrency(
-      decimalDigits: 1,
+      decimalDigits: 2,
       locale: 'en',
       symbol: ''
     ).format(number);
+    return formattedNumber;
+  }
+
+  static String percentage(double number){
+    final formattedNumber = NumberFormat.percentPattern().format(number);
     return formattedNumber;
   }
 

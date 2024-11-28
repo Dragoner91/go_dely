@@ -10,6 +10,7 @@ class ProductDB {
   final String description;
   final int stock;
   final String category;
+  final double discount; 
 
   ProductDB({
     required this.id, 
@@ -20,7 +21,9 @@ class ProductDB {
     required this.imageUrl, 
     required this.description, 
     required this.stock,
-    required this.category});
+    required this.category,
+    required this.discount
+    });
 
   factory ProductDB.fromJson(Map<String, dynamic> json) => ProductDB(
     id: json["product_id"], 
@@ -32,6 +35,7 @@ class ProductDB {
     description: json["product_description"], 
     stock: json["product_stock"],
     category: json["product_category"],
+    discount: json["discount"] == null ? 0.0 : double.tryParse(json["discount"]) ?? 0.1,
   );
 
   Map<String, dynamic> toJson() => {
@@ -44,5 +48,6 @@ class ProductDB {
     "product_description": description,
     "product_stock": stock,
     "product_category": category,
+    "product_discount": discount
   };
 }

@@ -22,7 +22,7 @@ class HomeScreen extends StatelessWidget {
       child: Scaffold(
           key: scaffoldkey,
           appBar: const CustomAppBar(),
-          drawer: FadeInUpBig(duration: const Duration(milliseconds: 400),child: CustomSideMenu(scaffoldkey: scaffoldkey),),
+          drawer: FadeInLeftBig(duration: const Duration(milliseconds: 400),child: CustomSideMenu(scaffoldkey: scaffoldkey),),
           bottomNavigationBar: const BottomAppBarCustom(),
           body: _Content(),
           ),
@@ -41,8 +41,12 @@ class _ContentState extends ConsumerState<_Content> {
   @override
   void initState() {
     super.initState();
-    final products = ref.read( productsProvider.notifier ).loadNextPage();
-    final combos = ref.read( combosProvider.notifier ).loadNextPage();
+    _loadData();
+  }
+
+  Future<void> _loadData() async {
+    await ref.read(productsProvider.notifier).loadNextPage();
+    await ref.read(combosProvider.notifier).loadNextPage();
   }
 
   @override
@@ -51,40 +55,47 @@ class _ContentState extends ConsumerState<_Content> {
     final products = ref.watch(productsProvider);
     final combos = ref.watch(combosProvider);
 
-    return SingleChildScrollView(
-      child: Column(
-        children: [
+    return RefreshIndicator(
+      triggerMode: RefreshIndicatorTriggerMode.anywhere,
+      color: const Color(0xFF5D9558),
+      onRefresh: _loadData,
+      child: SingleChildScrollView(
+        child: Column(
+          children: [
+      
+            ProductHorizontalListView(
+              products: [
+                ...products
+              ],
+              title: 'Productos',
+              subTitle: 'Ver todo',
+              loadNextPage: () => ref.read(productsProvider.notifier).loadNextPage(),
+            ),
 
-          ProductHorizontalListView(
-            products: [
-              ...products
-            ],
-            title: 'Productos',
-            subTitle: 'Ver todo',
-            loadNextPage: () => ref.read(productsProvider.notifier).loadNextPage(),
-          ),
+            
+            ComboHorizontalListView(
+              combos: [
+                ...combos
+              ],
+              title: 'Combos de Productos',
+              subTitle: 'Ver todo',
+              loadNextPage: () => ref.read(combosProvider.notifier).loadNextPage(),
+            ),
+            
 
-          ComboHorizontalListView(
-            combos: [
-              ...combos
-            ],
-            title: 'Combos de Productos',
-            subTitle: 'Ver todo',
-            loadNextPage: () => ref.read(combosProvider.notifier).loadNextPage(),
-          ),
-
-          ProductHorizontalListView(
-            products: [
-              ...products
-            ],
-            title: 'Ofertas Limitadas',
-            subTitle: 'Ver todo',
-            loadNextPage: () => ref.read(productsProvider.notifier).loadNextPage(),
-          ),
-
-          const SizedBox(height: 15,)
-
-        ],
+            ProductHorizontalListView(
+              products: [
+                ...products
+              ],
+              title: 'Ofertas Limitadas',
+              subTitle: 'Ver todo',
+              loadNextPage: () => ref.read(productsProvider.notifier).loadNextPage(),
+            ),
+      
+            const SizedBox(height: 15,)
+      
+          ],
+        ),
       ),
     );
   }

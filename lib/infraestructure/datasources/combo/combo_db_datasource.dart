@@ -1,7 +1,7 @@
 import 'package:dio/dio.dart';
 import 'package:go_dely/config/constants/enviroment.dart';
 import 'package:go_dely/domain/datasources/combo_datasource.dart';
-import 'package:go_dely/domain/entities/product/combo.dart';
+import 'package:go_dely/domain/entities/combo/combo.dart';
 import 'package:go_dely/infraestructure/mappers/combo_mapper.dart';
 import 'package:go_dely/infraestructure/models/combo_db.dart';
 
@@ -19,7 +19,7 @@ class ComboDBDatasource extends ComboDatasource{
   @override
   Future<List<Combo>> getCombos({int page = 1}) async{
 
-    final response = await dio.get('/combos?limit=5&offset=$page',
+    final response = await dio.get('/combos?perpage=5&page=$page',
       queryParameters: {
         //'page': page
       }
@@ -35,6 +35,23 @@ class ComboDBDatasource extends ComboDatasource{
 
     return combos;
     
+  }
+
+
+   @override
+  Future<Combo> getComboById(String id) async {
+    final response = await dio.get('/combos/$id',
+      queryParameters: {
+        
+      }
+    );
+
+    final Combo combo = ComboMapper.comboToEntity(
+      ComboDB.fromJson(response.data)
+    );
+
+    
+    return combo;
   }
 
 }

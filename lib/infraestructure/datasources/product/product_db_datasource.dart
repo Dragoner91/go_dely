@@ -19,7 +19,7 @@ class ProductDBDatasource extends ProductDatasource{
   @override
   Future<List<Product>> getProducts({int page = 1}) async{
 
-    final response = await dio.get('/products?limit=5&offset=$page',
+    final response = await dio.get('/products',
       queryParameters: {
         //'page': page
       }
@@ -39,19 +39,17 @@ class ProductDBDatasource extends ProductDatasource{
 
   @override
   Future<Product> getProductById(String id) async {
-    final response = await dio.get('/product/$id',
+    final response = await dio.get('/products/$id',
       queryParameters: {
         
       }
     );
 
-    final Product product = 
-      response.data.map(
-          (productsJson) => ProductMapper.productToEntity(
-            ProductDB.fromJson(productsJson)
-          )
-        );
+    final Product product = ProductMapper.productToEntity(
+      ProductDB.fromJson(response.data)
+    );
 
+    
     return product;
   }
 
