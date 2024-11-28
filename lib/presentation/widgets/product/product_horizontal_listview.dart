@@ -186,6 +186,23 @@ class _SlideState extends ConsumerState<_Slide> {
                       ),
                     ],
                   ),
+                  Row(
+                    children: [
+                      Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: Container(
+                          decoration: BoxDecoration(
+                            shape: BoxShape.circle,
+                            color: Colors.amber.shade600.withOpacity(0.75)
+                          ),
+                          child: Padding(
+                            padding: const EdgeInsets.all(8.0),
+                            child: Text(HumanFormarts.percentage(widget.product.discount), style: const TextStyle(fontWeight: FontWeight.bold),),
+                          ),
+                        ),
+                      )
+                    ],
+                  )
                 ],
               ),
             ),
@@ -211,18 +228,44 @@ class _SlideState extends ConsumerState<_Slide> {
             ),
           ),
 
-          //*rating
+          //*price
           SizedBox(
             width: 150,
             child: Row( //*arreglar cuando este producto listo
               children: [
+
                 const SizedBox(width: 5,),
-                Text(
-                  "${widget.product.currency} ${HumanFormarts.numberCurrency(widget.product.price)}", //*arreglar cuando este producto listo
-                  style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
-                ),
+                if (widget.product.discount > 0) ...[
+                  Text(
+                    "${HumanFormarts.numberCurrency(widget.product.price)} ${widget.product.currency}",
+                    style: const TextStyle(
+                      fontWeight: FontWeight.bold,
+                      fontSize: 14,
+                      color: Colors.red,
+                      decoration: TextDecoration.lineThrough,
+                      decorationColor: Colors.red,
+                    ),
+                  ),
+                  const SizedBox(width: 5,),
+                  Text(
+                    "${HumanFormarts.numberCurrency(widget.product.price - ( widget.product.price * widget.product.discount))} ${widget.product.currency}",
+                    style: const TextStyle(
+                      fontWeight: FontWeight.bold,
+                      fontSize: 16,
+                      color: Color.fromARGB(255, 80, 137, 74)
+                    ),
+                  ),
+                ] else ...[
+                  Text(
+                    "${HumanFormarts.numberCurrency(widget.product.price)} ${widget.product.currency}",
+                    style: const TextStyle(
+                      fontWeight: FontWeight.bold,
+                      fontSize: 16,
+                      color: Color.fromARGB(255, 80, 137, 74)
+                    ),
+                  ),
+                ],
                 const SizedBox(width: 5,), 
-                
               ],
             ),
           )

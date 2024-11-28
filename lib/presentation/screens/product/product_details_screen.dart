@@ -1,6 +1,7 @@
 import 'package:animate_do/animate_do.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_dely/config/helpers/human_formats.dart';
 import 'package:go_dely/domain/entities/product/product.dart';
 import 'package:go_dely/infraestructure/mappers/cart_item_mapper.dart';
 import 'package:go_dely/infraestructure/models/cart_item_local.dart';
@@ -256,17 +257,72 @@ class _ContentState extends ConsumerState<_Content> {
         children: [
           Padding(
             padding: const EdgeInsets.all(20),
-            child: _Slider(productImages: [...widget.product!.imageUrl,...widget.product!.imageUrl,...widget.product!.imageUrl,]),
+            child: Stack(children: [
+                _Slider(productImages: [...widget.product!.imageUrl]),
+                Row(
+                    children: [
+                      Padding(
+                        padding: const EdgeInsets.all(15.0),
+                        child: Container(
+                          decoration: BoxDecoration(
+                            shape: BoxShape.rectangle,
+                            borderRadius: BorderRadius.circular(8),
+                            color: Colors.amber.shade600.withOpacity(0.75)
+                          ),
+                          child: Padding(
+                            padding: const EdgeInsets.all(10.0),
+                            child: Text("${HumanFormarts.percentage(widget.product!.discount)} OFF", style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 25),),
+                          ),
+                        ),
+                      )
+                    ],
+                  ),
+                
+              ]
+            ),
           ),
           Row(
             children: [
               const SizedBox(width: 20,),
               Container(
                 constraints: const BoxConstraints(minWidth: 100, maxWidth: 200),
-                child: Text(widget.product!.name, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 26),maxLines: 3,)
+                child: Text(widget.product!.name, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 26), maxLines: 3,)
               ),
               const Spacer(),
-              Text("${widget.product!.price} ${widget.product!.currency}", style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 24),),
+              if (widget.product!.discount > 0) 
+                Column(
+                  children: [
+                    Text(
+                      "${HumanFormarts.numberCurrency(widget.product!.price)} ${widget.product!.currency}",
+                      style: const TextStyle(
+                        fontWeight: FontWeight.bold,
+                        fontSize: 20,
+                        color: Colors.red,
+                        decoration: TextDecoration.lineThrough,
+                        decorationColor: Colors.red,
+                      ),
+                    ),
+                    const SizedBox(width: 5,),
+                    Text(
+                      "${HumanFormarts.numberCurrency(widget.product!.price - ( widget.product!.price * widget.product!.discount))} ${widget.product!.currency}",
+                      style: const TextStyle(
+                        fontWeight: FontWeight.bold,
+                        fontSize: 24,
+                        color: Color.fromARGB(255, 80, 137, 74)
+                      ),
+                    ),
+                  ],
+                )
+               else ...[
+                  Text(
+                    "${HumanFormarts.numberCurrency(widget.product!.price)} ${widget.product!.currency}",
+                    style: const TextStyle(
+                      fontWeight: FontWeight.bold,
+                      fontSize: 24,
+                      color: Color.fromARGB(255, 80, 137, 74)
+                    ),
+                  ),
+                ],
               const SizedBox(width: 20,),
             ],
           ),
