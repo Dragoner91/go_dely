@@ -14,6 +14,7 @@ class ComboMapper{
       products: comboDB.products, 
       category: comboDB.category, 
       currency: comboDB.currency,
-      imageUrl: comboDB.imageUrl
+      imageUrl: comboDB.imageUrl,
+      discount: comboDB.discount,
     ); 
 }

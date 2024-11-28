@@ -12,6 +12,7 @@ class ComboDB {
   final String imageUrl;
   final List<Product> products;
   final String description;
+  final double discount;
 
   ComboDB({
     required this.id, 
@@ -22,6 +23,7 @@ class ComboDB {
     required this.category,
     required this.currency,
     required this.imageUrl,
+    required this.discount
   });
 
   factory ComboDB.fromJson(Map<String, dynamic> json) => ComboDB(
@@ -33,6 +35,7 @@ class ComboDB {
     category: json["combo_category"],
     currency: json["combo_currency"],
     imageUrl: json["combo_image"],
+    discount: json["combo_discount"] ? double.parse(json["combo_discount"]) : 0.0,
   );
 
   Map<String, dynamic> toJson() => {
@@ -44,5 +47,6 @@ class ComboDB {
     "combo_category": category,
     "combo_currency": currency,
     "combo_image": imageUrl,
+    "combo_discount": discount
   };
 }
