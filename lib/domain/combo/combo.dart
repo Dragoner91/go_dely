@@ -1,6 +1,6 @@
 
-import 'package:go_dely/domain/entities/product/product.dart';
-import 'package:go_dely/domain/entities/product_abstract.dart';
+import 'package:go_dely/domain/product/product.dart';
+import 'package:go_dely/domain/product_abstract.dart';
 
 // ignore_for_file: overridden_fields, annotate_overrides
 

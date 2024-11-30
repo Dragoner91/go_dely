@@ -1,6 +1,6 @@
 
 
-import 'package:go_dely/domain/entities/product_abstract.dart';
+import 'package:go_dely/domain/product_abstract.dart';
 
 class CartLocal {
   final String id;

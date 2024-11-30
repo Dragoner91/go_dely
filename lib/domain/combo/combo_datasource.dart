@@ -1,6 +1,6 @@
-import 'package:go_dely/domain/entities/combo/combo.dart';
+import 'package:go_dely/domain/combo/combo.dart';
 
-abstract class ComboDatasource{
+abstract class IComboDatasource{
 
   Future<List<Combo>> getCombos({int page = 1});
 

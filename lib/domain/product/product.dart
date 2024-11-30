@@ -1,7 +1,7 @@
 
 // ignore_for_file: overridden_fields, annotate_overrides
 
-import 'package:go_dely/domain/entities/product_abstract.dart';
+import 'package:go_dely/domain/product_abstract.dart';
 
 class Product extends ProductAbstract{
   

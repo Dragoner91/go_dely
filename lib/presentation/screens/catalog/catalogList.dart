@@ -5,7 +5,7 @@ import 'package:go_dely/presentation/providers/categoria/category_provider.dart'
 import 'package:go_dely/presentation/widgets/categories/category_vertical_listview.dart';
 import 'package:go_dely/presentation/widgets/categories/category_icon_listview.dart';
 import 'package:go_dely/presentation/widgets/widgets.dart';
-import 'package:go_dely/domain/entities/categories/categories.dart';
+import 'package:go_dely/domain/categories/categories.dart';
 
 
 

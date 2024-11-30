@@ -1,6 +1,6 @@
-import 'package:go_dely/domain/entities/product/product.dart';
+import 'package:go_dely/domain/product/product.dart';
 
-abstract class ProductDatasource{
+abstract class IProductDatasource{
 
   Future<List<Product>> getProducts({int page = 1});
 

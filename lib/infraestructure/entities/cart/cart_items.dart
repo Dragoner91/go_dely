@@ -1,6 +1,6 @@
 // ignore_for_file: overridden_fields, annotate_overrides
 
-import 'package:go_dely/domain/entities/cart/i_cart.dart';
+import 'package:go_dely/domain/cart/i_cart.dart';
 import 'package:isar/isar.dart';
 
 part 'cart_items.g.dart';

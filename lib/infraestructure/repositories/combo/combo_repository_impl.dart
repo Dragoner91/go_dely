@@ -1,13 +1,10 @@
+import 'package:go_dely/domain/combo/combo_datasource.dart';
+import 'package:go_dely/domain/combo/combo.dart';
+import 'package:go_dely/domain/combo/combo_repository.dart';
 
+class ComboRepositoryImpl extends IComboRepository {
 
-
-import 'package:go_dely/domain/datasources/combo_datasource.dart';
-import 'package:go_dely/domain/entities/combo/combo.dart';
-import 'package:go_dely/domain/repositories/combo_repository.dart';
-
-class ComboRepositoryImpl extends ComboRepository {
-
-  final ComboDatasource datasource;
+  final IComboDatasource datasource;
 
   ComboRepositoryImpl({required this.datasource});
 

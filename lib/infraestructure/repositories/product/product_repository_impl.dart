@@ -1,12 +1,12 @@
 
 
-import 'package:go_dely/domain/datasources/product_datasource.dart';
-import 'package:go_dely/domain/entities/product/product.dart';
-import 'package:go_dely/domain/repositories/product_repository.dart';
+import 'package:go_dely/domain/product/product_datasource.dart';
+import 'package:go_dely/domain/product/product.dart';
+import 'package:go_dely/domain/product/product_repository.dart';
 
-class ProductRepositoryImpl extends ProductRepository {
+class ProductRepositoryImpl extends IProductRepository {
 
-  final ProductDatasource datasource;
+  final IProductDatasource datasource;
 
   ProductRepositoryImpl({required this.datasource});
 

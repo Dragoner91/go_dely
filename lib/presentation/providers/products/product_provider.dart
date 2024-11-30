@@ -1,6 +1,6 @@
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:go_dely/domain/entities/product/product.dart';
+import 'package:go_dely/domain/product/product.dart';
 import 'package:go_dely/presentation/providers/products/product_repository_provider.dart';
 
 final productsProvider = StateNotifierProvider<ProductsNotifier ,List<Product>>(
