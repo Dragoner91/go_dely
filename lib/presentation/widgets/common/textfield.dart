@@ -2,7 +2,8 @@ import 'package:flutter/material.dart';
 
 class Authtextfield extends StatefulWidget {
   final String campo;
-  final Function(String,String) callback;
+  //final Function(String,String) callback;
+  final Function(String) callback;
   const Authtextfield({required this.campo,required this.callback, super.key});
 
   @override
@@ -28,7 +29,8 @@ class _AuthtextfieldState extends State<Authtextfield> {
             TextField(
               controller: _textController,
               onChanged: (texto) {
-              widget.callback(texto,widget.campo);},
+              //widget.callback(texto,widget.campo);
+              widget.callback(texto);},
               decoration: InputDecoration(
               enabledBorder: UnderlineInputBorder(
                 borderSide: BorderSide(color: Colors.black),

@@ -1,12 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:animate_do/animate_do.dart';
-import 'package:go_dely/config/constants/enviroment.dart';
 import 'package:go_dely/domain/entities/users/user.dart';
 import 'package:go_dely/infraestructure/datasources/auth_db_datasource.dart';
 import 'package:go_dely/infraestructure/repositories/auth_repository_impl.dart';
 import 'package:go_router/go_router.dart';
-//import 'package:http/http.dart' as http;
-import 'package:dio/dio.dart';
+
+
 
 
 
@@ -44,6 +43,35 @@ class _ContentRegisterState extends State<ContentRegister> {
     String fullname = '';
     String ci = '';
     String phone = '';
+    bool mostrarTexto = false;
+    String texto = 'User registered correctly' ;
+    bool mostrarTexto2 = false;
+    String texto2 = 'An error has occurred' ;
+
+    void actualizarEmail(String nuevoTexto) {
+
+        email = nuevoTexto;}
+
+    void actualizarPassword(String nuevoTexto) {
+
+      password = nuevoTexto;
+    }
+
+    void actualizarName(String nuevoTexto) {
+
+      fullname = nuevoTexto;
+    }
+
+    void actualizarCi(String nuevoTexto) {
+
+      ci = nuevoTexto;
+    }
+
+    void actualizarPhone(String nuevoTexto) {
+
+      phone = nuevoTexto;
+    }
+
     void actualizarValores(String nuevoTexto, String variable) {
       if (variable == 'Email'){
         email = nuevoTexto;
@@ -65,14 +93,7 @@ class _ContentRegisterState extends State<ContentRegister> {
 
 
     void registerUser() async{
-      final dio = Dio(
-      BaseOptions(
-      baseUrl: Environment.verdeAPI,
-      queryParameters: {
-        
-      }
-    )
-  );
+      
       if (email != '' && password != '' && fullname != '' && ci != '' && phone != ''){
         User usuario = User( 
           email,
@@ -83,10 +104,21 @@ class _ContentRegisterState extends State<ContentRegister> {
         );
 
         var response = "";
-          response = AuthRepositoryImpl(datasource: AuthDbDatasource()).register(usuario).toString();
+          response = await AuthRepositoryImpl(datasource: AuthDbDatasource()).register(usuario);
           if (response != ""){
-            print(response);
+            //print(response);
+            setState(() {
+              mostrarTexto = true;
+              mostrarTexto2 = false;
+            });
 
+
+          }
+          else{
+            setState(() {
+              mostrarTexto2 = true;
+              mostrarTexto = false;
+            });
           }
         
           /*final data = {
@@ -105,6 +137,12 @@ class _ContentRegisterState extends State<ContentRegister> {
     }*/
 
       }
+      else{
+        setState(() {
+          mostrarTexto2 = true;
+          mostrarTexto = false;
+        });
+      }
     } 
 
     return Container(
@@ -116,7 +154,7 @@ class _ContentRegisterState extends State<ContentRegister> {
       ),
       child: Center(
         child: Container(
-          padding: EdgeInsets.symmetric(vertical: 25, horizontal: 40),
+          padding: EdgeInsets.symmetric(vertical: 10, horizontal: 40),
           child: Column(
             children: [
               Image.asset(
@@ -126,23 +164,23 @@ class _ContentRegisterState extends State<ContentRegister> {
               ),
               Padding(
                 //padding: EdgeInsets.symmetric(vertical: 75, horizontal: 0),
-                padding: EdgeInsets.fromLTRB(0,130, 0, 60),
+                padding: EdgeInsets.fromLTRB(0,145, 0, 60),
                 child: Text(
                   'REGISTER',
                   style: TextStyle(fontSize: 32, fontWeight: FontWeight.bold),
                 ),
               ),
 
-              Authtextfield(campo: 'Full name',callback: actualizarValores),
-              Authtextfield(campo: 'CI',callback: actualizarValores),
-              Authtextfield(campo: 'Phone number',callback: actualizarValores),
-              Authtextfield(campo: 'Email',callback: actualizarValores),
-              Authtextfield(campo: 'Password',callback: actualizarValores),
+              Authtextfield(campo: 'Full name',callback: actualizarName),
+              Authtextfield(campo: 'CI',callback: actualizarCi),
+              Authtextfield(campo: 'Phone number',callback: actualizarPhone),
+              Authtextfield(campo: 'Email',callback: actualizarEmail),
+              Authtextfield(campo: 'Password',callback: actualizarPassword),
 
               Padding(
                 padding: EdgeInsets.symmetric(vertical: 5, horizontal: 0),
                 child: ElevatedButton(
-                    onPressed: () {},
+                    onPressed: () {registerUser();},
                     style: ButtonStyle(
                       minimumSize: WidgetStateProperty.all(const Size(250, 40)),
                       backgroundColor: WidgetStateProperty.all<Color>(Colors.black),
@@ -153,6 +191,8 @@ class _ContentRegisterState extends State<ContentRegister> {
                       style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
                     )),
               ),
+              if (mostrarTexto) Text(texto),
+              if (mostrarTexto2) Text(texto2),
               Row(
                 children: [
                   Expanded(child: Container()),
@@ -169,6 +209,7 @@ class _ContentRegisterState extends State<ContentRegister> {
                         'Log in',
                         style: textStyles.bodyLarge,
                       )),
+
                   Expanded(child: Container()),
                 ],
               )

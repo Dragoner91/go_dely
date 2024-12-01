@@ -1,8 +1,8 @@
 class Auth {
-  final String email;
-  final String password;
+  final String user_email;
+  final String user_password;
   
 
- Auth(this.email, this.password,);
+ Auth(this.user_email, this.user_password,);
    
 }

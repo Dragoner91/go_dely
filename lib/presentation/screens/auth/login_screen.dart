@@ -1,11 +1,9 @@
-import 'dart:convert';
+// import 'dart:convert';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:animate_do/animate_do.dart';
-import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
-import 'package:go_dely/config/constants/enviroment.dart';
 import 'package:go_dely/domain/entities/users/auth.dart';
-import 'package:go_dely/domain/entities/users/user.dart';
+//import 'package:go_dely/domain/entities/users/user.dart';
 import 'package:go_dely/infraestructure/datasources/auth_db_datasource.dart';
 import 'package:go_dely/infraestructure/repositories/auth_repository_impl.dart';
 import 'package:go_dely/presentation/providers/auth/auth_provider.dart';
@@ -42,45 +40,45 @@ class _LogincontentState extends ConsumerState<Logincontent> {
     //late SharedPreferences prefs;
     String email = '';
     String password = '';
+    bool mostrarTexto = false;
+    String texto = 'Wrong user or password' ;
+    bool mostrarTexto2 = false;
+    String texto2 = 'All fields are mandatory' ;
+    bool mostrarTexto3 = false;
+    String texto3 = 'Welcome' ;
 
 
-    void actualizarValores(String nuevoTexto, String variable) {
-      if (variable == 'Email'){
-        email = nuevoTexto;
-      };
-      if (variable == 'Password'){
-        password = nuevoTexto;
-      }
-      
+    void actualizarEmail(String nuevoTexto) {
+          email = nuevoTexto;
+    }
+    void actualizarPassword(String nuevoTexto) {
+      password = nuevoTexto;
     }
 
-    /*void initSharedPref() async{
-      prefs = await SharedPreferences.getInstance();
-    }*/
+
 
     void Login() async{
-      /*final dio = Dio(
-      BaseOptions(
-      baseUrl: Environment.verdeAPI,
-      queryParameters: {
-        
-      }
-    )
-  );*/
+      
       if (email != '' && password != '' ){
-         Auth usuario = Auth(    
-          
+         Auth usuario = Auth(
           email,
           password
           );
 
-          var token = "";
-          token = AuthRepositoryImpl(datasource: AuthDbDatasource()).login(usuario).toString();
-          if (token != ""){
+          var token = await AuthRepositoryImpl(datasource: AuthDbDatasource()).login(usuario);
+          var token2 = token.toString();
+
+          if (token2 != "error"){
             ref.read(AuthProvider.notifier).update((Token) => token);
-
             context.go("/home");
-
+            
+          }
+          else {
+            setState(() {
+              mostrarTexto = true;
+              mostrarTexto2 = false;
+              mostrarTexto3 = false;
+            });
           }
   
     /*try {
@@ -99,6 +97,13 @@ class _LogincontentState extends ConsumerState<Logincontent> {
     }*/
 
       }
+      else {
+        setState(() {
+          mostrarTexto2 = true;
+          mostrarTexto = false;
+          mostrarTexto3 = false;
+        });
+      }
     } 
 
     
@@ -111,7 +116,7 @@ class _LogincontentState extends ConsumerState<Logincontent> {
       ),
       child: Center(
         child: Container(
-          padding: EdgeInsets.symmetric(vertical: 25, horizontal: 40),
+          padding: EdgeInsets.symmetric(vertical: 10, horizontal: 40),
           child: Column(
             children: [
               Image.asset(
@@ -120,8 +125,8 @@ class _LogincontentState extends ConsumerState<Logincontent> {
                 width: 120,
               ),
               Padding(
-                //padding: EdgeInsets.symmetric(vertical: 50, horizontal: 0),
-                padding: EdgeInsets.fromLTRB(0,130, 0, 35),
+
+                padding: EdgeInsets.fromLTRB(0,145, 0, 35),
                 child: Text(
                   'LOGIN',
                   style: TextStyle(fontSize: 32, fontWeight: FontWeight.bold),
@@ -131,16 +136,26 @@ class _LogincontentState extends ConsumerState<Logincontent> {
                   padding: EdgeInsets.symmetric(vertical: 50, horizontal: 0),
                   height: 120
               ),
-              Authtextfield(campo: 'Email',callback: actualizarValores),
-              Authtextfield(campo: 'Password',callback: actualizarValores),
+              Authtextfield(campo: 'Email',callback: actualizarEmail),
+              Authtextfield(campo: 'Password',callback: actualizarPassword),
               Text(
                 'Forgot your password?',
                 style: textStyles.bodyLarge,
               ),
+              if (mostrarTexto)
+                Text(texto,
+                style: textStyles.bodyLarge,),
+              if (mostrarTexto2) Text(texto2,
+                style: textStyles.bodyLarge,),
+              if (mostrarTexto3) Text(texto3,
+                style: textStyles.bodyLarge,),
               Padding(
                 padding: EdgeInsets.symmetric(vertical: 50, horizontal: 0),
                 child: ElevatedButton(
-                    onPressed: () {},
+                    onPressed: () {
+                      Login();
+
+                      },
                     style: ButtonStyle(
                       minimumSize: WidgetStateProperty.all(const Size(250, 40)),
                       backgroundColor: WidgetStateProperty.all<Color>(Colors.black),
