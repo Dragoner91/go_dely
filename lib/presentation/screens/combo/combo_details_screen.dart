@@ -1,21 +1,23 @@
 import 'package:animate_do/animate_do.dart';
+import 'package:card_swiper/card_swiper.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_dely/config/helpers/human_formats.dart';
-import 'package:go_dely/domain/entities/combo/combo.dart';
-import 'package:go_dely/domain/entities/product/product.dart';
+import 'package:go_dely/domain/combo/combo.dart';
+import 'package:go_dely/domain/product/product.dart';
 import 'package:go_dely/infraestructure/mappers/cart_item_mapper.dart';
 import 'package:go_dely/infraestructure/models/cart_item_local.dart';
-import 'package:go_dely/presentation/providers/bottom_appbar_provider.dart';
-import 'package:go_dely/presentation/providers/cart/cart_items_provider.dart';
-import 'package:go_dely/presentation/providers/combos/combos_provider.dart';
-import 'package:go_dely/presentation/providers/combos/combos_repository_provider.dart';
-import 'package:go_dely/presentation/providers/combos/current_combo_provider.dart';
+import 'package:go_dely/aplication/providers/bottom_appbar_provider.dart';
+import 'package:go_dely/aplication/providers/cart/cart_items_provider.dart';
+import 'package:go_dely/aplication/providers/combos/combos_provider.dart';
+import 'package:go_dely/aplication/providers/combos/combos_repository_provider.dart';
+import 'package:go_dely/aplication/providers/combos/current_combo_provider.dart';
 import 'package:go_dely/presentation/widgets/combo/combo_horizontal_listview.dart';
 import 'package:go_dely/presentation/widgets/common/custom_bottom_app_bar.dart';
 import 'package:go_router/go_router.dart';
 import 'package:card_swiper/card_swiper.dart';
 import 'package:sliding_up_panel/sliding_up_panel.dart';
+
 
 
 class ComboDetailsScreen extends ConsumerStatefulWidget {
@@ -33,7 +35,7 @@ class _ComboDetailsScreenState extends ConsumerState<ComboDetailsScreen> {
   Future<Combo> _loadProduct() async {
     final comboId = ref.read(currentCombo).lastOrNull?.id;
     final combo = await ref.read(combosRepositoryProvider).getComboById(comboId!);
-    return combo;
+    return combo.unwrap();
   }
 
   @override 

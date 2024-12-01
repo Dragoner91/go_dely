@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 //import 'package:animate_do/animate_do.dart';
-import 'package:go_dely/domain/entities/categories/categories.dart';
+import 'package:go_dely/domain/categories/categories.dart';
 
 class CategoryIconListview extends StatefulWidget {
   final List<Categories> categories;

@@ -35,7 +35,7 @@ class ProductDB {
     description: json["product_description"], 
     stock: json["product_stock"],
     category: json["product_category"],
-    discount: json["discount"] == null ? 0.0 : double.tryParse(json["discount"]) ?? 0.1,
+    discount: json["discount"] == null ? 0.0 : double.tryParse(json["discount"]["value"]) ?? 0.1,
   );
 
   Map<String, dynamic> toJson() => {

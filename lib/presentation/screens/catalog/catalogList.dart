@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:animate_do/animate_do.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:go_dely/presentation/providers/categoria/category_provider.dart';
+import 'package:go_dely/aplication/providers/categoria/category_provider.dart';
 import 'package:go_dely/presentation/widgets/categories/category_vertical_listview.dart';
 import 'package:go_dely/presentation/widgets/categories/category_icon_listview.dart';
 import 'package:go_dely/presentation/widgets/widgets.dart';
-import 'package:go_dely/domain/entities/categories/categories.dart';
+import 'package:go_dely/domain/categories/categories.dart';
 
 
 

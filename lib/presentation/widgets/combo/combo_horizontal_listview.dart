@@ -2,14 +2,14 @@ import 'package:animate_do/animate_do.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_dely/config/helpers/human_formats.dart';
-import 'package:go_dely/domain/entities/combo/combo.dart';
-import 'package:go_dely/domain/entities/product/product.dart';
+import 'package:go_dely/domain/combo/combo.dart';
+import 'package:go_dely/domain/product/product.dart';
 import 'package:go_dely/infraestructure/mappers/cart_item_mapper.dart';
 import 'package:go_dely/infraestructure/models/cart_item_local.dart';
-import 'package:go_dely/presentation/providers/bottom_appbar_provider.dart';
-import 'package:go_dely/presentation/providers/cart/cart_items_provider.dart';
-import 'package:go_dely/presentation/providers/combos/current_combo_provider.dart';
-import 'package:go_dely/presentation/providers/products/current_product_provider.dart';
+import 'package:go_dely/aplication/providers/bottom_appbar_provider.dart';
+import 'package:go_dely/aplication/providers/cart/cart_items_provider.dart';
+import 'package:go_dely/aplication/providers/combos/current_combo_provider.dart';
+import 'package:go_dely/aplication/providers/products/current_product_provider.dart';
 import 'package:go_router/go_router.dart';
 
 

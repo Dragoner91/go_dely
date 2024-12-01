@@ -2,14 +2,14 @@ import 'package:animate_do/animate_do.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_dely/config/helpers/human_formats.dart';
-import 'package:go_dely/domain/entities/product/product.dart';
+import 'package:go_dely/domain/product/product.dart';
 import 'package:go_dely/infraestructure/mappers/cart_item_mapper.dart';
 import 'package:go_dely/infraestructure/models/cart_item_local.dart';
-import 'package:go_dely/presentation/providers/bottom_appbar_provider.dart';
-import 'package:go_dely/presentation/providers/cart/cart_items_provider.dart';
-import 'package:go_dely/presentation/providers/products/current_product_provider.dart';
-import 'package:go_dely/presentation/providers/products/product_provider.dart';
-import 'package:go_dely/presentation/providers/products/product_repository_provider.dart';
+import 'package:go_dely/aplication/providers/bottom_appbar_provider.dart';
+import 'package:go_dely/aplication/providers/cart/cart_items_provider.dart';
+import 'package:go_dely/aplication/providers/products/current_product_provider.dart';
+import 'package:go_dely/aplication/providers/products/product_provider.dart';
+import 'package:go_dely/aplication/providers/products/product_repository_provider.dart';
 import 'package:go_dely/presentation/widgets/common/custom_bottom_app_bar.dart';
 import 'package:go_dely/presentation/widgets/product/product_horizontal_listview.dart';
 import 'package:go_router/go_router.dart';
@@ -32,7 +32,7 @@ class _ProductDetailsScreenState extends ConsumerState<ProductDetailsScreen> {
   Future<Product> _loadProduct() async {
     final productId = ref.read(currentProduct).lastOrNull?.id;
     final product = await ref.read(productRepositoryProvider).getProductById(productId!);
-    return product;
+    return product.unwrap();
   }
 
   @override 

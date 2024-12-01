@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:go_dely/presentation/providers/bottom_appbar_provider.dart';
-import 'package:go_dely/presentation/providers/products/current_product_provider.dart';
+import 'package:go_dely/aplication/providers/bottom_appbar_provider.dart';
+import 'package:go_dely/aplication/providers/products/current_product_provider.dart';
 import 'package:go_router/go_router.dart';
 
 class BottomAppBarCustom extends ConsumerStatefulWidget {

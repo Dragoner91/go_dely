@@ -6,4 +6,21 @@ class Environment{
   static String naranjaAPI = dotenv.env['TEAM_NARANJA_API'] ?? 'No hay API URL NARANJA';
   static String azulAPI = dotenv.env['TEAM_AZUL_API'] ?? 'No hay API URL AZUL';
   static String amarilloAPI = dotenv.env['TEAM_AMARILLO_API'] ?? 'No hay API URL AMARILLO';
+
+  static String getAPI(String team){
+    switch (team) {
+      case 'verde':
+        return verdeAPI;
+      case 'rojo':
+        return rojoAPI;
+      case 'naranja':
+        return naranjaAPI;
+      case 'azul':
+        return azulAPI;
+      case 'amarillo':
+        return amarilloAPI;
+      default:
+        return 'No hay API URL';
+    }
+  }
 }

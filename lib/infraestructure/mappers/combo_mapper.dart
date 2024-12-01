@@ -1,6 +1,6 @@
 
 
-import 'package:go_dely/domain/entities/combo/combo.dart';
+import 'package:go_dely/domain/combo/combo.dart';
 import 'package:go_dely/infraestructure/models/combo_db.dart';
 
 class ComboMapper{

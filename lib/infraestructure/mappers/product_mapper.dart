@@ -1,6 +1,6 @@
 
 
-import 'package:go_dely/domain/entities/product/product.dart';
+import 'package:go_dely/domain/product/product.dart';
 import 'package:go_dely/infraestructure/models/product_db.dart';
 
 class ProductMapper{

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:go_dely/presentation/providers/categoria/category_provider.dart';
+import 'package:go_dely/aplication/providers/categoria/category_provider.dart';
 import 'package:go_router/go_router.dart';
 
 

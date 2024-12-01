@@ -2,8 +2,9 @@ import 'package:animate_do/animate_do.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_dely/config/helpers/human_formats.dart';
+import 'package:go_dely/domain/cart/i_cart.dart';
 import 'package:go_dely/infraestructure/entities/cart/cart_items.dart';
-import 'package:go_dely/presentation/providers/cart/cart_items_provider.dart';
+import 'package:go_dely/aplication/providers/cart/cart_items_provider.dart';
 import 'package:go_router/go_router.dart';
 
 class CartScreen extends StatelessWidget {
@@ -223,14 +224,14 @@ class _ContentState extends ConsumerState<_Content> {
     final cartItemsFuture =
         ref.watch(cartItemsProvider.notifier).watchAllItemsFromCart();
 
-    return FutureBuilder<Stream<List<CartItem>>>(
+    return FutureBuilder<Stream<List<ICart>>>(
       future: cartItemsFuture,
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
           return const SizedBox(height: 150 ,child: Center(child: CircularProgressIndicator()));
         } else {
           final cartItemsStream = snapshot.data!;
-          return StreamBuilder<List<CartItem>>(
+          return StreamBuilder<List<ICart>>(
             stream: cartItemsStream,
             builder: (context, snapshot) {
               if (snapshot.connectionState == ConnectionState.waiting) {
@@ -245,7 +246,7 @@ class _ContentState extends ConsumerState<_Content> {
                         physics: const NeverScrollableScrollPhysics(),
                         itemCount: items.length,
                         itemBuilder: (context, index) {
-                          return _Item(cartItem: items[index]);
+                          return _Item(cartItem: items[index] as CartItem);
                         },
                       ),
                     ],
