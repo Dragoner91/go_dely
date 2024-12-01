@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_dely/config/DI/ioc_container.dart';
 import 'config/router/app_router.dart';
 
 Future<void> main() async{
   await dotenv.load(fileName: '.env');
+  await IoCContainer.init();
   runApp(const ProviderScope(child: MyApp()));
 }
 
@@ -23,7 +25,6 @@ class MyApp extends StatelessWidget {
       routerConfig: appRouter,
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
         useMaterial3: true,
       ),
     );

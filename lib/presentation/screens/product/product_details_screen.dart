@@ -32,7 +32,7 @@ class _ProductDetailsScreenState extends ConsumerState<ProductDetailsScreen> {
   Future<Product> _loadProduct() async {
     final productId = ref.read(currentProduct).lastOrNull?.id;
     final product = await ref.read(productRepositoryProvider).getProductById(productId!);
-    return product;
+    return product.unwrap();
   }
 
   @override 

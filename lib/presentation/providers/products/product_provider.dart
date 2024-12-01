@@ -1,6 +1,8 @@
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_dely/core/result.dart';
 import 'package:go_dely/domain/product/product.dart';
+import 'package:go_dely/domain/product/product_repository.dart';
 import 'package:go_dely/presentation/providers/products/product_repository_provider.dart';
 
 final productsProvider = StateNotifierProvider<ProductsNotifier ,List<Product>>(
@@ -12,7 +14,7 @@ final productsProvider = StateNotifierProvider<ProductsNotifier ,List<Product>>(
   },
 );
 
-typedef ProductCallback = Future<List<Product>> Function({ int page});
+typedef ProductCallback = Future<Result<List<Product>>> Function( GetProductsDto dto );
 
 class ProductsNotifier extends StateNotifier<List<Product>>{
 
@@ -28,8 +30,8 @@ class ProductsNotifier extends StateNotifier<List<Product>>{
     isLoading = true;
     currentPage++;
     
-    final List<Product> products = await fetchMoreProducts(page: currentPage*5);
-    state = [...state, ...products];
+    final Result<List<Product>> products = await fetchMoreProducts( GetProductsDto( page: currentPage ) );
+    state = [...state, ...products.unwrap()];
     await Future.delayed(const Duration(milliseconds: 500));
     isLoading = false;
   }
