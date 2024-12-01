@@ -9,7 +9,6 @@ class PetitionImpl extends IPetition {
 
   PetitionImpl() : dio = Dio();
 
-
   @override
   Future<Result<T>> makeRequest<T>({
       required String httpMethod, 
