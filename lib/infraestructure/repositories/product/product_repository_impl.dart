@@ -1,6 +1,6 @@
 import 'package:go_dely/core/result.dart';
 import 'package:go_dely/domain/product/product.dart';
-import 'package:go_dely/domain/product/product_repository.dart';
+import 'package:go_dely/domain/product/i_product_repository.dart';
 import 'package:go_dely/infraestructure/datasources/petitions/i_petition.dart';
 import 'package:go_dely/infraestructure/mappers/product_mapper.dart';
 import 'package:go_dely/infraestructure/models/product_db.dart';

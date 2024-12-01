@@ -2,7 +2,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_dely/core/result.dart';
 import 'package:go_dely/domain/combo/combo.dart';
 import 'package:go_dely/aplication/providers/combos/combos_repository_provider.dart';
-import 'package:go_dely/domain/combo/combo_repository.dart';
+import 'package:go_dely/domain/combo/i_combo_repository.dart';
 
 final combosProvider = StateNotifierProvider<CombosNotifier ,List<Combo>>(
   (ref) {

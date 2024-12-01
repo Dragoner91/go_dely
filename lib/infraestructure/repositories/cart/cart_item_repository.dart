@@ -1,37 +1,90 @@
-import 'package:go_dely/infraestructure/datasources/cart/cart_item_datasource.dart';
+import 'package:go_dely/domain/cart/i_cart.dart';
+import 'package:go_dely/domain/cart/i_cart_repository.dart';
 import 'package:go_dely/infraestructure/entities/cart/cart_items.dart';
+import 'package:isar/isar.dart';
+import 'package:path_provider/path_provider.dart';
 
-class CartItemRepository {
+class CartItemRepository extends ICartRepository{
+   late Future<Isar> db;
 
-  final CartItemDatasource datasource;
+  CartItemRepository(){
+    db = openDB();
+  }
 
-  CartItemRepository({required this.datasource});
+  Future<Isar> openDB() async {
+    if( Isar.instanceNames.isEmpty){
+      final dir = await getApplicationDocumentsDirectory();
+      return await Isar.open(
+        [CartItemSchema], 
+        directory: dir.path, 
+        inspector: true
+      );
+    }
+    return Future.value(Isar.getInstance());
+  }
 
+  @override
   Future<bool> itemExistsInCart(String id) async {
-    return datasource.itemExistsInCart(id);
+    final isar = await db;
+    return await isar.cartItems.where().filter().idEqualTo(id).count() > 0;
   }
 
-  Future<void> addProductToCart(CartItem cartItem) async {
-    return datasource.addItemToCart(cartItem);
+  @override
+  Future<void> addItemToCart(ICart cartItem) async {
+    final isar = await db;
+    isar.writeTxn(() async {
+      isar.cartItems.put(cartItem as CartItem);
+    });
   }
 
-  Future<void> removeProductFromCart(int id) async {
-    return datasource.removeItemFromCart(id);
+  @override
+  Future<void> removeItemFromCart(int id) async {
+    final isar = await db;
+    isar.writeTxn(() async {
+      isar.cartItems.delete(id);
+    });
   }
 
-  Future<List<CartItem>> getProductsFromCart() async {
-    return datasource.getProductsFromCart();
+  @override
+  Future<List<ICart>> getItemsFromCart() async {
+    final isar = await db;
+    return isar.txn(() async => (  await isar.cartItems.where().findAll() ),);
   }
 
-  Future<void> incrementProduct(String id) async {
-    return datasource.incrementItem(id);
+  @override
+  Future<void> incrementItem(String id) async {
+    final isar = await db;
+    await isar.writeTxn(() async {
+      final item = await isar.cartItems.where().filter().idEqualTo(id).findFirst();
+      if (item == null) {
+        throw Exception('Item not found');
+      }
+      item.quantity++;
+      await isar.cartItems.put(item);
+      return item;
+    });
   }
   
-  Future<void> decrementProduct(String id) async {
-    return datasource.decrementItem(id);
+  @override
+  Future<void> decrementItem(String id) async {
+    final isar = await db;
+    await isar.writeTxn(() async {
+      final item = await isar.cartItems.where().filter().idEqualTo(id).findFirst();
+      if (item == null) {
+        throw Exception('Item not found');
+      }
+      if(item.quantity == 1){
+        return item;
+      }
+      item.quantity--;
+      await isar.cartItems.put(item);
+      return item;
+    });
   }
 
-  Future<Stream<List<CartItem>>> watchAllItemsFromCart() {
-    return datasource.watchAllItemsFromCart();
+  @override
+  Future<Stream<List<ICart>>> watchAllItemsFromCart() async {
+    final isar = await db;
+    return isar.cartItems.where().watch(fireImmediately: true);
   }
 }

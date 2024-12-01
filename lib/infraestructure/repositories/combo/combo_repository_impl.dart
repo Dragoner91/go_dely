@@ -1,6 +1,6 @@
 import 'package:go_dely/core/result.dart';
 import 'package:go_dely/domain/combo/combo.dart';
-import 'package:go_dely/domain/combo/combo_repository.dart';
+import 'package:go_dely/domain/combo/i_combo_repository.dart';
 import 'package:go_dely/infraestructure/datasources/petitions/i_petition.dart';
 import 'package:go_dely/infraestructure/mappers/combo_mapper.dart';
 import 'package:go_dely/infraestructure/models/combo_db.dart';
