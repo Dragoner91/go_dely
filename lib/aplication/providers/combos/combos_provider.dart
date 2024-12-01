@@ -1,7 +1,8 @@
-
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_dely/core/result.dart';
 import 'package:go_dely/domain/combo/combo.dart';
-import 'package:go_dely/presentation/providers/combos/combos_repository_provider.dart';
+import 'package:go_dely/aplication/providers/combos/combos_repository_provider.dart';
+import 'package:go_dely/domain/combo/combo_repository.dart';
 
 final combosProvider = StateNotifierProvider<CombosNotifier ,List<Combo>>(
   (ref) {
@@ -12,7 +13,7 @@ final combosProvider = StateNotifierProvider<CombosNotifier ,List<Combo>>(
   },
 );
 
-typedef ComboCallback = Future<List<Combo>> Function({ int page});
+typedef ComboCallback = Future<Result<List<Combo>>> Function(GetCombosDto dto);
 
 class CombosNotifier extends StateNotifier<List<Combo>>{
 
@@ -28,8 +29,8 @@ class CombosNotifier extends StateNotifier<List<Combo>>{
     isLoading = true;
     currentPage++;
     
-    final List<Combo> combos = await fetchMoreCombos(page: currentPage*5);
-    state = [...state, ...combos];
+    final Result<List<Combo>> combos = await fetchMoreCombos( GetCombosDto( page: currentPage ) );
+    state = [...state, ...combos.unwrap()];
     await Future.delayed(const Duration(milliseconds: 500));
     isLoading = false;
   }

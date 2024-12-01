@@ -1,8 +1,8 @@
 import 'package:animate_do/animate_do.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:go_dely/presentation/providers/combos/combos_provider.dart';
-import 'package:go_dely/presentation/providers/products/product_provider.dart';
+import 'package:go_dely/aplication/providers/combos/combos_provider.dart';
+import 'package:go_dely/aplication/providers/products/product_provider.dart';
 import 'package:go_dely/presentation/widgets/combo/combo_horizontal_listview.dart';
 import 'package:go_dely/presentation/widgets/product/product_horizontal_listview.dart';
 import 'package:go_dely/presentation/widgets/widgets.dart';

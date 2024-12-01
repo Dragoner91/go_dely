@@ -6,11 +6,11 @@ import 'package:go_dely/domain/combo/combo.dart';
 import 'package:go_dely/domain/product/product.dart';
 import 'package:go_dely/infraestructure/mappers/cart_item_mapper.dart';
 import 'package:go_dely/infraestructure/models/cart_item_local.dart';
-import 'package:go_dely/presentation/providers/bottom_appbar_provider.dart';
-import 'package:go_dely/presentation/providers/cart/cart_items_provider.dart';
-import 'package:go_dely/presentation/providers/combos/combos_provider.dart';
-import 'package:go_dely/presentation/providers/combos/combos_repository_provider.dart';
-import 'package:go_dely/presentation/providers/combos/current_combo_provider.dart';
+import 'package:go_dely/aplication/providers/bottom_appbar_provider.dart';
+import 'package:go_dely/aplication/providers/cart/cart_items_provider.dart';
+import 'package:go_dely/aplication/providers/combos/combos_provider.dart';
+import 'package:go_dely/aplication/providers/combos/combos_repository_provider.dart';
+import 'package:go_dely/aplication/providers/combos/current_combo_provider.dart';
 import 'package:go_dely/presentation/widgets/combo/combo_horizontal_listview.dart';
 import 'package:go_dely/presentation/widgets/common/custom_bottom_app_bar.dart';
 import 'package:go_router/go_router.dart';
@@ -33,7 +33,7 @@ class _ComboDetailsScreenState extends ConsumerState<ComboDetailsScreen> {
   Future<Combo> _loadProduct() async {
     final comboId = ref.read(currentCombo).lastOrNull?.id;
     final combo = await ref.read(combosRepositoryProvider).getComboById(comboId!);
-    return combo;
+    return combo.unwrap();
   }
 
   @override 

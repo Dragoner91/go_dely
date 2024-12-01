@@ -1,6 +1,8 @@
 import 'package:get_it/get_it.dart';
 import 'package:go_dely/aplication/use_cases/product/get_product_by_id.use_case.dart';
 import 'package:go_dely/aplication/use_cases/product/get_products.use_case.dart';
+import 'package:go_dely/domain/combo/combo_repository.dart';
+import 'package:go_dely/domain/product/product_repository.dart';
 import 'package:go_dely/infraestructure/datasources/petitions/petition_impl.dart';
 import 'package:go_dely/infraestructure/repositories/combo/combo_repository_impl.dart';
 import 'package:go_dely/infraestructure/repositories/product/product_repository_impl.dart';
@@ -18,8 +20,9 @@ class IoCContainer {
 
     //*REPOSITORIES
     final productRepository = ProductRepositoryImpl(petition: petitions);
-    getIt.registerSingleton<ProductRepositoryImpl>(productRepository);
-    // final comboRepository = ComboRepositoryImpl(petition: petition);
+    getIt.registerSingleton<IProductRepository>(productRepository);
+    final comboRepository = ComboRepositoryImpl(petition: petitions);
+    getIt.registerSingleton<IComboRepository>(comboRepository);
 
     //*USE CASES
     final getProductsUseCase = GetProductsUseCase(productRepository);

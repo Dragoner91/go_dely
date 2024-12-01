@@ -3,7 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_dely/core/result.dart';
 import 'package:go_dely/domain/product/product.dart';
 import 'package:go_dely/domain/product/product_repository.dart';
-import 'package:go_dely/presentation/providers/products/product_repository_provider.dart';
+import 'package:go_dely/aplication/providers/products/product_repository_provider.dart';
 
 final productsProvider = StateNotifierProvider<ProductsNotifier ,List<Product>>(
   (ref) {
