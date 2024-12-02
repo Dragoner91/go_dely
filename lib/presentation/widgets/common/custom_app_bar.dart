@@ -93,7 +93,12 @@ class _SearchButton extends StatelessWidget implements PreferredSizeWidget{
   @override
   Widget build(BuildContext context) {
     return FilledButton(
-      onPressed: () {},
+      onPressed: () {
+        showSearch(
+          context: context, 
+          delegate: CustomSearchDelegate()
+        );
+      },
       style: ElevatedButton.styleFrom(
         foregroundColor: Colors.black,
         backgroundColor: Colors.white,
@@ -106,4 +111,41 @@ class _SearchButton extends StatelessWidget implements PreferredSizeWidget{
       ),
     );
   }
+}
+
+class CustomSearchDelegate extends SearchDelegate{
+
+  @override
+  List<Widget>? buildActions(BuildContext context) {
+    return [
+      IconButton(
+        onPressed: () {
+          query = '';
+        }, 
+        icon: const Icon(Icons.clear)
+      )
+    ];
+  }
+
+  @override
+  Widget? buildLeading(BuildContext context) {
+    return IconButton(
+      onPressed: () {
+        close(context, null);
+      }, 
+      icon: const Icon(Icons.arrow_back)
+    );
+  }
+
+  @override
+  Widget buildResults(BuildContext context) {
+    List<String> matchQuery = [];
+    throw UnimplementedError();
+  }
+
+  @override
+  Widget buildSuggestions(BuildContext context) {
+    throw UnimplementedError();
+  }
+
 }

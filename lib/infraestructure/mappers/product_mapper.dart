@@ -1,6 +1,6 @@
 
 
-import 'package:go_dely/domain/entities/product/product.dart';
+import 'package:go_dely/domain/product/product.dart';
 import 'package:go_dely/infraestructure/models/product_db.dart';
 
 class ProductMapper{
@@ -15,6 +15,7 @@ class ProductMapper{
       weight: productDB.weight, 
       currency: productDB.currency, 
       stock: productDB.stock, 
-      category: productDB.category
+      category: productDB.category,
+      discount: productDB.discount,
     ); 
 }

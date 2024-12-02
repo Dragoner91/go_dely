@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:go_dely/domain/entities/categories/categories.dart';
+import 'package:go_dely/domain/categories/categories.dart';
 
 class CategoryVerticalListView extends StatefulWidget {
 

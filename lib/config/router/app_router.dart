@@ -84,13 +84,18 @@ final appRouter = GoRouter(
       path: '/combo',
       pageBuilder: (context, state) {
         return  CustomTransitionPage(
-          transitionDuration: const Duration(seconds: 2),
+          transitionDuration: const Duration(milliseconds: 500),
           key: state.pageKey,
           child: const ComboDetailsScreen(),
           transitionsBuilder: (context, animation, secondaryAnimation, child) {
-            return FadeTransition(
-              opacity:
-                  CurveTween(curve: Curves.decelerate).animate(animation),
+            return SizeTransition(
+              sizeFactor: Tween<double>(begin: 0.0, end: 1.0).animate(
+                CurvedAnimation(
+                  parent: animation,
+                  curve: Curves.easeInOut,
+                ),
+              ),
+              axisAlignment: 0.0,
               child: child,
             );
           },
@@ -181,6 +186,59 @@ final appRouter = GoRouter(
           },
         );
       },
-    ),    
+    ),  
+
+
+    GoRoute(
+      path: '/orderHistory',
+      pageBuilder: (context, state) {
+        return  CustomTransitionPage(
+          transitionDuration: const Duration(seconds: 1),
+          key: state.pageKey,
+          child: const OrderHistoryScreen(),
+          transitionsBuilder: (context, animation, secondaryAnimation, child) {
+            return FadeTransition(
+              opacity:
+                  CurveTween(curve: Curves.easeInOutCirc).animate(animation),
+              child: child,
+            );
+          },
+        );
+      },
+    ),  
+    GoRoute(
+      path: '/orderDetails',
+      pageBuilder: (context, state) {
+        return  CustomTransitionPage(
+          transitionDuration: const Duration(seconds: 1),
+          key: state.pageKey,
+          child: const OrderDetailsScreen(),
+          transitionsBuilder: (context, animation, secondaryAnimation, child) {
+            return FadeTransition(
+              opacity:
+                  CurveTween(curve: Curves.easeInOutCirc).animate(animation),
+              child: child,
+            );
+          },
+        );
+      },
+    ),  
+    GoRoute(
+      path: '/couponsAvailable',
+      pageBuilder: (context, state) {
+        return  CustomTransitionPage(
+          transitionDuration: const Duration(seconds: 1),
+          key: state.pageKey,
+          child: const CouponsAvailableScreen(),
+          transitionsBuilder: (context, animation, secondaryAnimation, child) {
+            return FadeTransition(
+              opacity:
+                  CurveTween(curve: Curves.easeInOutCirc).animate(animation),
+              child: child,
+            );
+          },
+        );
+      },
+    ), 
   ],
 );
