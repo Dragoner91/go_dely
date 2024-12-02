@@ -15,6 +15,8 @@ import '../../widgets/common/textfield.dart';
 class RegisterScreen extends StatelessWidget {
   const RegisterScreen({super.key});
 
+
+
   @override
   Widget build(BuildContext context) {
     final scaffoldkey = GlobalKey<ScaffoldState>();
@@ -30,23 +32,44 @@ class RegisterScreen extends StatelessWidget {
 class ContentRegister extends StatefulWidget {
   const ContentRegister({super.key});
 
+
+
   @override
   State<ContentRegister> createState() => _ContentRegisterState();
 }
 
 class _ContentRegisterState extends State<ContentRegister> {
+
+  late String email;
+  late String password;
+  late String fullname;
+  late String ci;
+  late String phone;
+  late bool mostrarTexto;
+  late String texto;
+  late bool mostrarTexto2;
+  late String texto2;
+  late bool mostrarTexto3;
+  late String texto3;
+
+  void initState() {
+    super.initState();
+    email = '';
+    password = '';
+    fullname = '';
+    ci = '';
+    phone = '';
+    mostrarTexto = false;
+    texto = 'There has been an error, try later' ;
+    mostrarTexto2 = false;
+    texto2 = 'All fields are mandatory' ;
+    mostrarTexto3 = false;
+    texto3 = 'Created user';
+  }
   @override
   Widget build(BuildContext context) {
     final textStyles = Theme.of(context).textTheme;
-    String email = '';
-    String password = '';
-    String fullname = '';
-    String ci = '';
-    String phone = '';
-    bool mostrarTexto = false;
-    String texto = 'User registered correctly' ;
-    bool mostrarTexto2 = false;
-    String texto2 = 'An error has occurred' ;
+
 
     void actualizarEmail(String nuevoTexto) {
 
@@ -72,24 +95,6 @@ class _ContentRegisterState extends State<ContentRegister> {
       phone = nuevoTexto;
     }
 
-    void actualizarValores(String nuevoTexto, String variable) {
-      if (variable == 'Email'){
-        email = nuevoTexto;
-      };
-      if (variable == 'Password'){
-        password = nuevoTexto;
-      };
-      if (variable == 'Full name'){
-        fullname = nuevoTexto;
-      };
-      if (variable == 'CI'){
-        ci = nuevoTexto;
-      };
-      if (variable == 'Phone number'){
-        phone = nuevoTexto;
-      };
-      
-    }
 
 
     void registerUser() async{
@@ -108,16 +113,20 @@ class _ContentRegisterState extends State<ContentRegister> {
           if (response != ""){
             //print(response);
             setState(() {
-              mostrarTexto = true;
+              mostrarTexto3 = true;
               mostrarTexto2 = false;
+              mostrarTexto = true;
             });
 
 
           }
           else{
             setState(() {
-              mostrarTexto2 = true;
-              mostrarTexto = false;
+              mostrarTexto = true;
+              mostrarTexto2 = false;
+              mostrarTexto3 = false;
+              email = '';
+              password = '';
             });
           }
         
@@ -141,6 +150,7 @@ class _ContentRegisterState extends State<ContentRegister> {
         setState(() {
           mostrarTexto2 = true;
           mostrarTexto = false;
+          mostrarTexto3 = false;
         });
       }
     } 
@@ -191,8 +201,18 @@ class _ContentRegisterState extends State<ContentRegister> {
                       style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
                     )),
               ),
-              if (mostrarTexto) Text(texto),
-              if (mostrarTexto2) Text(texto2),
+              if (mostrarTexto) Text(texto,
+                style: TextStyle(
+                  fontSize: 18,
+                  color: Colors.red,),),
+              if (mostrarTexto2) Text(texto2,
+                style: TextStyle(
+                  fontSize: 18,
+                  color: Colors.red,),),
+              if (mostrarTexto3) Text(texto3,
+                style: TextStyle(
+                  fontSize: 18,
+                  color: Colors.green,),),
               Row(
                 children: [
                   Expanded(child: Container()),

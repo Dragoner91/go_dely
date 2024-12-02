@@ -34,18 +34,35 @@ class Logincontent extends ConsumerStatefulWidget {
 }
 
 class _LogincontentState extends ConsumerState<Logincontent> {
+
+  late String email;
+  late String password;
+  late bool mostrarTexto;
+  late String texto;
+  late bool mostrarTexto2;
+  late String texto2;
+
+
+  @override
+  void initState() {
+    super.initState();
+    email = '';
+    password = '';
+    mostrarTexto = false;
+    texto = 'Wrong user or password' ;
+    mostrarTexto2 = false;
+    texto2 = 'All fields are mandatory' ;
+
+  }
+
   @override
   Widget build(BuildContext context) {
     final textStyles = Theme.of(context).textTheme;
     //late SharedPreferences prefs;
-    String email = '';
-    String password = '';
-    bool mostrarTexto = false;
-    String texto = 'Wrong user or password' ;
-    bool mostrarTexto2 = false;
-    String texto2 = 'All fields are mandatory' ;
-    bool mostrarTexto3 = false;
-    String texto3 = 'Welcome' ;
+
+
+
+
 
 
     void actualizarEmail(String nuevoTexto) {
@@ -68,16 +85,19 @@ class _LogincontentState extends ConsumerState<Logincontent> {
           var token = await AuthRepositoryImpl(datasource: AuthDbDatasource()).login(usuario);
           var token2 = token.toString();
 
+
           if (token2 != "error"){
             ref.read(AuthProvider.notifier).update((Token) => token);
             context.go("/home");
+
             
           }
           else {
             setState(() {
               mostrarTexto = true;
               mostrarTexto2 = false;
-              mostrarTexto3 = false;
+              email = '';
+              password = '';
             });
           }
   
@@ -101,7 +121,6 @@ class _LogincontentState extends ConsumerState<Logincontent> {
         setState(() {
           mostrarTexto2 = true;
           mostrarTexto = false;
-          mostrarTexto3 = false;
         });
       }
     } 
@@ -144,16 +163,22 @@ class _LogincontentState extends ConsumerState<Logincontent> {
               ),
               if (mostrarTexto)
                 Text(texto,
-                style: textStyles.bodyLarge,),
+                  style: TextStyle(
+                    fontSize: 18,
+                    color: Colors.red,),
+                ),
               if (mostrarTexto2) Text(texto2,
-                style: textStyles.bodyLarge,),
-              if (mostrarTexto3) Text(texto3,
-                style: textStyles.bodyLarge,),
+                style: TextStyle(
+                  fontSize: 18,
+                  color: Colors.red,),
+              ),
+
               Padding(
                 padding: EdgeInsets.symmetric(vertical: 50, horizontal: 0),
                 child: ElevatedButton(
                     onPressed: () {
                       Login();
+
 
                       },
                     style: ButtonStyle(
