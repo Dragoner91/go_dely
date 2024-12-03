@@ -3,7 +3,6 @@ import 'package:animate_do/animate_do.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_dely/aplication/providers/auth/auth_repository_provider.dart';
 import 'package:go_dely/domain/users/user.dart';
-import 'package:go_dely/infraestructure/repositories/auth/auth_repository_impl.dart';
 import 'package:go_router/go_router.dart';
 
 

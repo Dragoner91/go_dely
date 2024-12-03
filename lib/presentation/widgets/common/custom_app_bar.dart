@@ -9,11 +9,16 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
 
   @override
   Widget build(BuildContext context) {
+
+    final theme = Theme.of(context);
+    final secondaryColor = theme.colorScheme.secondary;
+
     return SizedBox(
       height: 700,
       width: double.infinity,
       child: AppBar(
         centerTitle: true,
+        iconTheme: IconThemeData(color: secondaryColor),
         title: IconButton(
           onPressed: () {
             
@@ -32,8 +37,8 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
           ),
         ),
         actions: [
-          IconButton(onPressed: () {}, icon: const Icon(Icons.notifications),),
-          IconButton(onPressed: () {context.push("/cart");}, icon: const Icon(Icons.shopping_cart))
+          IconButton(onPressed: () {}, icon: Icon(Icons.notifications, color: secondaryColor,),),
+          IconButton(onPressed: () {context.push("/cart");}, icon: Icon(Icons.shopping_cart, color: secondaryColor,))
         ],
         bottom: const _ColumnaWidgetsBottom(),
         

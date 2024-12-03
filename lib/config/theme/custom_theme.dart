@@ -9,8 +9,8 @@ class AppTheme {
       ),
       colorScheme: ColorScheme.fromSeed(
           seedColor: const Color(0xFF5D9558),
-          primary: const Color(0xFF94ED8C),
-          secondary: const Color(0xFFB9B9B9),
+          primary: const Color(0xFF5D9558),
+          secondary: const Color(0xFF6B6B6B),
         )
     );
   }
@@ -21,8 +21,8 @@ class AppTheme {
       dividerTheme: const DividerThemeData(color: Colors.white, space: 20),
       colorScheme: ColorScheme.fromSeed(
           seedColor: const Color(0xFF5D9558),
-          primary: Colors.white,
-          secondary: const Color(0xFF5D9558),
+          primary: const Color(0xFF5D9558),
+          secondary: Colors.white,
           brightness: Brightness.dark,
         ),
     );

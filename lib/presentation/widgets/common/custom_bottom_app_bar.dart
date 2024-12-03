@@ -28,6 +28,11 @@ class BottomAppBarCustomState extends ConsumerState<BottomAppBarCustom> {
     const Color currentColor = Color(0xFF5D9558);
     const Color colorOptions = Colors.black45;
 
+    final theme = Theme.of(context);
+    final primaryColor = theme.colorScheme.primary;
+    final secondaryColor = theme.colorScheme.secondary;
+    final bottomAppBarColor = theme.colorScheme.surfaceContainer;
+
     return BottomAppBar(
       height: 90,
       shape: const AutomaticNotchedShape(RoundedRectangleBorder(
@@ -41,9 +46,9 @@ class BottomAppBarCustomState extends ConsumerState<BottomAppBarCustom> {
                 ref.read(currentStateNavBar.notifier).update((state) => 0);
                 ref.read(currentProduct.notifier).update((state) => [] );
               },
-              color: currentState == 0 ? currentColor : colorOptions,
+              color: currentState == 0 ? currentColor : secondaryColor,
             ),
-            Text("Offers", style: TextStyle(color: currentState == 0 ? currentColor : colorOptions,),)
+            Text("Offers", style: TextStyle(color: currentState == 0 ? primaryColor : secondaryColor,),)
           ]),
           const Padding(padding: EdgeInsets.only(left: 15)),
           Column(children: [
@@ -54,9 +59,9 @@ class BottomAppBarCustomState extends ConsumerState<BottomAppBarCustom> {
                 ref.read(currentProduct.notifier).update((state) => [] );
                 context.go("/categoryList");
               },
-              color: currentState == 1 ? currentColor : colorOptions,
+              color: currentState == 1 ? primaryColor : secondaryColor,
             ),
-            Text("Categories", style: TextStyle(color: currentState == 1 ? currentColor : colorOptions,),)
+            Text("Categories", style: TextStyle(color: currentState == 1 ? primaryColor : secondaryColor,),)
           ]),
           const Spacer(),
           //const Padding(padding: EdgeInsets.only(left: 20)),
@@ -70,7 +75,7 @@ class BottomAppBarCustomState extends ConsumerState<BottomAppBarCustom> {
                 )
             ),
             child: CircleAvatar(
-              backgroundColor: currentState == 2 ? currentColor : const Color(0xFFf3ecf4),
+              backgroundColor: currentState == 2 ? primaryColor : bottomAppBarColor,
               radius: 30,
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.center,
@@ -80,8 +85,8 @@ class BottomAppBarCustomState extends ConsumerState<BottomAppBarCustom> {
                   child: Container(
                     alignment: Alignment.center,
                     child: Column(children: [
-                      Icon(Icons.home_outlined, color: currentState == 2 ? Colors.white : currentColor,),
-                      Text("Home", style: TextStyle(color: currentState == 2 ? Colors.white : currentColor, fontSize: 12))
+                      Icon(Icons.home_outlined, color: currentState == 2 ? Colors.white : primaryColor,),
+                      Text("Home", style: TextStyle(color: currentState == 2 ? Colors.white : primaryColor, fontSize: 12))
                     ]),
                   ),
                   onPressed: () { 
@@ -102,9 +107,9 @@ class BottomAppBarCustomState extends ConsumerState<BottomAppBarCustom> {
                 ref.read(currentStateNavBar.notifier).update((state) => 3);
                 ref.read(currentProduct.notifier).update((state) => [] );
               },
-              color: currentState == 3 ? currentColor : colorOptions,
+              color: currentState == 3 ? primaryColor : secondaryColor,
             ),
-            Text("Orders", style: TextStyle(color: currentState == 3 ? currentColor : colorOptions,),)
+            Text("Orders", style: TextStyle(color: currentState == 3 ? primaryColor : secondaryColor,),)
           ]),
           const Spacer(),
           // const Padding(padding: EdgeInsets.only(right: 25)),
@@ -115,9 +120,9 @@ class BottomAppBarCustomState extends ConsumerState<BottomAppBarCustom> {
                 ref.read(currentStateNavBar.notifier).update((state) => 4);
                 ref.read(currentProduct.notifier).update((state) => [] );
               },
-              color: currentState == 4 ? currentColor : colorOptions,
+              color: currentState == 4 ? primaryColor : secondaryColor,
             ),
-            Text("Profile", style: TextStyle(color: currentState == 4 ? currentColor : colorOptions,),)
+            Text("Profile", style: TextStyle(color: currentState == 4 ? primaryColor : secondaryColor,),)
           ]),
           const Padding(padding: EdgeInsets.only(right: 5)),
         ],
