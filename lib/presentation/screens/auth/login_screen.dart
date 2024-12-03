@@ -46,9 +46,9 @@ class _LogincontentState extends ConsumerState<Logincontent> {
     email = '';
     password = '';
     mostrarTexto = false;
-    texto = 'Wrong user or password' ;
+    texto = 'Wrong user or password';
     mostrarTexto2 = false;
-    texto2 = 'All fields are mandatory' ;
+    texto2 = 'All fields are mandatory';
   }
 
   @override
@@ -65,11 +65,10 @@ class _LogincontentState extends ConsumerState<Logincontent> {
 
 
 
-    void login() async{
-      
-      if (email != '' && password != '' ){
-        
+    void login() async {
+      if (email != '' && password != '') {
 
+        FocusScope.of(context).unfocus();
 
         showDialog(
           context: context,
@@ -80,7 +79,7 @@ class _LogincontentState extends ConsumerState<Logincontent> {
                 padding: EdgeInsets.all(16.0),
                 child: SizedBox(
                   height: 150,
-                  width: 100,
+                  width: 80,
                   child: Row(
                     crossAxisAlignment: CrossAxisAlignment.center,
                     mainAxisAlignment: MainAxisAlignment.center,
@@ -94,34 +93,57 @@ class _LogincontentState extends ConsumerState<Logincontent> {
           },
         );
 
-
-
-
-
-         AuthDto usuario = AuthDto(
+        AuthDto usuario = AuthDto(
           email,
           password
-          );
+        );
 
-          var token = await ref.read(authRepositoryProvider).login(usuario);
+        var response = await ref.read(authRepositoryProvider).login(usuario);
 
+        Navigator.of(context).pop(); // Close the loading dialog
 
-          if (token.unwrap() != "error"){
-            ref.read(authProvider.notifier).update((tokenOld) => token.unwrap());
+        if (response.isSuccessful) {
+          if (response.unwrap() != "error") {
+            ref.read(authProvider.notifier).update((token) => response.unwrap());
             context.go("/home");
           }
-          else {
-            setState(() {
-              mostrarTexto = true;
-              mostrarTexto2 = false;
-            });
-          }
-      }
-      else {
-        setState(() {
-          mostrarTexto2 = true;
-          mostrarTexto = false;
-        });
+        } else {
+          showDialog(
+            context: context,
+            builder: (BuildContext context) {
+              return AlertDialog(
+                title: const Text("Error"),
+                content: const Text("Wrong user or password"),
+                actions: [
+                  TextButton(
+                    child: const Text("OK"),
+                    onPressed: () {
+                      Navigator.of(context).pop(); // Close the error dialog
+                    },
+                  ),
+                ],
+              );
+            },
+          );
+        }
+      } else {
+        showDialog(
+          context: context,
+          builder: (BuildContext context) {
+            return AlertDialog(
+              title: const Text("Error"),
+              content: const Text("All fields are mandatory"),
+              actions: [
+                TextButton(
+                  child: const Text("OK"),
+                  onPressed: () {
+                    Navigator.of(context).pop(); // Close the error dialog
+                  },
+                ),
+              ],
+            );
+          },
+        );
       }
     } 
 

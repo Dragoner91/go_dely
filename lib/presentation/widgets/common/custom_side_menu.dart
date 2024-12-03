@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_dely/aplication/providers/theme/theme_provider.dart';
 import 'package:go_dely/config/menu_items.dart';
-import 'package:go_dely/presentation/screens/auth/login_screen.dart';
 import 'package:go_router/go_router.dart';
 
 class CustomSideMenu extends ConsumerStatefulWidget {
