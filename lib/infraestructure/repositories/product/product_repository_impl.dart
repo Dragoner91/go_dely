@@ -6,10 +6,9 @@ import 'package:go_dely/infraestructure/mappers/product_mapper.dart';
 import 'package:go_dely/infraestructure/models/product_db.dart';
 
 class ProductRepositoryImpl extends IProductRepository {
- final IPetition petition;
+  final IPetition petition;
 
   ProductRepositoryImpl({required this.petition});
-
 
   @override
   Future<Result<List<Product>>> getProducts(GetProductsDto dto) async {

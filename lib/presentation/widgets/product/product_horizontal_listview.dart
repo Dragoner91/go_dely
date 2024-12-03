@@ -186,7 +186,8 @@ class _SlideState extends ConsumerState<_Slide> {
                       ),
                     ],
                   ),
-                  Row(
+                  widget.product.discount > 0 
+                  ? Row(
                     children: [
                       Padding(
                         padding: const EdgeInsets.all(8.0),
@@ -203,6 +204,7 @@ class _SlideState extends ConsumerState<_Slide> {
                       )
                     ],
                   )
+                  : const SizedBox.shrink(),
                 ],
               ),
             ),
@@ -252,7 +254,6 @@ class _SlideState extends ConsumerState<_Slide> {
                     style: const TextStyle(
                       fontWeight: FontWeight.bold,
                       fontSize: 16,
-                      color: Color.fromARGB(255, 80, 137, 74)
                     ),
                   ),
                 ] else ...[
@@ -261,7 +262,6 @@ class _SlideState extends ConsumerState<_Slide> {
                     style: const TextStyle(
                       fontWeight: FontWeight.bold,
                       fontSize: 16,
-                      color: Color.fromARGB(255, 80, 137, 74)
                     ),
                   ),
                 ],

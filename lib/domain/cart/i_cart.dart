@@ -1,3 +1,6 @@
+
+//*agregar tipo item si es producto o combo
+
 class ICart {
   final String id;
   final String name;

@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:animate_do/animate_do.dart';
-import 'package:go_dely/domain/entities/users/user.dart';
-import 'package:go_dely/infraestructure/datasources/auth_db_datasource.dart';
-import 'package:go_dely/infraestructure/repositories/auth_repository_impl.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_dely/aplication/providers/auth/auth_repository_provider.dart';
+import 'package:go_dely/domain/users/user.dart';
+import 'package:go_dely/infraestructure/repositories/auth/auth_repository_impl.dart';
 import 'package:go_router/go_router.dart';
 
 
@@ -27,14 +28,14 @@ class RegisterScreen extends StatelessWidget {
   }
 }
 
-class ContentRegister extends StatefulWidget {
+class ContentRegister extends ConsumerStatefulWidget {
   const ContentRegister({super.key});
 
   @override
-  State<ContentRegister> createState() => _ContentRegisterState();
+  ConsumerState<ContentRegister> createState() => _ContentRegisterState();
 }
 
-class _ContentRegisterState extends State<ContentRegister> {
+class _ContentRegisterState extends ConsumerState<ContentRegister> {
   @override
   Widget build(BuildContext context) {
     final textStyles = Theme.of(context).textTheme;
@@ -75,19 +76,19 @@ class _ContentRegisterState extends State<ContentRegister> {
     void actualizarValores(String nuevoTexto, String variable) {
       if (variable == 'Email'){
         email = nuevoTexto;
-      };
+      }
       if (variable == 'Password'){
         password = nuevoTexto;
-      };
+      }
       if (variable == 'Full name'){
         fullname = nuevoTexto;
-      };
+      }
       if (variable == 'CI'){
         ci = nuevoTexto;
-      };
+      }
       if (variable == 'Phone number'){
         phone = nuevoTexto;
-      };
+      }
       
     }
 
@@ -103,9 +104,10 @@ class _ContentRegisterState extends State<ContentRegister> {
           ci,
         );
 
-        var response = "";
-          response = await AuthRepositoryImpl(datasource: AuthDbDatasource()).register(usuario);
-          if (response != ""){
+        
+          var response = await ref.read(authRepositoryProvider).register(usuario);
+
+          if (response.unwrap() != ""){
             //print(response);
             setState(() {
               mostrarTexto = true;
@@ -146,7 +148,7 @@ class _ContentRegisterState extends State<ContentRegister> {
     } 
 
     return Container(
-      decoration: BoxDecoration(
+      decoration: const BoxDecoration(
         image: DecorationImage(
           image: AssetImage('assets/fondo.png'),
           fit: BoxFit.cover,
@@ -154,7 +156,7 @@ class _ContentRegisterState extends State<ContentRegister> {
       ),
       child: Center(
         child: Container(
-          padding: EdgeInsets.symmetric(vertical: 10, horizontal: 40),
+          padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 40),
           child: Column(
             children: [
               Image.asset(
@@ -162,7 +164,7 @@ class _ContentRegisterState extends State<ContentRegister> {
                 height: 120,
                 width: 120,
               ),
-              Padding(
+              const Padding(
                 //padding: EdgeInsets.symmetric(vertical: 75, horizontal: 0),
                 padding: EdgeInsets.fromLTRB(0,145, 0, 60),
                 child: Text(
@@ -178,7 +180,7 @@ class _ContentRegisterState extends State<ContentRegister> {
               Authtextfield(campo: 'Password',callback: actualizarPassword),
 
               Padding(
-                padding: EdgeInsets.symmetric(vertical: 5, horizontal: 0),
+                padding: const EdgeInsets.symmetric(vertical: 5, horizontal: 0),
                 child: ElevatedButton(
                     onPressed: () {registerUser();},
                     style: ButtonStyle(
@@ -186,7 +188,7 @@ class _ContentRegisterState extends State<ContentRegister> {
                       backgroundColor: WidgetStateProperty.all<Color>(Colors.black),
                       foregroundColor: WidgetStateProperty.all<Color>(Colors.white),
                     ),
-                    child: Text(
+                    child: const Text(
                       'Sign up',
                       style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
                     )),

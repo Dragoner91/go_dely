@@ -1,4 +1,4 @@
-import 'package:go_dely/domain/entities/users/user.dart';
+import 'package:go_dely/domain/users/user.dart';
 import 'package:go_dely/infraestructure/models/user_db.dart';
 
 class UserMapper{
