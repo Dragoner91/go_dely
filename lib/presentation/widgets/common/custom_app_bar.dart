@@ -97,7 +97,7 @@ class _CustomAppBarState extends ConsumerState<CustomAppBar> {
                     } else {
                       final cartItems = streamSnapshot.data ?? [];
                       return badges.Badge(
-                        showBadge: true,
+                        showBadge: cartItems.isEmpty ? false : true,
                         badgeContent: Text('${cartItems.length}', style: const TextStyle(color: Colors.white)),
                         badgeAnimation: const badges.BadgeAnimation.slide(
                           animationDuration: Duration(milliseconds: 400),
