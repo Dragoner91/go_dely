@@ -106,6 +106,7 @@ class BottomAppBarCustomState extends ConsumerState<BottomAppBarCustom> {
               onPressed: () { 
                 ref.read(currentStateNavBar.notifier).update((state) => 3);
                 ref.read(currentProduct.notifier).update((state) => [] );
+                context.go("/orderHistory");
               },
               color: currentState == 3 ? primaryColor : secondaryColor,
             ),
