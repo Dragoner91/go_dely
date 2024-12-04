@@ -1,17 +1,31 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_dely/aplication/providers/cart/cart_items_provider.dart';
+import 'package:go_dely/domain/cart/i_cart.dart';
 import 'package:go_router/go_router.dart';
+import 'package:badges/badges.dart' as badges;
 
-class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
+class CustomAppBar extends ConsumerStatefulWidget implements PreferredSizeWidget {
+
+  @override
+  Size get preferredSize => const Size.fromHeight(100);
+
   const CustomAppBar({super.key});
 
   @override
-  Size get preferredSize => const Size.fromHeight(150);
+  ConsumerState<CustomAppBar> createState() => _CustomAppBarState();
+}
+
+class _CustomAppBarState extends ConsumerState<CustomAppBar> {
+  
 
   @override
   Widget build(BuildContext context) {
 
     final theme = Theme.of(context);
     final secondaryColor = theme.colorScheme.secondary;
+
+    final cartItemsFuture = ref.watch(cartItemsProvider.notifier).watchAllItemsFromCart();
 
     return SizedBox(
       height: 700,
@@ -27,6 +41,7 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
           width: 200,
             child: Row(
               mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.end,
               children: [
                 Text('Calle Central', style: TextStyle(
                   fontSize: 16,
@@ -38,7 +53,72 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
         ),
         actions: [
           IconButton(onPressed: () {}, icon: Icon(Icons.notifications, color: secondaryColor,),),
-          IconButton(onPressed: () {context.push("/cart");}, icon: Icon(Icons.shopping_cart, color: secondaryColor,))
+          FutureBuilder<Stream<List<ICart>>>(
+            future: cartItemsFuture,
+            builder: (context, snapshot) {
+              if (snapshot.connectionState == ConnectionState.waiting) {
+                return badges.Badge(
+                  showBadge: true,
+                  badgeContent: const Text('0', style: TextStyle(color: Colors.white)),
+                  badgeAnimation: const badges.BadgeAnimation.slide(
+                    animationDuration: Duration(milliseconds: 400),
+                    colorChangeAnimationDuration: Duration(seconds: 1),
+                    loopAnimation: false,
+                    curve: Curves.easeInOut,
+                    colorChangeAnimationCurve: Curves.easeInOut,
+                  ),
+                  position: badges.BadgePosition.topEnd(top: 0, end: 5),
+                  child: IconButton(
+                    onPressed: () {context.push("/cart");}, 
+                    icon: Icon(Icons.shopping_cart, color: secondaryColor,)
+                  )
+                );
+              } else if (snapshot.hasData) {
+                return StreamBuilder<List<ICart>>(
+                  stream: snapshot.data,
+                  builder: (context, streamSnapshot) {
+                    if (streamSnapshot.connectionState == ConnectionState.waiting) {
+                      return badges.Badge(
+                        showBadge: true,
+                        badgeContent: const Text('0', style: TextStyle(color: Colors.white)),
+                        badgeAnimation: const badges.BadgeAnimation.slide(
+                          animationDuration: Duration(milliseconds: 400),
+                          colorChangeAnimationDuration: Duration(seconds: 1),
+                          loopAnimation: false,
+                          curve: Curves.easeInOut,
+                          colorChangeAnimationCurve: Curves.easeInOut,
+                        ),
+                        position: badges.BadgePosition.topEnd(top: 0, end: 5),
+                        child: IconButton(
+                          onPressed: () {context.push("/cart");}, 
+                          icon: Icon(Icons.shopping_cart, color: secondaryColor,)
+                        )
+                      );
+                    } else {
+                      final cartItems = streamSnapshot.data ?? [];
+                      return badges.Badge(
+                        showBadge: true,
+                        badgeContent: Text('${cartItems.length}', style: const TextStyle(color: Colors.white)),
+                        badgeAnimation: const badges.BadgeAnimation.slide(
+                          animationDuration: Duration(milliseconds: 400),
+                          colorChangeAnimationDuration: Duration(seconds: 1),
+                          loopAnimation: false,
+                          curve: Curves.easeInOut,
+                          colorChangeAnimationCurve: Curves.easeInOut,
+                        ),
+                        position: badges.BadgePosition.topEnd(top: 0, end: 5),
+                        child: IconButton(
+                          onPressed: () {context.push("/cart");}, 
+                          icon: Icon(Icons.shopping_cart, color: secondaryColor,)
+                        )
+                      );
+                    }
+                  },
+                );
+              }
+              return const SizedBox.shrink();
+            },
+          )
         ],
         bottom: const _ColumnaWidgetsBottom(),
         
@@ -51,7 +131,7 @@ class _ColumnaWidgetsBottom extends StatefulWidget implements PreferredSizeWidge
   const _ColumnaWidgetsBottom();
 
   @override
-  Size get preferredSize => const Size.fromHeight(100);
+  Size get preferredSize => const Size.fromHeight(80);
 
   @override
   State<_ColumnaWidgetsBottom> createState() => _ColumnaWidgetsBottomState();
@@ -62,26 +142,10 @@ class _ColumnaWidgetsBottomState extends State<_ColumnaWidgetsBottom> with Singl
   @override
   Widget build(BuildContext context) {
 
-    final tabs = <Tab>[
-      const Tab(child: Text('TODO')),
-      const Tab(child: Text('COMIDA'),),
-      const Tab(child: Text('MEDICINA'),),
-    ];
-
-    final tabController = TabController(length: tabs.length, vsync: this);
-
-    return Column(
+    return const Column(
       children: [
-        const _SearchButton(),
-        TabBar(
-          labelColor: const Color(0xFF5D9558),
-          indicatorColor: const Color(0xFF5D9558),
-          unselectedLabelColor: Colors.grey,
-          controller: tabController,
-          tabs: [
-            ...tabs,
-          ], 
-        )
+        _SearchButton(),
+        Divider()
       ],
     );
   }
@@ -97,22 +161,32 @@ class _SearchButton extends StatelessWidget implements PreferredSizeWidget{
 
   @override
   Widget build(BuildContext context) {
-    return FilledButton(
-      onPressed: () {
-        showSearch(
-          context: context, 
-          delegate: CustomSearchDelegate()
-        );
-      },
-      style: ElevatedButton.styleFrom(
-        foregroundColor: Colors.black,
-        backgroundColor: Colors.white,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(8),
+
+    final theme = Theme.of(context);
+    final secondaryColor = theme.colorScheme.secondary;
+    final backgroundColor = theme.colorScheme.surfaceBright;
+
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 20),
+      child: FilledButton(
+        onPressed: () {
+          showSearch(
+            context: context, 
+            delegate: CustomSearchDelegate()
+          );
+        },
+        style: ElevatedButton.styleFrom(
+          backgroundColor: backgroundColor,
+          shape: RoundedRectangleBorder(
+            side: const BorderSide(
+              width: 0.6
+            ),
+            borderRadius: BorderRadius.circular(8),
+          ),
         ),
-      ),
-      child: const Row(
-        children: [Icon(Icons.search, color: Colors.grey,),SizedBox(width: 7,), Text('Busca Categoria o producto', style: TextStyle(color: Colors.grey),),],
+        child: Row(
+          children: [Icon(Icons.search, color: secondaryColor), const SizedBox(width: 7,), Text('Search for Products or Combos', style: TextStyle(color: secondaryColor),),],
+        ),
       ),
     );
   }
