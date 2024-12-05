@@ -117,46 +117,7 @@ class _SlideCategorias extends StatelessWidget {
         },
         )
       
-      
-      
-      
-        /*Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            
-            SizedBox(
-              child: Row(
-                children: [
-                  const SizedBox(width: 5,),
-                  Text(
-                    categorias.name, 
-                    
-                    style: titleStyle,
-                  ),
-                  const SizedBox(width: 5,),
-                ],
-              ),
-            ),
-      
-      
-            SizedBox(
-              child: Row( 
-                children: [
-                  const SizedBox(width: 5,),
-                  Text(
-                    categorias.descripcion, 
-                    style: textStyles.bodyLarge,
-                  ),
-                  const SizedBox(width: 5,), 
-                  
-                ],
-              ),
-            )
-      
-      
-      
-      
-        ]),*/
+
       ),
     );
   }
