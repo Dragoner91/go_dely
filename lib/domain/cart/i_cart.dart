@@ -1,3 +1,6 @@
+
+//*agregar tipo item si es producto o combo
+
 class ICart {
   final String id;
   final String name;
@@ -6,6 +9,7 @@ class ICart {
   final double price;
   final String currency;
   final String image; 
+  final String type;
   int quantity;
 
   ICart({
@@ -16,7 +20,8 @@ class ICart {
     required this.id, 
     required this.image, 
     required this.name, 
-    required this.price
+    required this.price,
+    required this.type
   });
 
 }

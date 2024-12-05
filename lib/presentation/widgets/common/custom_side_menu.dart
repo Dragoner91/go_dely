@@ -1,8 +1,11 @@
 import 'package:animate_do/animate_do.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:get_it/get_it.dart';
 import 'package:go_dely/aplication/providers/theme/theme_provider.dart';
 import 'package:go_dely/config/menu_items.dart';
+import 'package:go_dely/infraestructure/repositories/theme/theme_repository.dart';
+import 'package:go_router/go_router.dart';
 
 class CustomSideMenu extends ConsumerStatefulWidget {
 
@@ -53,23 +56,33 @@ class _CustomSideMenuState extends ConsumerState<CustomSideMenu> {
                 .map(
                   (item) => NavigationDrawerDestination(
                   icon: Icon(item.icon, color: Colors.white,), 
-                  label: Text(item.title, style: const TextStyle(color: Colors.white))
+                  label: Text(item.title, style: const TextStyle(color: Colors.white)),
                   ),
                 ),
               const SizedBox(height: 280),
-              const Column(
+              Column(
                 children: [
                   Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      SizedBox(width: 70),
-                      Icon(Icons.logout_outlined, color: Colors.white,),
-                      SizedBox(width: 16),
-                      Text('Logout', style: TextStyle(color: Colors.white))
+                      GestureDetector(
+                        onTap: () {
+                          context.go("/welcome");
+                        },
+                        child: const Row(
+                          children: [
+                            Icon(Icons.logout_outlined, color: Colors.white,),
+                            SizedBox(width: 16),
+                            Text('Logout', style: TextStyle(color: Colors.white))
+                          ],
+                        ),
+                      )
+                      
                     ],
                   ),
-                  SizedBox(height: 15),
-                  Text('Version 1.0.0', style: TextStyle(color: Colors.white, fontSize: 10)),
-                  Text('2024 GoDely. All rights reserved.', style: TextStyle(color: Colors.white, fontSize: 10))
+                  const SizedBox(height: 15),
+                  const Text('Version 1.0.0', style: TextStyle(color: Colors.white, fontSize: 10)),
+                  const Text('2024 GoDely. All rights reserved.', style: TextStyle(color: Colors.white, fontSize: 10))
                 ],
               )
             ],
@@ -90,8 +103,9 @@ class _CustomSideMenuState extends ConsumerState<CustomSideMenu> {
           top: 10,
           right: 10,
           child: IconButton(
-            onPressed: () {
+            onPressed: () async {
               ref.read(currentThemeIsDark.notifier).update((state) => !state);
+              GetIt.instance.get<ThemeRepository>().changeTheme();
             },
             icon: FadeIn(
               delay: const Duration(milliseconds: 200),

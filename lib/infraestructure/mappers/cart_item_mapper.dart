@@ -13,6 +13,7 @@ class CartItemMapper{
       image: cartLocal.image,
       name: cartLocal.name,
       price: cartLocal.price,
-      quantity: cartLocal.quantity
+      quantity: cartLocal.quantity,
+      type: cartLocal.type
     ); 
 }

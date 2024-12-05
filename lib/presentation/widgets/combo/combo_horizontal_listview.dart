@@ -178,7 +178,7 @@ class _SlideState extends ConsumerState<_Slide> {
                                 onPressed: inCart ? null : () async {
                                   //*agregar producto al carrito
                                   final cart = ref.watch(cartItemsProvider.notifier).addItemToCart;
-                                  cart(CartItemMapper.cartItemToEntity(CartLocal.fromEntity(widget.combo, 1, widget.combo.imageUrl)));
+                                  cart(CartItemMapper.cartItemToEntity(CartLocal.fromEntity(widget.combo, 1, widget.combo.imageUrl, "Combo")));
                                 },
                                 icon: inCart ? const Icon(Icons.check, size: 14, color: Colors.white,) : const Icon(Icons.add, size: 14, color: Colors.white,),
                               );
