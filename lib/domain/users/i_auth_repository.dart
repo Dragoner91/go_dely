@@ -8,5 +8,8 @@ abstract class IAuthRepository{
 
   Future<Result<String>> register(User user);
 
+  Future<Result<String?>> getToken();
+
+  Future<Result<String>> setToken(String token);
 
 }

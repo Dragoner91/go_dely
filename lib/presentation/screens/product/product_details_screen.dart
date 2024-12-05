@@ -210,7 +210,7 @@ class __PanelContentState extends ConsumerState<_PanelContent> {
           ),
           onPressed: () {
             final cart = ref.watch(cartItemsProvider.notifier).addItemToCart;
-            cart(CartItemMapper.cartItemToEntity(CartLocal.fromEntity(widget.product, _quantity, widget.product.imageUrl[0])));
+            cart(CartItemMapper.cartItemToEntity(CartLocal.fromEntity(widget.product, _quantity, widget.product.imageUrl[0], "Product")));
             widget.panelController.close();
           },
           child: const SizedBox(

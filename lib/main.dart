@@ -28,6 +28,9 @@ class _MyAppState extends ConsumerState<MyApp> {
     final currentTheme = ref.watch(currentThemeIsDark);
     ThemeData theme = currentTheme ? AppTheme.getDarkTheme() : AppTheme.getTheme();
 
+
+    //*hacer que se traiga el token del repositorio de auth con getit
+
     return MaterialApp.router(
       title: 'GoDely',
       routerConfig: appRouter,
