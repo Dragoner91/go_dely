@@ -273,31 +273,38 @@ class _Item extends ConsumerStatefulWidget {
 class _ItemState extends ConsumerState<_Item> {
   @override
   Widget build(BuildContext context) {
-    return Dismissible(
-      key: Key(widget.cartItem.id),
-      direction: DismissDirection.endToStart,
-      onDismissed: (direction) async {
-        // Lógica para eliminar el producto de la base de datos
-        ref.read(cartItemsProvider.notifier).removeItemFromCart(widget.cartItem.isarId!.toInt());
 
-        // Mostrar un mensaje de confirmación
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('${widget.cartItem.name} eliminado')),
-        );
-      },
-      background: Container(
-        color: Colors.red,
-        alignment: Alignment.centerRight,
-        padding: const EdgeInsets.symmetric(horizontal: 20),
-        child: const Icon(
-          Icons.delete,
-          color: Colors.white,
+    final backgroundColor = Theme.of(context).colorScheme.surfaceBright;
+
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+      child: Dismissible(
+        key: Key(widget.cartItem.id),
+        direction: DismissDirection.endToStart,
+        onDismissed: (direction) async {
+          // Lógica para eliminar el producto de la base de datos
+          ref.read(cartItemsProvider.notifier).removeItemFromCart(widget.cartItem.isarId!.toInt());
+      
+          // Mostrar un mensaje de confirmación
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text('${widget.cartItem.name} Eliminated')),
+          );
+        },
+        background: Container(
+          alignment: Alignment.centerRight,
+          decoration: BoxDecoration(
+            color: Colors.red,
+            borderRadius: BorderRadius.circular(15),
+          ),
+          padding: const EdgeInsets.symmetric(horizontal: 20),
+          child: const Icon(
+            Icons.delete,
+            color: Colors.white,
+          ),
         ),
-      ),
-      child: Padding(
-        padding: const EdgeInsets.all(5),
         child: Container(
           decoration: BoxDecoration(
+            color: backgroundColor,
             borderRadius: BorderRadius.circular(8),
             border: Border.all(color: Colors.black26, width: 1),
           ),
@@ -376,7 +383,6 @@ class _ItemState extends ConsumerState<_Item> {
                               Row(
                                 children: [
                                   IconButton(
-                                    disabledColor: Colors.black26,
                                     color: const Color(0xFF5D9558),
                                     icon: const Icon(
                                       Icons.remove_circle_outline_outlined,
