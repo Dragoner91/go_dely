@@ -10,9 +10,9 @@ import 'package:shared_preferences/shared_preferences.dart';
 class AuthRepositoryImpl extends IAuthRepository {
 
   final IPetition petition;
-  final SharedPreferencesAsync asyncPrefs = SharedPreferencesAsync();
+  final SharedPreferencesAsync asyncPrefs;
 
-  AuthRepositoryImpl({required this.petition});
+  AuthRepositoryImpl({required this.petition, required this.asyncPrefs});
 
   @override
   Future<Result<String>> login(AuthDto dto) async{

@@ -108,8 +108,6 @@ class _OrderContent extends StatelessWidget {
     final theme = Theme.of(context);
     final backgroundColor = theme.scaffoldBackgroundColor;
     final primaryColor = theme.colorScheme.primary;
-    final secondaryColor = theme.colorScheme.secondary;
-    final bottomAppBarColor = theme.colorScheme.surfaceContainer;
 
     return Padding(
       padding: const EdgeInsets.all(12),

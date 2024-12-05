@@ -1,8 +1,10 @@
 import 'package:animate_do/animate_do.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:get_it/get_it.dart';
 import 'package:go_dely/aplication/providers/theme/theme_provider.dart';
 import 'package:go_dely/config/menu_items.dart';
+import 'package:go_dely/infraestructure/repositories/theme/theme_repository.dart';
 import 'package:go_router/go_router.dart';
 
 class CustomSideMenu extends ConsumerStatefulWidget {
@@ -101,8 +103,9 @@ class _CustomSideMenuState extends ConsumerState<CustomSideMenu> {
           top: 10,
           right: 10,
           child: IconButton(
-            onPressed: () {
+            onPressed: () async {
               ref.read(currentThemeIsDark.notifier).update((state) => !state);
+              GetIt.instance.get<ThemeRepository>().changeTheme();
             },
             icon: FadeIn(
               delay: const Duration(milliseconds: 200),
