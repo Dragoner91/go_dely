@@ -5,7 +5,9 @@ import 'package:go_dely/aplication/providers/cart/cart_items_provider.dart';
 import 'package:go_dely/aplication/providers/cart/date_selected_provider.dart';
 import 'package:go_dely/aplication/providers/cart/payment_method_selected_provider.dart';
 import 'package:go_dely/aplication/providers/order/order_repository_provider.dart';
+import 'package:go_dely/aplication/providers/paymentMethod/payment_method_repository_provider.dart';
 import 'package:go_dely/domain/order/order.dart';
+import 'package:go_dely/domain/paymentMethod/payment_method.dart';
 import 'package:go_router/go_router.dart';
 
 
@@ -86,18 +88,47 @@ class _PlaceOrderButtonState extends ConsumerState<_PlaceOrderButton> {
                   );
                 },
               );
-
+              final items = await ref.read(cartItemsProvider.notifier).getAllItemsFromCart();
               final date = ref.read(dateSelected.notifier).state;
               final paymentMethod = ref.read(paymentMethodSelected.notifier).state;
               final address = ref.read(addressSelected.notifier).state;
               final total = await ref.read(cartItemsProvider.notifier).getTotalPrice();
 
-              final Order order = Order(
+              final comboIds = items
+                  .where((item) => item.type == 'Combo')
+                  .map((item) => item.id)
+                  .toList();
+
+              final productsIds = items
+                  .where((item) => item.type == 'Product')
+                  .map((item) => item.id)
+                  .toList();    
+
+              final List<Map<String, dynamic>> combos = items
+                  .where((item) => item.type == 'Combo')
+                  .map((item) => {
+                        'combo_id': item.id,
+                        'combo_price': item.price,
+                        'quantity': item.quantity,
+                      })
+                  .toList();
+
+              final List<Map<String, dynamic>> products = items
+                  .where((item) => item.type == 'Product')
+                  .map((item) => {
+                        'product_id': item.id,
+                        'product_price': item.price,
+                        'quantity': item.quantity,
+                      })
+                  .toList();
+
+              final Order order = Order( //*crear clase para CreateOrder
+                id: "",
                 address: address, 
-                combos: [], 
+                combos: combos, 
                 currency: "USD", 
                 paymentMethod: paymentMethod, 
-                products: [], 
+                products: products, 
                 total: total,
                 status: "Active"
               );
@@ -143,7 +174,18 @@ class _PlaceOrderButtonState extends ConsumerState<_PlaceOrderButton> {
   }
 }
 
-class _Content extends StatelessWidget {
+class _Content extends ConsumerStatefulWidget {
+
+  @override
+  ConsumerState<_Content> createState() => _ContentState();
+}
+
+class _ContentState extends ConsumerState<_Content> {
+
+  Future<List<PaymentMethod>> getPaymentMethods() async {
+    final paymentMethods = await ref.watch(paymentMethodRepositoryProvider).getPaymentMethods();
+    return paymentMethods.unwrap();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -157,19 +199,27 @@ class _Content extends StatelessWidget {
       "Calle 5, 456",
       "Calle 6, 789",
     ];
-    final List<String> paymentMethods = [
-      "Credit Card",
-      "Debit Card",
-      "Pago Movil",
-      "Cash"
-    ];
 
     return SingleChildScrollView(
       child: Column(
         children: [
           _Addresses(addresses: addresses,), //*mandarle las direcciones
           const _DatePicker(), //*implementar un provider para toda esta info
-          _PaymentMethod(paymentMethods: paymentMethods,), //*pasarle los metodos
+          FutureBuilder<List<PaymentMethod>>(
+            future: getPaymentMethods(),
+            builder: (context, snapshot) {
+              if (snapshot.connectionState == ConnectionState.waiting) {
+                return const Center(child: CircularProgressIndicator());
+              } else if (snapshot.hasError) {
+                return const Center(child: Text('Error loading payment methods'));
+              } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
+                return const Center(child: Text('No payment methods available'));
+              } else {
+                final paymentMethods = snapshot.data!;
+                return _PaymentMethod(paymentMethods: paymentMethods);
+              }
+            },
+          ),
         ],
       )
     );
@@ -410,17 +460,17 @@ class _DatePickerState extends ConsumerState<_DatePicker> {
   }
 }
 
-class _PaymentMethod extends StatefulWidget {
+class _PaymentMethod extends ConsumerStatefulWidget {
 
-  final List<String> paymentMethods;
+  final List<PaymentMethod> paymentMethods;
 
   const _PaymentMethod({super.key, required this.paymentMethods});
 
   @override
-  State<_PaymentMethod> createState() => _PaymentMethodState();
+  ConsumerState<_PaymentMethod> createState() => _PaymentMethodState();
 }
 
-class _PaymentMethodState extends State<_PaymentMethod> {
+class _PaymentMethodState extends ConsumerState<_PaymentMethod> {
   String? selectedMethod;
 
   @override
@@ -442,12 +492,13 @@ class _PaymentMethodState extends State<_PaymentMethod> {
             itemCount: widget.paymentMethods.length,
             itemBuilder: (context, index) {
               return RadioListTile<String>(
-                title: Text(widget.paymentMethods[index]),
-                value: widget.paymentMethods[index],
+                title: Text(widget.paymentMethods[index].name),
+                value: widget.paymentMethods[index].id,
                 groupValue: selectedMethod,
                 onChanged: (String? value) {
                   setState(() {
                     selectedMethod = value;
+                    ref.read(paymentMethodSelected.notifier).update((state) => value!,);
                   });
                 },
                 contentPadding: const EdgeInsets.symmetric(vertical: 0.0, horizontal: 8.0),

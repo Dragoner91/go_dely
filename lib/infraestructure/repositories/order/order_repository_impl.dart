@@ -19,21 +19,20 @@ class OrderRepositoryImpl extends IOrderRepository{
     final tokenResult = await auth.getToken();
     if(tokenResult.isError) return throw tokenResult.error;
 
+    petition.updateHeaders(headerKey: "Authorization", headerValue: "Bearer ${tokenResult.unwrap()}");
     var queryParameters = {
-      'user_id': tokenResult.unwrap(), //*VERIFICAR
       'address': order.address,
       'paymentMethodId': order.paymentMethod,
       'currency': order.currency,
       'total': order.total,
-      //*lista de productos
-      //*lista de combos
+      'order_products': order.products
     };
 
     final result = await petition.makeRequest(
       urlPath: '/orders/create',
       httpMethod: 'POST',
       mapperCallBack: (data) {
-        final String orderId = data['']; //*TERMINAR
+        final String orderId = data['order_id']; //*TERMINAR
         return orderId;
       },
       body: queryParameters
@@ -47,9 +46,7 @@ class OrderRepositoryImpl extends IOrderRepository{
     final tokenResult = await auth.getToken();
     if(tokenResult.isError) return throw tokenResult.error;
 
-    var queryParameters = {
-      'token': tokenResult.unwrap(), //*VERIFICAR
-    };
+    petition.updateHeaders(headerKey: "Authorization", headerValue: "Bearer ${tokenResult.unwrap()}");
 
     final result = await petition.makeRequest(
       urlPath: '/orders/$id',
@@ -60,7 +57,6 @@ class OrderRepositoryImpl extends IOrderRepository{
         );
         return order;
       },
-      body: queryParameters
     );
     return result;
   }
@@ -71,25 +67,24 @@ class OrderRepositoryImpl extends IOrderRepository{
     final tokenResult = await auth.getToken();
     if(tokenResult.isError) return throw tokenResult.error;
 
-    var queryParameters = {
-      'token': tokenResult.unwrap(), //*VERIFICAR
-    };
+    petition.updateHeaders(headerKey: "Authorization", headerValue: "Bearer ${tokenResult.unwrap()}");
 
     final result = await petition.makeRequest(
       urlPath: '/orders',
       httpMethod: 'GET',
       mapperCallBack: (data) {
         List<Order> orders = [];
+        print(data);
         for (var order in data) {
           orders.add(
             OrderMapper.orderToEntity(
               OrderDB.fromJson(order)
             )
           );
+          
         }
         return orders;
       },
-      body: queryParameters
     );
     return result;
   }

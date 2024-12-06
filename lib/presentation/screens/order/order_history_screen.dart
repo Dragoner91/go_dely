@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_dely/aplication/providers/bottom_appbar_provider.dart';
+import 'package:go_dely/aplication/providers/order/order_repository_provider.dart';
 import 'package:go_dely/aplication/providers/order/order_selected_provider.dart';
+import 'package:go_dely/domain/order/order.dart';
 import 'package:go_dely/presentation/widgets/widgets.dart';
 import 'package:go_router/go_router.dart';
 import 'package:flutter_advanced_segment/flutter_advanced_segment.dart';
@@ -45,6 +47,13 @@ class _Content extends ConsumerStatefulWidget {
 }
 
 class _ContentState extends ConsumerState<_Content> {
+
+
+  Future<List<Order>> getOrders() async {
+    final orders = await ref.read(orderRepositoryProvider).getOrders();
+    return orders.unwrap();
+  }
+
   @override
   Widget build(BuildContext context) {
 
@@ -59,49 +68,111 @@ class _ContentState extends ConsumerState<_Content> {
     controller.addListener(() {
       ref.read(orderSelectedProvider.notifier).update((state) => controller.value);
     });
+    
 
-    return SingleChildScrollView(
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Padding(
-            padding: const EdgeInsets.all(10),
-            child: AdvancedSegment(
-              controller: controller, // AdvancedSegmentController
-              segments: const { // Map<String, String>
-                'Active': 'Active',
-                'Past Orders': 'Past Orders',
-              },
-              activeStyle: const TextStyle( // TextStyle
-                color: Colors.white,
-                fontWeight: FontWeight.w600,
+    return RefreshIndicator(
+      triggerMode: RefreshIndicatorTriggerMode.anywhere,
+      color: const Color(0xFF5D9558),
+      onRefresh: () async {
+        setState(() {}); // Forzar la reconstrucción de la pantalla
+        await getOrders(); // Esperar a que se obtengan las órdenes
+      },
+      child: SingleChildScrollView(
+        child: Column(
+          children: [
+            Padding(
+              padding: const EdgeInsets.all(10),
+              child: AdvancedSegment(
+                controller: controller, // AdvancedSegmentController
+                segments: const { // Map<String, String>
+                  'Active': 'Active',
+                  'Past Orders': 'Past Orders',
+                },
+                activeStyle: const TextStyle( // TextStyle
+                  color: Colors.white,
+                  fontWeight: FontWeight.w600,
+                ),
+                inactiveStyle: TextStyle( // TextStyle
+                  color: secondaryColor,
+                ),
+                backgroundColor: backgroundColor, // Color
+                sliderColor: primaryColor, // Color
+                sliderOffset: 2.0, // Double
+                borderRadius: const BorderRadius.all(Radius.circular(8.0)), // BorderRadius
+                itemPadding: const EdgeInsets.symmetric( // EdgeInsets
+                  horizontal: 30,
+                  vertical: 10,
+                ),
+                animationDuration: const Duration(milliseconds: 250), // Duration
               ),
-              inactiveStyle: TextStyle( // TextStyle
-                color: secondaryColor,
-              ),
-              backgroundColor: backgroundColor, // Color
-              sliderColor: primaryColor, // Color
-              sliderOffset: 2.0, // Double
-              borderRadius: const BorderRadius.all(Radius.circular(8.0)), // BorderRadius
-              itemPadding: const EdgeInsets.symmetric( // EdgeInsets
-                horizontal: 30,
-                vertical: 10,
-              ),
-              animationDuration: const Duration(milliseconds: 250), // Duration
             ),
-          ),
-          const _OrderContent(),
-          const _OrderContent(),
-
-        ],
-      )
+            SingleChildScrollView(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  FutureBuilder<List<Order>>(
+                    future: getOrders(), 
+                    builder: (context, snapshot) {
+                      if (snapshot.connectionState == ConnectionState.waiting) {
+                        return const Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          children: [
+                            Center(child: CircularProgressIndicator()),
+                          ],
+                        );
+                      } else if (snapshot.hasError) {
+                        return Center(child: Text('Error loading orders ${snapshot.error}'));
+                      } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
+                        return const Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          children: [
+                            Center(child: Text('No orders available')),
+                          ],
+                        );
+                      } else {
+                        final orders = snapshot.data!;
+                        return Column(
+                          children: orders.map((order) => _OrderContent(order: order)).toList(),
+                        );
+                      }
+                    },
+                  ),
+            
+                ],
+              )
+            ),
+          ],
+        ),
+      ),
     );
   }
 }
 
 
 class _OrderContent extends StatelessWidget {
-  const _OrderContent({super.key});
+
+  final Order order;
+
+  const _OrderContent({super.key, required this.order});
+
+  Color getColor(String status) {
+    switch (status) {
+      case 'CREATED':
+        return Colors.blue;
+      case 'CANCELLED':
+        return Colors.red;
+      case 'DELIVERED':
+        return Colors.green;
+      case 'SHIPPED':
+        return Colors.orange;
+      case 'BEING PROCESSED':
+        return Colors.yellow;
+      default:
+        return Colors.grey;
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -138,11 +209,11 @@ class _OrderContent extends StatelessWidget {
                     },
                     icon: const Icon(Icons.keyboard_double_arrow_down_rounded),
                   ),
-                  const Expanded(
+                  Expanded(
                     child: Text(
-                      "Precio Final",
+                      "${order.total} ${order.currency}",
                       textAlign: TextAlign.right,
-                      style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
+                      style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
                     ),
                   ),
                 ],
@@ -151,17 +222,38 @@ class _OrderContent extends StatelessWidget {
             const Divider(
               height: 5,
             ),
-            const Row(
+            Row(
               children: [
                 Padding(
-                  padding: EdgeInsets.only(left: 15, top: 5),
-                  child: Text("Order #123456", style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),),
+                  padding: const EdgeInsets.only(left: 15, top: 5),
+                  child: Text("Order #${order.id}", style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),),
                 ),
-                Spacer()
+                const Spacer()
               ],
             ),
-            const Text("ProductList"),
+            const Text("Items List"),
             const Spacer(),
+            Row(
+              children: [
+                Padding(
+                  padding: const EdgeInsets.only(left: 15, top: 5),
+                  child: Container(
+                    width: 10,
+                    height: 10,
+                    decoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                      color: getColor(order.status)
+                      , // Color basado en el estado de la orden
+                    ),
+                  ),
+                ),
+                Padding(
+                  padding: const EdgeInsets.only(left: 5, top: 5),
+                  child: Text(" ${order.status}", style: const TextStyle(fontSize: 14),), // Mostrar el estatus de la orden
+                ),
+                const Spacer()
+              ],
+            ),
             const Divider(),
             Padding(
               padding: const EdgeInsets.only(bottom: 10),

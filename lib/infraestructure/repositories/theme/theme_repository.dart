@@ -7,7 +7,7 @@ class ThemeRepository {
   ThemeRepository({required this.prefs});
   
   bool getCurrentTheme() {
-    final bool? theme = prefs.getBool('isThemeDark');
+    final bool? theme = prefs.getBool('isThemeDark') ?? false;
     return theme!;
   }
 

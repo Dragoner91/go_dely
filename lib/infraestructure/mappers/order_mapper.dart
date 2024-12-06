@@ -5,11 +5,12 @@ class OrderMapper {
 
   static Order orderToEntity(OrderDB orderDB) =>
     Order(
+      id: orderDB.id,
       address: orderDB.address, 
-      combos: orderDB.combos, 
-      currency: orderDB.currency, 
+      combos:  [{}], //orderDB.combos, 
+      currency: orderDB.currency,  //*ARREGLAR ESTO
       paymentMethod: orderDB.paymentMethod, 
-      products: orderDB.products, 
+      products: [{}], //orderDB.products, 
       total: orderDB.total,
       status: orderDB.status
     );
