@@ -5,6 +5,7 @@ class Order {
   final String address;
   final String paymentMethod;
   final String currency;
+  final String status;
   final double total;
   final List<Product> products;
   final List<Combo> combos;
@@ -15,6 +16,7 @@ class Order {
     required this.currency,
     required this.paymentMethod,
     required this.products,
-    required this.total
+    required this.total,
+    required this.status
     });
 }

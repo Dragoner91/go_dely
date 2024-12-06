@@ -5,6 +5,7 @@ class OrderDB {
   final String address;
   final String paymentMethod;
   final String currency;
+  final String status;
   final double total;
   final List<Product> products;
   final List<Combo> combos;
@@ -15,13 +16,15 @@ class OrderDB {
     required this.currency, 
     required this.total, 
     required this.products, 
-    required this.combos
+    required this.combos,
+    required this.status
   });
 
   factory OrderDB.fromJson(Map<String, dynamic> json) => OrderDB(
     address: json['address'],
     combos: json[''],  //*TERMINAR
     currency: json['currency'],
+    status: json['status'],
     paymentMethod: json['paymentMethodId'],
     products: json[''],  //*TERMINAR
     total: json['total'],

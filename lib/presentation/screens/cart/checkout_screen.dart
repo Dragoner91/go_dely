@@ -98,7 +98,8 @@ class _PlaceOrderButtonState extends ConsumerState<_PlaceOrderButton> {
                 currency: "USD", 
                 paymentMethod: paymentMethod, 
                 products: [], 
-                total: total
+                total: total,
+                status: "Active"
               );
 
               final response = await ref.read(orderRepositoryProvider).createOrder(order);
@@ -152,6 +153,9 @@ class _Content extends StatelessWidget {
       "Calle 1, 123",
       "Calle 2, 456",
       "Calle 3, 789",
+      "Calle 4, 123",
+      "Calle 5, 456",
+      "Calle 6, 789",
     ];
     final List<String> paymentMethods = [
       "Credit Card",
@@ -205,7 +209,7 @@ class _AddressesState extends ConsumerState<_Addresses> {
             ),),
           ),
           SizedBox(
-            height: 330,
+            height: 325,
             child: ListView.builder(
               itemCount: widget.addresses.length,
               shrinkWrap: true,
@@ -299,14 +303,14 @@ class _AddressState extends ConsumerState<_Address> {
   }
 }
 
-class _DatePicker extends StatefulWidget {
+class _DatePicker extends ConsumerStatefulWidget {
   const _DatePicker({super.key});
 
   @override
   _DatePickerState createState() => _DatePickerState();
 }
 
-class _DatePickerState extends State<_DatePicker> {
+class _DatePickerState extends ConsumerState<_DatePicker> {
   DateTime? selectedDate;
   TimeOfDay? selectedTime;
 
@@ -318,8 +322,11 @@ class _DatePickerState extends State<_DatePicker> {
       lastDate: DateTime(2101),
     );
     if (picked != null && picked != selectedDate) {
+      print(picked.toString());
+      ref.read(dateSelected.notifier).update((state) => picked.toString(),);  //*ARREGLAR ESTO
       setState(() {
         selectedDate = picked;
+        
       });
     }
   }
@@ -330,6 +337,7 @@ class _DatePickerState extends State<_DatePicker> {
       initialTime: selectedTime ?? TimeOfDay.now(),
     );
     if (picked != null && picked != selectedTime) {
+      print(picked.format(context));
       setState(() {
         selectedTime = picked;
       });

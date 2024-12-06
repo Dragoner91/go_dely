@@ -10,6 +10,7 @@ class OrderMapper {
       currency: orderDB.currency, 
       paymentMethod: orderDB.paymentMethod, 
       products: orderDB.products, 
-      total: orderDB.total
+      total: orderDB.total,
+      status: orderDB.status
     );
 }

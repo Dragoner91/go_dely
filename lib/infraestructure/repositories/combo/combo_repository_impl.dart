@@ -29,6 +29,7 @@ class ComboRepositoryImpl extends IComboRepository {
       mapperCallBack: (data) {
         List<Combo> combos = [];
         for (var combo in data) {
+          print(combo);
           combos.add(
             ComboMapper.comboToEntity(
               ComboDB.fromJson(combo)

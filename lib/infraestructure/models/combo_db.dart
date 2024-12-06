@@ -35,7 +35,7 @@ class ComboDB {
     category: json["combo_category"],
     currency: json["combo_currency"],
     imageUrl: json["combo_image"],
-    discount: json["combo_discount"] ? double.parse(json["combo_discount"]) : 0.0,
+    discount: json["discount"] == null ? 0.0 : double.tryParse(json["discount"]["value"]) ?? 0.1,
   );
 
   Map<String, dynamic> toJson() => {
