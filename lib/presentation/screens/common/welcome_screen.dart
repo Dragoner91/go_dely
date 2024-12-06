@@ -1,5 +1,7 @@
 import 'package:animate_do/animate_do.dart';
 import 'package:flutter/material.dart';
+import 'package:get_it/get_it.dart';
+import 'package:go_dely/domain/users/i_auth_repository.dart';
 import 'package:go_router/go_router.dart';
 
 
@@ -18,6 +20,20 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
   Future<void> changeScreen(BuildContext context, String route) async {
     await Future.delayed(const Duration(milliseconds: 1000));
     context.go(route);
+  }
+
+  Future<void> checkSessionToken() async {
+    final authRepository = GetIt.instance.get<IAuthRepository>();
+    final token = await authRepository.getToken();
+    if (token.isSuccessful && token.unwrap()!.isNotEmpty) {
+      context.go("/home");
+    }
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    checkSessionToken();
   }
 
   bool isAnimating = false;

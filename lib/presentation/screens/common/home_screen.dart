@@ -49,6 +49,11 @@ class _ContentState extends ConsumerState<_Content> {
     await ref.read(combosProvider.notifier).loadNextPage();
   }
 
+  Future<void> _refreshData() async {
+    await ref.read(productsProvider.notifier).refresh();
+    await ref.read(combosProvider.notifier).refresh();
+  }
+
   @override
   Widget build(BuildContext context) {
 
@@ -58,7 +63,7 @@ class _ContentState extends ConsumerState<_Content> {
     return RefreshIndicator(
       triggerMode: RefreshIndicatorTriggerMode.anywhere,
       color: const Color(0xFF5D9558),
-      onRefresh: _loadData,
+      onRefresh: _refreshData,
       child: SingleChildScrollView(
         child: Column(
           children: [
@@ -67,8 +72,8 @@ class _ContentState extends ConsumerState<_Content> {
               products: [
                 ...products
               ],
-              title: 'Productos',
-              subTitle: 'Ver todo',
+              title: 'Products',
+              subTitle: 'View All',
               loadNextPage: () => ref.read(productsProvider.notifier).loadNextPage(),
             ),
 
@@ -77,8 +82,8 @@ class _ContentState extends ConsumerState<_Content> {
               combos: [
                 ...combos
               ],
-              title: 'Combos de Productos',
-              subTitle: 'Ver todo',
+              title: 'Products Combos',
+              subTitle: 'View All',
               loadNextPage: () => ref.read(combosProvider.notifier).loadNextPage(),
             ),
             
@@ -87,8 +92,8 @@ class _ContentState extends ConsumerState<_Content> {
               products: [
                 ...products
               ],
-              title: 'Ofertas Limitadas',
-              subTitle: 'Ver todo',
+              title: 'Limited Offers',
+              subTitle: 'View All',
               loadNextPage: () => ref.read(productsProvider.notifier).loadNextPage(),
             ),
       
