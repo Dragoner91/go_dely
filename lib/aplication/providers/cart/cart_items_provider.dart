@@ -56,4 +56,8 @@ class CartItemsNotifier extends StateNotifier<List<ICart>>{
     return await repository.getTotalPrice();
   }
 
+  Future<void> cleanItems() async {
+    return await repository.cleanItems();
+  }
+
 }

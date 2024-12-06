@@ -18,4 +18,6 @@ abstract class ICartRepository {
 
   Future<double> getTotalPrice();
 
+  Future<void> cleanItems();
+
 }

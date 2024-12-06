@@ -98,4 +98,13 @@ class CartItemRepository extends ICartRepository{
     return totalPrice;
   }
 
+  @override
+  Future<void> cleanItems() async {
+    final items = await getItemsFromCart();
+    for (var item in items) {
+      var cartItem = item as CartItem;
+      await removeItemFromCart(cartItem.isarId!.toInt());
+    }
+  }
+
 }

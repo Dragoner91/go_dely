@@ -25,7 +25,8 @@ class OrderRepositoryImpl extends IOrderRepository{
       'paymentMethodId': order.paymentMethod,
       'currency': order.currency,
       'total': order.total,
-      'order_products': order.products
+      'order_products': order.products,
+      'order_combos': order.combos
     };
 
     final result = await petition.makeRequest(
@@ -74,7 +75,6 @@ class OrderRepositoryImpl extends IOrderRepository{
       httpMethod: 'GET',
       mapperCallBack: (data) {
         List<Order> orders = [];
-        print(data);
         for (var order in data) {
           orders.add(
             OrderMapper.orderToEntity(

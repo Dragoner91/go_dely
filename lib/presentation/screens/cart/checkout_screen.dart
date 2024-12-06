@@ -136,7 +136,7 @@ class _PlaceOrderButtonState extends ConsumerState<_PlaceOrderButton> {
               final response = await ref.read(orderRepositoryProvider).createOrder(order);
 
               if(response.isError){
-                response.error;
+                throw response.error;
               } else {
                 if (context.mounted) {
                   showDialog(
@@ -148,7 +148,8 @@ class _PlaceOrderButtonState extends ConsumerState<_PlaceOrderButton> {
                         actions: [
                           TextButton(
                             child: const Text("OK"),
-                            onPressed: () {
+                            onPressed: () async {
+                              await ref.read(cartItemsProvider.notifier).cleanItems();
                               Navigator.of(context).pop();
                               context.go("/home");
                               context.push("/orderHistory");
