@@ -77,4 +77,22 @@ class AuthRepositoryImpl extends IAuthRepository {
     }
   }
 
+  @override
+  Future<Result<bool>> checkAuth(String token) async {
+
+    petition.updateHeaders(headerKey: "Authorization", headerValue: "Bearer $token");
+    final result = await petition.makeRequest(
+      urlPath: '/auth/private',
+      httpMethod: 'GET',
+      mapperCallBack: (data) {
+        print(data);
+        if (data['message'] == "Authorized") {
+          return true;
+        }
+        return false;
+      },
+    );
+    return result;
+  }
+
 }

@@ -5,6 +5,7 @@ import 'package:get_it/get_it.dart';
 import 'package:go_dely/aplication/providers/theme/theme_provider.dart';
 import 'package:go_dely/config/DI/ioc_container.dart';
 import 'package:go_dely/config/theme/custom_theme.dart';
+import 'package:go_dely/domain/users/i_auth_repository.dart';
 import 'package:go_dely/infraestructure/repositories/theme/theme_repository.dart';
 import 'config/router/app_router.dart';
 
@@ -24,6 +25,12 @@ class MyApp extends ConsumerStatefulWidget {
 
 class _MyAppState extends ConsumerState<MyApp> {
   
+  @override
+  void initState() {
+    super.initState();
+    initStateTheme(ref);
+  }
+
   Future<void> initStateTheme(WidgetRef ref) async{
     await IoCContainer.initThemes(ref);
   }
@@ -31,13 +38,9 @@ class _MyAppState extends ConsumerState<MyApp> {
   @override
   Widget build(BuildContext context) {
 
-    initStateTheme(ref);
     ref.watch(currentThemeIsDark);
     final currentTheme = GetIt.instance.get<ThemeRepository>().getCurrentTheme();
     ThemeData theme = currentTheme == true ? AppTheme.getDarkTheme() : AppTheme.getTheme();
-
-
-    //*hacer que se traiga el token del repositorio de auth con getit
 
     return MaterialApp.router(
       title: 'GoDely',

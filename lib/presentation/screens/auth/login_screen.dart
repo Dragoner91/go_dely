@@ -100,11 +100,12 @@ class _LogincontentState extends ConsumerState<Logincontent> {
 
         var response = await ref.read(authRepositoryProvider).login(usuario);
 
-        Navigator.of(context).pop(); // Close the loading dialog
+        Navigator.of(context).pop();
 
         if (response.isSuccessful) {
           if (response.unwrap() != "error") {
             ref.read(authProvider.notifier).update((token) => response.unwrap());
+            ref.read(authRepositoryProvider).setToken(response.unwrap());
             context.go("/home");
           }
         } else {

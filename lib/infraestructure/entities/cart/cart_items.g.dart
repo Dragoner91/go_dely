@@ -32,33 +32,38 @@ const CartItemSchema = CollectionSchema(
       name: r'description',
       type: IsarType.string,
     ),
-    r'id': PropertySchema(
+    r'discount': PropertySchema(
       id: 3,
+      name: r'discount',
+      type: IsarType.double,
+    ),
+    r'id': PropertySchema(
+      id: 4,
       name: r'id',
       type: IsarType.string,
     ),
     r'image': PropertySchema(
-      id: 4,
+      id: 5,
       name: r'image',
       type: IsarType.string,
     ),
     r'name': PropertySchema(
-      id: 5,
+      id: 6,
       name: r'name',
       type: IsarType.string,
     ),
     r'price': PropertySchema(
-      id: 6,
+      id: 7,
       name: r'price',
       type: IsarType.double,
     ),
     r'quantity': PropertySchema(
-      id: 7,
+      id: 8,
       name: r'quantity',
       type: IsarType.long,
     ),
     r'type': PropertySchema(
-      id: 8,
+      id: 9,
       name: r'type',
       type: IsarType.string,
     )
@@ -102,12 +107,13 @@ void _cartItemSerialize(
   writer.writeString(offsets[0], object.category);
   writer.writeString(offsets[1], object.currency);
   writer.writeString(offsets[2], object.description);
-  writer.writeString(offsets[3], object.id);
-  writer.writeString(offsets[4], object.image);
-  writer.writeString(offsets[5], object.name);
-  writer.writeDouble(offsets[6], object.price);
-  writer.writeLong(offsets[7], object.quantity);
-  writer.writeString(offsets[8], object.type);
+  writer.writeDouble(offsets[3], object.discount);
+  writer.writeString(offsets[4], object.id);
+  writer.writeString(offsets[5], object.image);
+  writer.writeString(offsets[6], object.name);
+  writer.writeDouble(offsets[7], object.price);
+  writer.writeLong(offsets[8], object.quantity);
+  writer.writeString(offsets[9], object.type);
 }
 
 CartItem _cartItemDeserialize(
@@ -120,13 +126,14 @@ CartItem _cartItemDeserialize(
     category: reader.readString(offsets[0]),
     currency: reader.readString(offsets[1]),
     description: reader.readString(offsets[2]),
-    id: reader.readString(offsets[3]),
-    image: reader.readString(offsets[4]),
+    discount: reader.readDouble(offsets[3]),
+    id: reader.readString(offsets[4]),
+    image: reader.readString(offsets[5]),
     isarId: id,
-    name: reader.readString(offsets[5]),
-    price: reader.readDouble(offsets[6]),
-    quantity: reader.readLong(offsets[7]),
-    type: reader.readString(offsets[8]),
+    name: reader.readString(offsets[6]),
+    price: reader.readDouble(offsets[7]),
+    quantity: reader.readLong(offsets[8]),
+    type: reader.readString(offsets[9]),
   );
   return object;
 }
@@ -145,16 +152,18 @@ P _cartItemDeserializeProp<P>(
     case 2:
       return (reader.readString(offset)) as P;
     case 3:
-      return (reader.readString(offset)) as P;
+      return (reader.readDouble(offset)) as P;
     case 4:
       return (reader.readString(offset)) as P;
     case 5:
       return (reader.readString(offset)) as P;
     case 6:
-      return (reader.readDouble(offset)) as P;
+      return (reader.readString(offset)) as P;
     case 7:
-      return (reader.readLong(offset)) as P;
+      return (reader.readDouble(offset)) as P;
     case 8:
+      return (reader.readLong(offset)) as P;
+    case 9:
       return (reader.readString(offset)) as P;
     default:
       throw IsarError('Unknown property with id $propertyId');
@@ -640,6 +649,68 @@ extension CartItemQueryFilter
       return query.addFilterCondition(FilterCondition.greaterThan(
         property: r'description',
         value: '',
+      ));
+    });
+  }
+
+  QueryBuilder<CartItem, CartItem, QAfterFilterCondition> discountEqualTo(
+    double value, {
+    double epsilon = Query.epsilon,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.equalTo(
+        property: r'discount',
+        value: value,
+        epsilon: epsilon,
+      ));
+    });
+  }
+
+  QueryBuilder<CartItem, CartItem, QAfterFilterCondition> discountGreaterThan(
+    double value, {
+    bool include = false,
+    double epsilon = Query.epsilon,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.greaterThan(
+        include: include,
+        property: r'discount',
+        value: value,
+        epsilon: epsilon,
+      ));
+    });
+  }
+
+  QueryBuilder<CartItem, CartItem, QAfterFilterCondition> discountLessThan(
+    double value, {
+    bool include = false,
+    double epsilon = Query.epsilon,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.lessThan(
+        include: include,
+        property: r'discount',
+        value: value,
+        epsilon: epsilon,
+      ));
+    });
+  }
+
+  QueryBuilder<CartItem, CartItem, QAfterFilterCondition> discountBetween(
+    double lower,
+    double upper, {
+    bool includeLower = true,
+    bool includeUpper = true,
+    double epsilon = Query.epsilon,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.between(
+        property: r'discount',
+        lower: lower,
+        includeLower: includeLower,
+        upper: upper,
+        includeUpper: includeUpper,
+        epsilon: epsilon,
       ));
     });
   }
@@ -1392,6 +1463,18 @@ extension CartItemQuerySortBy on QueryBuilder<CartItem, CartItem, QSortBy> {
     });
   }
 
+  QueryBuilder<CartItem, CartItem, QAfterSortBy> sortByDiscount() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'discount', Sort.asc);
+    });
+  }
+
+  QueryBuilder<CartItem, CartItem, QAfterSortBy> sortByDiscountDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'discount', Sort.desc);
+    });
+  }
+
   QueryBuilder<CartItem, CartItem, QAfterSortBy> sortById() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'id', Sort.asc);
@@ -1503,6 +1586,18 @@ extension CartItemQuerySortThenBy
     });
   }
 
+  QueryBuilder<CartItem, CartItem, QAfterSortBy> thenByDiscount() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'discount', Sort.asc);
+    });
+  }
+
+  QueryBuilder<CartItem, CartItem, QAfterSortBy> thenByDiscountDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'discount', Sort.desc);
+    });
+  }
+
   QueryBuilder<CartItem, CartItem, QAfterSortBy> thenById() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'id', Sort.asc);
@@ -1611,6 +1706,12 @@ extension CartItemQueryWhereDistinct
     });
   }
 
+  QueryBuilder<CartItem, CartItem, QDistinct> distinctByDiscount() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addDistinctBy(r'discount');
+    });
+  }
+
   QueryBuilder<CartItem, CartItem, QDistinct> distinctById(
       {bool caseSensitive = true}) {
     return QueryBuilder.apply(this, (query) {
@@ -1675,6 +1776,12 @@ extension CartItemQueryProperty
   QueryBuilder<CartItem, String, QQueryOperations> descriptionProperty() {
     return QueryBuilder.apply(this, (query) {
       return query.addPropertyName(r'description');
+    });
+  }
+
+  QueryBuilder<CartItem, double, QQueryOperations> discountProperty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addPropertyName(r'discount');
     });
   }
 

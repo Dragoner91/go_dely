@@ -11,6 +11,7 @@ class CartLocal {
   final String currency;
   final String image;
   final String type;
+  final double discount;
   final int quantity;
 
   CartLocal({
@@ -23,6 +24,7 @@ class CartLocal {
     required this.image,
     required this.quantity,
     required this.type,
+    required this.discount
   });
 
   factory CartLocal.fromEntity(ProductAbstract item, int quantity, String image, String type) => CartLocal(
@@ -35,6 +37,7 @@ class CartLocal {
     image: image,
     quantity: quantity,
     type: type,
+    discount: item.discount
   );
 
   Map<String, dynamic> toJson() => {

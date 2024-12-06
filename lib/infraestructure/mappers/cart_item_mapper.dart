@@ -14,6 +14,7 @@ class CartItemMapper{
       name: cartLocal.name,
       price: cartLocal.price,
       quantity: cartLocal.quantity,
-      type: cartLocal.type
+      type: cartLocal.type,
+      discount: cartLocal.discount
     ); 
 }

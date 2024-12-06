@@ -16,4 +16,6 @@ abstract class ICartRepository {
 
   Future<Stream<List<ICart>>> watchAllItemsFromCart();
 
+  Future<double> getTotalPrice();
+
 }
