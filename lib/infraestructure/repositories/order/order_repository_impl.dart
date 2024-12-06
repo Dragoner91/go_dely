@@ -14,13 +14,13 @@ class OrderRepositoryImpl extends IOrderRepository{
   OrderRepositoryImpl({required this.petition, required this.auth});
 
   @override
-  Future<Result<void>> createOrder(Order order) async {
+  Future<Result<String>> createOrder(Order order) async {
 
     final tokenResult = await auth.getToken();
     if(tokenResult.isError) return throw tokenResult.error;
 
     var queryParameters = {
-      'token': tokenResult.unwrap(), //*VERIFICAR
+      'user_id': tokenResult.unwrap(), //*VERIFICAR
       'address': order.address,
       'paymentMethodId': order.paymentMethod,
       'currency': order.currency,

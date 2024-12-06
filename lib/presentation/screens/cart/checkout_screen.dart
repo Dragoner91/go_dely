@@ -1,4 +1,13 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:get_it/get_it.dart';
+import 'package:go_dely/aplication/providers/cart/address_selected_provider.dart';
+import 'package:go_dely/aplication/providers/cart/cart_items_provider.dart';
+import 'package:go_dely/aplication/providers/cart/date_selected_provider.dart';
+import 'package:go_dely/aplication/providers/cart/payment_method_selected_provider.dart';
+import 'package:go_dely/aplication/providers/order/order_repository_provider.dart';
+import 'package:go_dely/domain/order/i_order_repository.dart';
+import 'package:go_dely/domain/order/order.dart';
 import 'package:go_router/go_router.dart';
 
 
@@ -38,7 +47,12 @@ class CheckoutScreen extends StatelessWidget {
   }
 }
 
-class _PlaceOrderButton extends StatelessWidget {
+class _PlaceOrderButton extends ConsumerStatefulWidget {
+  @override
+  ConsumerState<_PlaceOrderButton> createState() => _PlaceOrderButtonState();
+}
+
+class _PlaceOrderButtonState extends ConsumerState<_PlaceOrderButton> {
   @override
   Widget build(BuildContext context) {
     return Padding(
@@ -50,15 +64,80 @@ class _PlaceOrderButton extends StatelessWidget {
             style: ButtonStyle(
                 backgroundColor:
                     WidgetStateProperty.all(const Color(0xFF5D9558))),
-            onPressed: () {
-              context.push("/checkout");
+            onPressed: () async {
+              
+              showDialog(
+                context: context,
+                barrierDismissible: false,
+                builder: (BuildContext context) {
+                  return const Dialog(
+                    child: Padding(
+                      padding: EdgeInsets.all(16.0),
+                      child: SizedBox(
+                        height: 150,
+                        width: 80,
+                        child: Row(
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            CircularProgressIndicator(),
+                          ],
+                        ),
+                      ),
+                    ),
+                  );
+                },
+              );
+
+              final date = ref.read(dateSelected.notifier).state;
+              final paymentMethod = ref.read(paymentMethodSelected.notifier).state;
+              final address = ref.read(addressSelected.notifier).state;
+              final total = await ref.read(cartItemsProvider.notifier).getTotalPrice();
+
+              final Order order = Order(
+                address: address, 
+                combos: [], 
+                currency: "USD", 
+                paymentMethod: paymentMethod, 
+                products: [], 
+                total: total
+              );
+
+              final response = await ref.read(orderRepositoryProvider).createOrder(order);
+
+              if(response.isError){
+                response.error;
+              } else {
+                if (context.mounted) {
+                  showDialog(
+                    context: context,
+                    builder: (BuildContext context) {
+                      return AlertDialog(
+                        title: const Text("Order Created Succesfully"),
+                        content: Text("Order ID: ${response.unwrap()}"),
+                        actions: [
+                          TextButton(
+                            child: const Text("OK"),
+                            onPressed: () {
+                              Navigator.of(context).pop();
+                              context.go("/home");
+                              context.push("/orderHistory");
+                            },
+                          ),
+                        ],
+                      );
+                    },
+                  );
+                }
+              }
             },
             child: const Text(
               "Place Order",
               style: TextStyle(
                   fontSize: 18,
                   fontWeight: FontWeight.bold,
-                  fontStyle: FontStyle.normal),
+                  fontStyle: FontStyle.normal
+                ),
             )),
       ),
     );
@@ -100,7 +179,7 @@ class _Addresses extends StatelessWidget {
   final int selected = 0;
   final List<String> addresses;
 
-  const _Addresses({super.key, required this.addresses});
+  const _Addresses({required this.addresses});
 
   @override
   Widget build(BuildContext context) {
@@ -216,10 +295,10 @@ class _DatePicker extends StatefulWidget {
   const _DatePicker({super.key});
 
   @override
-  __DatePickerState createState() => __DatePickerState();
+  _DatePickerState createState() => _DatePickerState();
 }
 
-class __DatePickerState extends State<_DatePicker> {
+class _DatePickerState extends State<_DatePicker> {
   DateTime? selectedDate;
   TimeOfDay? selectedTime;
 

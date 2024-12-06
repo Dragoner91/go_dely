@@ -70,7 +70,7 @@ class _ContentState extends ConsumerState<_Content> {
       
             ProductHorizontalListView(
               products: [
-                ...products
+                ...products.where((product) => product.discount == 0)
               ],
               title: 'Products',
               subTitle: 'View All',
@@ -90,7 +90,7 @@ class _ContentState extends ConsumerState<_Content> {
 
             ProductHorizontalListView(
               products: [
-                ...products
+                ...products.where((product) => product.discount > 0)
               ],
               title: 'Limited Offers',
               subTitle: 'View All',

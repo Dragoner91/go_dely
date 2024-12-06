@@ -10,6 +10,7 @@ class ICart {
   final String currency;
   final String image; 
   final String type;
+  final double discount;
   int quantity;
 
   ICart({
@@ -21,7 +22,8 @@ class ICart {
     required this.image, 
     required this.name, 
     required this.price,
-    required this.type
+    required this.type,
+    required this.discount
   });
 
 }

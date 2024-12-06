@@ -4,7 +4,7 @@ import 'package:go_dely/domain/order/order.dart';
 
 abstract class IOrderRepository {
 
-  Future<Result<void>> createOrder(Order order);
+  Future<Result<String>> createOrder(Order order);
 
   Future<Result<List<Order>>> getOrders();
 

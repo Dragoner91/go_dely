@@ -16,6 +16,7 @@ class CartItem extends ICart{
   final String currency;
   final String image; 
   final String type;
+  final double discount;
   int quantity;
 
   CartItem({
@@ -28,7 +29,8 @@ class CartItem extends ICart{
     required this.image, 
     required this.name, 
     required this.price,
-    required this.type
+    required this.type,
+    required this.discount
   }) : super(
     quantity: quantity, 
     category: category, 
@@ -38,7 +40,8 @@ class CartItem extends ICart{
     image: image, 
     name: name, 
     price: price,
-    type: type
+    type: type,
+    discount: discount
   );
 
 }

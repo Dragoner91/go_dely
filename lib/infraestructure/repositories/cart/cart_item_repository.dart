@@ -87,4 +87,15 @@ class CartItemRepository extends ICartRepository{
     final isar = await db;
     return isar.cartItems.where().watch(fireImmediately: true);
   }
+
+  @override
+  Future<double> getTotalPrice() async {
+    final items = await getItemsFromCart();
+    double totalPrice = 0;
+    for (var item in items) {
+      totalPrice += item.quantity * item.price - item.price * item.discount;
+    }
+    return totalPrice;
+  }
+
 }
