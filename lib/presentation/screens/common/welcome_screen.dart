@@ -26,7 +26,54 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
     final authRepository = GetIt.instance.get<IAuthRepository>();
     final token = await authRepository.getToken();
     if (token.isSuccessful && token.unwrap()!.isNotEmpty) {
-      context.go("/home");
+
+      showDialog(
+          context: context,
+          barrierDismissible: false,
+          builder: (BuildContext context) {
+            return const Dialog(
+              child: Padding(
+                padding: EdgeInsets.all(16.0),
+                child: SizedBox(
+                  height: 150,
+                  width: 80,
+                  child: Row(
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      CircularProgressIndicator(),
+                    ],
+                  ),
+                ),
+              ),
+            );
+          },
+        );
+
+      final check = await authRepository.checkAuth(token.unwrap()!);
+      if(check.isSuccessful && check.unwrap()) {
+        context.go("/home");
+      } else {
+        showDialog(
+            context: context,
+            builder: (BuildContext context) {
+              return AlertDialog(
+                title: const Text("Error"),
+                content: const Text("Token Expired, you must login again"),
+                actions: [
+                  TextButton(
+                    child: const Text("OK"),
+                    onPressed: () {
+                      Navigator.of(context).pop(); // Close the error dialog
+                      context.go("/login");
+                    },
+                  ),
+                ],
+              );
+            },
+          );
+      }
+      
     }
   }
 
@@ -110,19 +157,6 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
             ), 
             child: const Text("Login or Register", style: TextStyle(color: Colors.white, fontSize: 20),),
           ),
-          const SizedBox(height: 10,),
-          OutlinedButton(
-            onPressed: () {
-              setState(() {
-                isAnimating = !isAnimating;
-                changeScreen(context, "/home");
-              });
-            },
-            style: OutlinedButton.styleFrom(
-              side: const BorderSide(width: 2, color: Colors.black),
-            ),
-            child: const Text("Continue Without Login", style: TextStyle(color: Colors.black, fontSize: 16),),
-          )
         ],
       ),
       );

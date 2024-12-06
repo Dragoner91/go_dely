@@ -12,4 +12,6 @@ abstract class IAuthRepository{
 
   Future<Result<String>> setToken(String token);
 
+  Future<Result<bool>> checkAuth(String token);
+
 }

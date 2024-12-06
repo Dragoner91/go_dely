@@ -1,12 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:get_it/get_it.dart';
 import 'package:go_dely/aplication/providers/cart/address_selected_provider.dart';
 import 'package:go_dely/aplication/providers/cart/cart_items_provider.dart';
 import 'package:go_dely/aplication/providers/cart/date_selected_provider.dart';
 import 'package:go_dely/aplication/providers/cart/payment_method_selected_provider.dart';
 import 'package:go_dely/aplication/providers/order/order_repository_provider.dart';
-import 'package:go_dely/domain/order/i_order_repository.dart';
 import 'package:go_dely/domain/order/order.dart';
 import 'package:go_router/go_router.dart';
 
@@ -174,17 +172,24 @@ class _Content extends StatelessWidget {
   }
 }
 
-class _Addresses extends StatelessWidget {
+class _Addresses extends ConsumerStatefulWidget {
 
-  final int selected = 0;
   final List<String> addresses;
 
   const _Addresses({required this.addresses});
 
   @override
+  ConsumerState<_Addresses> createState() => _AddressesState();
+}
+
+class _AddressesState extends ConsumerState<_Addresses> {
+  final int selected = 0;
+
+  @override
   Widget build(BuildContext context) {
 
     final primaryColor = Theme.of(context).colorScheme;
+    ref.watch(addressSelected);
 
     return Padding(
       padding: const EdgeInsets.all(8.0),
@@ -202,12 +207,10 @@ class _Addresses extends StatelessWidget {
           SizedBox(
             height: 330,
             child: ListView.builder(
-              itemCount: addresses.length,
+              itemCount: widget.addresses.length,
               shrinkWrap: true,
               itemBuilder: (context, index) { 
-                bool isSelected;
-                selected == index ? isSelected = true : isSelected = false;
-                return _Address(selected: isSelected, address: addresses[index],);
+                return _Address(address: widget.addresses[index],);
                 }, //*meterle una direccion
             ),
           ),
@@ -229,16 +232,21 @@ class _Addresses extends StatelessWidget {
   }
 }
 
-class _Address extends StatelessWidget {
-  final bool selected;
+class _Address extends ConsumerStatefulWidget {
   final String address;
-  const _Address({required this.selected, required this.address});
+  const _Address({required this.address});
 
+  @override
+  ConsumerState<_Address> createState() => _AddressState();
+}
+
+class _AddressState extends ConsumerState<_Address> {
   @override
   Widget build(BuildContext context) {
 
     final selectedColor = Theme.of(context).splashColor;
     final unselectedColor = Theme.of(context).scaffoldBackgroundColor;
+    final bool selected = ref.watch(addressSelected.notifier).state == widget.address;
 
     return Padding(
       padding: const EdgeInsets.all(4),
@@ -260,7 +268,7 @@ class _Address extends StatelessWidget {
                 shape: const CircleBorder(),
                 value: selected,
                 onChanged: (value) {
-                  //* implementar provider para el valor seleccionado y hacerlo persistente con sharedPreferences
+                  ref.read(addressSelected.notifier).update((state) => widget.address);
                 },
               ),
             ),
@@ -270,11 +278,11 @@ class _Address extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    address,
+                    widget.address,
                     style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
                   ),
-                  Text(address), //*arreglar esto cuando las direcciones reales esten listas
-                  Text('${address}, ${address} ${address}'),
+                  Text(widget.address), //*arreglar esto cuando las direcciones reales esten listas
+                  Text('${widget.address}, ${widget.address} ${widget.address}'),
                 ],
               ),
             ),
