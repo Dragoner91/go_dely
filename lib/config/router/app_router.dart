@@ -5,7 +5,7 @@ import 'package:go_router/go_router.dart';
 
 // GoRouter configuration
 final appRouter = GoRouter(
-  initialLocation: '/discount',
+  initialLocation: '/profile',
   routes: [
     GoRoute(
       path: '/home',
@@ -47,7 +47,7 @@ final appRouter = GoRouter(
         return  CustomTransitionPage(
           transitionDuration: const Duration(seconds: 1),
           key: state.pageKey,
-          child: const ProfileScreen(),
+          child: UserProfileScreen(),
           transitionsBuilder: (context, animation, secondaryAnimation, child) {
             return FadeTransition(
               opacity:
@@ -247,6 +247,23 @@ final appRouter = GoRouter(
           transitionDuration: const Duration(seconds: 1),
           key: state.pageKey,
           child: const DiscountScreen(),
+          transitionsBuilder: (context, animation, secondaryAnimation, child) {
+            return FadeTransition(
+              opacity:
+              CurveTween(curve: Curves.easeInOutCirc).animate(animation),
+              child: child,
+            );
+          },
+        );
+      },
+    ),
+    GoRoute(
+      path: '/userprofile',
+      pageBuilder: (context, state) {
+        return  CustomTransitionPage(
+          transitionDuration: const Duration(seconds: 1),
+          key: state.pageKey,
+          child: UserProfileScreen(),
           transitionsBuilder: (context, animation, secondaryAnimation, child) {
             return FadeTransition(
               opacity:
