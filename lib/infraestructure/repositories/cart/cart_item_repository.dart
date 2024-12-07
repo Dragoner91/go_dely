@@ -5,7 +5,7 @@ import 'package:isar/isar.dart';
 import 'package:path_provider/path_provider.dart';
 
 class CartItemRepository extends ICartRepository{
-   late Future<Isar> db;
+  late Future<Isar> db;
 
   CartItemRepository(){
     db = openDB();
@@ -89,22 +89,19 @@ class CartItemRepository extends ICartRepository{
   }
 
   @override
-  Future<double> getTotalPrice() async {
-    final items = await getItemsFromCart();
-    double totalPrice = 0;
-    for (var item in items) {
-      totalPrice += item.quantity * item.price - item.price * item.discount;
-    }
-    return totalPrice;
-  }
-
-  @override
   Future<void> cleanItems() async {
     final items = await getItemsFromCart();
     for (var item in items) {
       var cartItem = item as CartItem;
       await removeItemFromCart(cartItem.isarId!.toInt());
     }
+  }
+
+  @override
+  Future<double> calculateTotal() async {
+    final items = await getItemsFromCart();
+    final double total = items.fold(0, (sum, item) => sum + item.price * item.quantity * (1 - item.discount));
+    return total;
   }
 
 }

@@ -53,10 +53,8 @@ class _CheckoutInfo extends ConsumerStatefulWidget {
 
 class _CheckoutInfoState extends ConsumerState<_CheckoutInfo> {
   Future<double> calculateSubtotal() async {
-    final items =
-        await ref.read(cartItemsProvider.notifier).getAllItemsFromCart();
-    double subtotal =
-        items.fold(0, (sum, item) => sum + (item.price * item.quantity));
+    final items = await ref.read(cartItemsProvider.notifier).getAllItemsFromCart();
+    double subtotal = items.fold(0, (sum, item) => sum + item.price * item.quantity);
     return subtotal;
   }
 
@@ -69,16 +67,15 @@ class _CheckoutInfoState extends ConsumerState<_CheckoutInfo> {
   }
 
   Future<double> calculateDiscount() async {
-    final items = await ref
-        .read(cartItemsProvider.notifier)
-        .getAllItemsFromCart(); //* Implementar descuento cuando se haga en el back
-    double subtotal = items.fold(0, (sum, item) => sum + item.price);
-    return subtotal;
+    final items = await ref.read(cartItemsProvider.notifier).getAllItemsFromCart();
+    final double discount = items.fold(0, (sum, item) => sum + item.price * item.discount * item.quantity);
+    return discount;
   }
 
   Future<double> calculateTotal() async {
-    double subtotal = await calculateSubtotal(); //* Acomodar cuando se haga lo demas
-    return subtotal;
+    final items = await ref.read(cartItemsProvider.notifier).getAllItemsFromCart();
+    final double total = items.fold(0, (sum, item) => sum + item.price * item.quantity * (1 - item.discount));
+    return total;
   }
 
   @override
@@ -131,18 +128,31 @@ class _CheckoutInfoState extends ConsumerState<_CheckoutInfo> {
             ),
           ],
         ),
-        const Row(
+        Row(
           children: [
-            SizedBox(
+            const SizedBox(
               width: 40,
             ),
-            Text(
+            const Text(
               "Discount: ",
               style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
             ),
-            Spacer(),
-            Text("0 USD", style: TextStyle(fontSize: 16, color: Colors.red)),
-            SizedBox(
+            const Spacer(),
+            FutureBuilder(
+              future: calculateDiscount(),
+              builder: (context, snapshot) {
+                if (snapshot.connectionState == ConnectionState.waiting) {
+                  return const SizedBox();
+                } else {
+                  return FadeIn(
+                    duration: const Duration(milliseconds: 200),
+                    child: Text('${HumanFormarts.numberCurrency(snapshot.data!)} USD',
+                        style: const TextStyle(fontSize: 16, color: Colors.red)),
+                  ); //* Cambiar despues para que traiga el currency
+                }
+              },
+            ),
+            const SizedBox(
               width: 40,
             ),
           ],

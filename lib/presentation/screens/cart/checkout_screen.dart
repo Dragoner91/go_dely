@@ -88,21 +88,12 @@ class _PlaceOrderButtonState extends ConsumerState<_PlaceOrderButton> {
                   );
                 },
               );
+              
               final items = await ref.read(cartItemsProvider.notifier).getAllItemsFromCart();
               final date = ref.read(dateSelected.notifier).state;
               final paymentMethod = ref.read(paymentMethodSelected.notifier).state;
               final address = ref.read(addressSelected.notifier).state;
-              final total = await ref.read(cartItemsProvider.notifier).getTotalPrice();
-
-              final comboIds = items
-                  .where((item) => item.type == 'Combo')
-                  .map((item) => item.id)
-                  .toList();
-
-              final productsIds = items
-                  .where((item) => item.type == 'Product')
-                  .map((item) => item.id)
-                  .toList();    
+              final total = await ref.read(cartItemsProvider.notifier).calculateTotal(); 
 
               final List<Map<String, dynamic>> combos = items
                   .where((item) => item.type == 'Combo')
