@@ -204,6 +204,7 @@ class ItemsInfo extends StatelessWidget {
               borderRadius: const BorderRadius.all(Radius.circular(5)),
             ),
         child: Column(
+          mainAxisAlignment: MainAxisAlignment.start,
           children: [
             Row(
               children: [
@@ -222,7 +223,16 @@ class ItemsInfo extends StatelessWidget {
             ),
 
 
-            // ItemsDetails(item: item),
+            SizedBox(
+              height: order.items.length * 80.0, // Ajusta la altura según el número de ítems
+              child: ListView.builder(
+                itemCount: order.items.length,
+                itemBuilder: (context, index) {
+                  final item = order.items[index];
+                  return ItemsDetails(item: item);
+                },
+              ),
+            ),
 
 
             const Divider(),
@@ -265,7 +275,6 @@ class ItemsInfo extends StatelessWidget {
 }
 
 class ItemsDetails extends StatelessWidget {
-
   final ICart item;
 
   const ItemsDetails({super.key, required this.item});
@@ -278,18 +287,57 @@ class ItemsDetails extends StatelessWidget {
         children: [
           Padding(
             padding: const EdgeInsets.all(5),
-            child: Image.network(item.image, fit: BoxFit.contain, height: 70, width: 70,),
+            child: Image.network(
+              item.image,
+              fit: BoxFit.contain,
+              height: 50,
+              width: 50,
+              errorBuilder: (context, error, stackTrace) {
+                return Image.network(
+                  'https://media.istockphoto.com/id/1396814518/vector/image-coming-soon-no-photo-no-thumbnail-image-available-vector-illustration.jpg?s=612x612&w=0&k=20&c=hnh2OZgQGhf0b46-J2z7aHbIWwq8HNlSDaNp2wn_iko=',
+                  fit: BoxFit.contain,
+                  height: 50,
+                  width: 50,
+                );
+              },
+            ),
           ),
-          Column(
-            children: [
-              Text(item.name),
-              Text(item.description)
-            ],
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  children: [
+                    Container(
+                      constraints: const BoxConstraints(maxWidth: 200),
+                      child: Text(
+                        "${item.name}  (x${item.quantity})",
+                        style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 12),
+                        maxLines: 2,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    ),
+                    const Spacer(),
+                    Text(
+                      "${item.price} USD",
+                      style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 12),
+                      maxLines: 2,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 5),
+                Text(
+                  item.description,
+                  style: const TextStyle(fontSize: 8),
+                  maxLines: 2,
+                  overflow: TextOverflow.ellipsis,
+                ),
+                const SizedBox(height: 5),
+                
+              ],
+            ),
           ),
-          Padding(
-            padding: const EdgeInsets.all(5),
-            child: Text("${item.price} ${item.currency}"),
-          )
         ],
       ),
     );

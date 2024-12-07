@@ -49,6 +49,23 @@ class _Content extends ConsumerStatefulWidget {
 
 class _ContentState extends ConsumerState<_Content> {
 
+  List<Order> _ordersActive = [];
+  List<Order> _ordersPast = [];
+
+  @override
+  void initState() {
+    super.initState();
+    _loadOrders();
+  }
+
+  Future<void> _loadOrders() async {
+    final orders = await ref.read(orderRepositoryProvider).getOrders();
+    setState(() {
+      _ordersActive = orders.unwrap().where((order) => ((order.status == 'CREATED') | (order.status == 'BEING PROCESSED') | (order.status == 'SHIPPED'))).toList();
+      _ordersPast = orders.unwrap().where((order) => ((order.status == 'CANCELLED') | (order.status == 'DELIVERED'))).toList();
+    });
+  }
+
   Future<List<Order>> getOrders() async {
     final orders = await ref.read(orderRepositoryProvider).getOrders();
     final selected = ref.read(orderSelectedProvider.notifier).state;
@@ -62,14 +79,17 @@ class _ContentState extends ConsumerState<_Content> {
   }
 
   Future<String> getActiveQuantity() async {
-    final orders = await ref.read(orderRepositoryProvider).getOrders();
-    return orders.unwrap().where((order) => ((order.status == 'CREATED') | (order.status == 'BEING PROCESSED') | (order.status == 'SHIPPED'))).toList().length.toString();
+    return _ordersActive.length.toString();
   }
 
   Future<String> getPastQuantity() async {
-    final orders = await ref.read(orderRepositoryProvider).getOrders();
-    return orders.unwrap().where((order) => ((order.status == 'CANCELLED') | (order.status == 'DELIVERED'))).toList().length.toString();
+    return _ordersPast.length.toString();
   }
+
+  Future<List<String>> getOrderQuantities() async {
+
+  return [await getActiveQuantity(), await getPastQuantity()];
+}
 
   Future<List<String>> getQuantities() async {
     final activeQuantity = await getActiveQuantity();
@@ -79,7 +99,7 @@ class _ContentState extends ConsumerState<_Content> {
 
   void refreshState() {
     setState(() {
-      // Aquí puedes agregar cualquier lógica adicional que necesites para recargar los widgets de arriba
+      _loadOrders();
     });
   }
 
@@ -224,6 +244,10 @@ class _OrderContentState extends ConsumerState<_OrderContent> {
     }
   }
 
+  String getOrderItemsText() {
+    return widget.order.items.map((item) => '${item.name} (x${item.quantity})').join(', \n');
+  }
+
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
@@ -239,7 +263,7 @@ class _OrderContentState extends ConsumerState<_OrderContent> {
           shape: BoxShape.rectangle,
           borderRadius: const BorderRadius.all(Radius.circular(20)),
         ),
-        height: 220,
+        height: 200 + (widget.order.items.length * 20.0),
         child: Column(
           children: [
             Padding(
@@ -282,7 +306,22 @@ class _OrderContentState extends ConsumerState<_OrderContent> {
                 const Spacer()
               ],
             ),
-            const Text("Items List"),
+            Row(
+              children: [
+                Padding(
+                  padding: const EdgeInsets.all(10),
+                  child: Expanded(
+                    child: Text(
+                      getOrderItemsText(),
+                      style: const TextStyle(fontSize: 12),
+                      softWrap: true,
+                      maxLines: widget.order.items.length,
+                      overflow: TextOverflow.visible,
+                    ),
+                  ),
+                ),
+              ],
+            ),
             const Spacer(),
             Row(
               children: [
@@ -427,6 +466,7 @@ class _OrderContentState extends ConsumerState<_OrderContent> {
                                         child: const Text("YES", style: TextStyle(color: Colors.red),),
                                         onPressed: () async {
                                           await ref.read(orderRepositoryProvider).changeStatus(widget.order.id, 'CANCELLED');
+                                          print("cambio");
                                           widget.onRefresh();
                                           Navigator.of(context).pop(); // Close the error dialog
                                         },

@@ -33,14 +33,15 @@ class ProductDB {
         price: double.parse(json["product_price"]), 
         currency: json["product_currency"], 
         weight: json["product_weight"], 
-        imageUrl: List<String>.from(json["images"].map((e) => e)), 
+        imageUrl: json["images"] != null
+          ? List<String>.from(json["images"].map((e) => e))
+          : [],
         description: json["product_description"], 
         stock: json["product_stock"],
         category: json["product_category"] ?? "No category",
         discount: json["discount"] == null ? 0.0 : double.tryParse(json["discount"]["value"]) ?? 0.1,
       );
     } catch (e) {
-      print(json["discount"] == null ? 0.0 : double.tryParse(json["discount"]["value"]) ?? 0.1);
       print(e);
     }
     return ProductDB(

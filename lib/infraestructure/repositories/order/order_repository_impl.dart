@@ -14,7 +14,7 @@ class OrderRepositoryImpl extends IOrderRepository{
   OrderRepositoryImpl({required this.petition, required this.auth});
 
   @override
-  Future<Result<String>> createOrder(Order order) async {
+  Future<Result<String>> createOrder(CreateOrder order) async {
 
     final tokenResult = await auth.getToken();
     if(tokenResult.isError) return throw tokenResult.error;
@@ -81,7 +81,6 @@ class OrderRepositoryImpl extends IOrderRepository{
               OrderDB.fromJson(order)
             )
           );
-          
         }
         return orders;
       },

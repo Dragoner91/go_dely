@@ -113,7 +113,7 @@ class _PlaceOrderButtonState extends ConsumerState<_PlaceOrderButton> {
                       })
                   .toList();
 
-              final Order order = Order( //*crear clase para CreateOrder
+              final CreateOrder order = CreateOrder( 
                 id: "",
                 address: address, 
                 combos: combos, 

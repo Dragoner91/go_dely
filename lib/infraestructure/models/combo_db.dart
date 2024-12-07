@@ -30,11 +30,13 @@ class ComboDB {
     id: json["combo_id"].toString(), 
     name: json["combo_name"], 
     price: double.parse(json["combo_price"]), 
-    products: List<Product>.from(json["products"].map((e) => ProductMapper.productToEntity(ProductDB.fromJson(e)))), 
+    products: json["products"] == null
+        ? []
+        : List<Product>.from(json["products"].map((e) => ProductMapper.productToEntity(ProductDB.fromJson(e)))), 
     description: json["combo_description"], 
-    category: json["combo_category"],
+    category: json["combo_category"] ?? "",
     currency: json["combo_currency"],
-    imageUrl: json["combo_image"],
+    imageUrl: json["combo_image"] ?? "",
     discount: json["discount"] == null ? 0.0 : double.tryParse(json["discount"]["value"]) ?? 0.1,
   );
 
