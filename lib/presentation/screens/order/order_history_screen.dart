@@ -53,27 +53,33 @@ class _ContentState extends ConsumerState<_Content> {
     final selected = ref.read(orderSelectedProvider.notifier).state;
     final List<Order> ordersSelected;
     if(selected == "Active"){
-      ordersSelected = orders.unwrap().where((order) => ((order.status == 'CREATED') | (order.status == 'BEING PROCESSED'))).toList();
+      ordersSelected = orders.unwrap().where((order) => ((order.status == 'CREATED') | (order.status == 'BEING PROCESSED') | (order.status == 'SHIPPED'))).toList();
     } else {
-      ordersSelected = orders.unwrap().where((order) => ((order.status == 'CANCELLED') | (order.status == 'DELIVERED') | (order.status == 'SHIPPED'))).toList();
+      ordersSelected = orders.unwrap().where((order) => ((order.status == 'CANCELLED') | (order.status == 'DELIVERED'))).toList();
     }
     return ordersSelected;
   }
 
   Future<String> getActiveQuantity() async {
     final orders = await ref.read(orderRepositoryProvider).getOrders();
-    return orders.unwrap().where((order) => ((order.status == 'CREATED') | (order.status == 'BEING PROCESSED'))).toList().length.toString();
+    return orders.unwrap().where((order) => ((order.status == 'CREATED') | (order.status == 'BEING PROCESSED') | (order.status == 'SHIPPED'))).toList().length.toString();
   }
 
   Future<String> getPastQuantity() async {
     final orders = await ref.read(orderRepositoryProvider).getOrders();
-    return orders.unwrap().where((order) => ((order.status == 'CANCELLED') | (order.status == 'DELIVERED') | (order.status == 'SHIPPED'))).toList().length.toString();
+    return orders.unwrap().where((order) => ((order.status == 'CANCELLED') | (order.status == 'DELIVERED'))).toList().length.toString();
   }
 
   Future<List<String>> getQuantities() async {
     final activeQuantity = await getActiveQuantity();
     final pastQuantity = await getPastQuantity();
     return [activeQuantity, pastQuantity];
+  }
+
+  void refreshState() {
+    setState(() {
+      // Aquí puedes agregar cualquier lógica adicional que necesites para recargar los widgets de arriba
+    });
   }
 
   @override
@@ -108,32 +114,40 @@ class _ContentState extends ConsumerState<_Content> {
               child: FutureBuilder<List<String>>(
                 future: getQuantities(),
                 builder: (context, snapshot) {
-                  final quantities = snapshot.data!;
-                  final activeQuantity = quantities[0];
-                  final pastQuantity = quantities[1];
-                  return AdvancedSegment(
-                    controller: controller, // AdvancedSegmentController
-                    segments: { // Map<String, String>
-                      'Active': 'Active ($activeQuantity)',
-                      'Past Orders': 'Past Orders ($pastQuantity)',
-                    },
-                    activeStyle: const TextStyle( // TextStyle
-                      color: Colors.white,
-                      fontWeight: FontWeight.w600,
-                    ),
-                    inactiveStyle: TextStyle( // TextStyle
-                      color: secondaryColor,
-                    ),
-                    backgroundColor: backgroundColor, // Color
-                    sliderColor: primaryColor, // Color
-                    sliderOffset: 2.0, // Double
-                    borderRadius: const BorderRadius.all(Radius.circular(8.0)), // BorderRadius
-                    itemPadding: const EdgeInsets.symmetric( // EdgeInsets
-                      horizontal: 30,
-                      vertical: 10,
-                    ),
-                    animationDuration: const Duration(milliseconds: 250), // Duration
-                  );
+                  if (snapshot.connectionState == ConnectionState.waiting) {
+                    return const SizedBox();
+                  } else if (snapshot.hasError) {
+                    return const SizedBox();
+                  } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
+                    return const SizedBox();
+                  } else {
+                    final quantities = snapshot.data!;
+                    final activeQuantity = quantities[0];
+                    final pastQuantity = quantities[1];
+                    return AdvancedSegment(
+                      controller: controller, // AdvancedSegmentController
+                      segments: { // Map<String, String>
+                        'Active': 'Active ($activeQuantity)',
+                        'Past Orders': 'Past Orders ($pastQuantity)',
+                      },
+                      activeStyle: const TextStyle( // TextStyle
+                        color: Colors.white,
+                        fontWeight: FontWeight.w600,
+                      ),
+                      inactiveStyle: TextStyle( // TextStyle
+                        color: secondaryColor,
+                      ),
+                      backgroundColor: backgroundColor, // Color
+                      sliderColor: primaryColor, // Color
+                      sliderOffset: 2.0, // Double
+                      borderRadius: const BorderRadius.all(Radius.circular(8.0)), // BorderRadius
+                      itemPadding: const EdgeInsets.symmetric( // EdgeInsets
+                        horizontal: 30,
+                        vertical: 10,
+                      ),
+                      animationDuration: const Duration(milliseconds: 250), // Duration
+                    );
+                  }
                 },
               ),
             ),
@@ -165,7 +179,7 @@ class _ContentState extends ConsumerState<_Content> {
                     } else {
                       final orders = snapshot.data!;
                       return Column(
-                        children: orders.map((order) => _OrderContent(order: order)).toList(),
+                        children: orders.map((order) => _OrderContent(order: order, onRefresh: refreshState)).toList(),
                       );
                     }
                   },
@@ -180,12 +194,18 @@ class _ContentState extends ConsumerState<_Content> {
 }
 
 
-class _OrderContent extends StatelessWidget {
+class _OrderContent extends ConsumerStatefulWidget {
 
+  final VoidCallback onRefresh;
   final Order order;
 
-  const _OrderContent({required this.order});
+  const _OrderContent({required this.order, required this.onRefresh});
 
+  @override
+  ConsumerState<_OrderContent> createState() => _OrderContentState();
+}
+
+class _OrderContentState extends ConsumerState<_OrderContent> {
   Color getColor(String status) {
     switch (status) {
       case 'CREATED':
@@ -195,9 +215,9 @@ class _OrderContent extends StatelessWidget {
       case 'DELIVERED':
         return Colors.green;
       case 'SHIPPED':
-        return Colors.orange;
-      case 'BEING PROCESSED':
         return Colors.yellow;
+      case 'BEING PROCESSED':
+        return Colors.orange;
       default:
         return Colors.grey;
     }
@@ -240,7 +260,7 @@ class _OrderContent extends StatelessWidget {
                   ),
                   Expanded(
                     child: Text(
-                      "${order.total} ${order.currency}",
+                      "${widget.order.total} ${widget.order.currency}",
                       textAlign: TextAlign.right,
                       style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
                     ),
@@ -255,7 +275,7 @@ class _OrderContent extends StatelessWidget {
               children: [
                 Padding(
                   padding: const EdgeInsets.only(left: 15, top: 5),
-                  child: Text("Order #${order.id}", style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),),
+                  child: Text("Order #${widget.order.id}", style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),),
                 ),
                 const Spacer()
               ],
@@ -267,18 +287,18 @@ class _OrderContent extends StatelessWidget {
                 Padding(
                   padding: const EdgeInsets.only(left: 15, top: 5),
                   child: Container(
-                    width: 10,
-                    height: 10,
+                    width: 12,
+                    height: 12,
                     decoration: BoxDecoration(
                       shape: BoxShape.circle,
-                      color: getColor(order.status)
+                      color: getColor(widget.order.status)
                       , // Color basado en el estado de la orden
                     ),
                   ),
                 ),
                 Padding(
                   padding: const EdgeInsets.only(left: 5, top: 5),
-                  child: Text(" ${order.status}", style: const TextStyle(fontSize: 14),), // Mostrar el estatus de la orden
+                  child: Text(" ${widget.order.status}", style: const TextStyle(fontSize: 14),), // Mostrar el estatus de la orden
                 ),
                 const Spacer()
               ],
@@ -303,7 +323,7 @@ class _OrderContent extends StatelessWidget {
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceEvenly, // Distribuye los botones uniformemente
                     children: [
-                      ['DELIVERED'].contains(order.status)
+                      ['DELIVERED'].contains(widget.order.status)
                       ? Expanded(
                         child: Padding(
                           padding: const EdgeInsets.symmetric(horizontal: 7),
@@ -325,7 +345,7 @@ class _OrderContent extends StatelessWidget {
                         ),
                       )
                       : const SizedBox(),
-                      ['CANCELLED', 'DELIVERED'].contains(order.status)
+                      ['CANCELLED', 'DELIVERED'].contains(widget.order.status)
                       ? Expanded(
                         child: Padding(
                           padding: const EdgeInsets.symmetric(horizontal: 7),
@@ -347,7 +367,7 @@ class _OrderContent extends StatelessWidget {
                         ),
                       )
                       : const SizedBox(),
-                      ['CANCELLED', 'DELIVERED'].contains(order.status)
+                      ['CANCELLED', 'DELIVERED'].contains(widget.order.status)
                       ? Expanded(
                         child: Padding(
                           padding: const EdgeInsets.symmetric(horizontal: 7),
@@ -369,13 +389,50 @@ class _OrderContent extends StatelessWidget {
                         ),
                       )
                       : const SizedBox(),
-                      ['CREATED', 'BEING PROCESSED'].contains(order.status)
+                      ['CREATED', 'BEING PROCESSED'].contains(widget.order.status)
                       ? Expanded(
                         child: Padding(
                           padding: const EdgeInsets.symmetric(horizontal: 7),
                           child: FilledButton(
                             onPressed: () {
-                              
+                              showDialog(
+                                context: context,
+                                builder: (BuildContext context) {
+                                  return AlertDialog(
+                                    title: Row(
+                                      mainAxisAlignment: MainAxisAlignment.center,
+                                      children: [
+                                        Icon(Icons.warning_rounded, color: Colors.yellowAccent.shade400),
+                                        const Text("  WARNING  "),
+                                        Icon(Icons.warning_rounded, color: Colors.yellowAccent.shade400),
+                                      ],
+                                    ),
+                                    content: const Row(
+                                      mainAxisAlignment: MainAxisAlignment.center,
+                                      children: [
+                                        Text("Do you want to cancel this order?"),
+                                      ],
+                                    ),
+                                    actions: [
+                                      TextButton(
+                                        child: const Text("NO"),
+                                        onPressed: () {
+                                          Navigator.of(context).pop();
+                                        },
+                                      ),
+                                      const SizedBox(width: 100),
+                                      TextButton(
+                                        child: const Text("YES", style: TextStyle(color: Colors.red),),
+                                        onPressed: () async {
+                                          await ref.read(orderRepositoryProvider).changeStatus(widget.order.id, 'CANCELLED');
+                                          widget.onRefresh();
+                                          Navigator.of(context).pop(); // Close the error dialog
+                                        },
+                                      ),
+                                    ],
+                                  );
+                                },
+                              );
                             },
                             style: ButtonStyle(
                               shape: WidgetStateProperty.all<RoundedRectangleBorder>(
@@ -393,7 +450,7 @@ class _OrderContent extends StatelessWidget {
                         ),
                       )
                       : const SizedBox(),
-                      ['BEING PROCESSED', 'SHIPPED'].contains(order.status)
+                      ['BEING PROCESSED', 'SHIPPED'].contains(widget.order.status)
                       ? Expanded(
                         child: Padding(
                           padding: const EdgeInsets.symmetric(horizontal: 7),

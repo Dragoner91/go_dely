@@ -89,5 +89,28 @@ class OrderRepositoryImpl extends IOrderRepository{
     return result;
   }
 
+  @override
+  Future<Result<void>> changeStatus(String id, String status) async {
+    final tokenResult = await auth.getToken();
+    if(tokenResult.isError) return throw tokenResult.error;
+
+    petition.updateHeaders(headerKey: "Authorization", headerValue: "Bearer ${tokenResult.unwrap()}");
+
+    var queryParameters = {
+      'status': status,
+    };
+
+    final result = await petition.makeRequest(
+      urlPath: '/orders/$id/status',
+      httpMethod: 'PATCH',
+      mapperCallBack: (data) {
+        return data['message'];
+      },
+      body: queryParameters
+    );
+    
+    return result;
+
+  }
 
 }

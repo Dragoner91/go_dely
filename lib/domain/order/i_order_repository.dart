@@ -10,4 +10,6 @@ abstract class IOrderRepository {
 
   Future<Result<Order>> getOrderById(String id);
 
+  Future<Result<void>> changeStatus(String id, String status);
+
 }
