@@ -48,15 +48,36 @@ class _Content extends ConsumerStatefulWidget {
 
 class _ContentState extends ConsumerState<_Content> {
 
-
   Future<List<Order>> getOrders() async {
     final orders = await ref.read(orderRepositoryProvider).getOrders();
-    return orders.unwrap();
+    final selected = ref.read(orderSelectedProvider.notifier).state;
+    final List<Order> ordersSelected;
+    if(selected == "Active"){
+      ordersSelected = orders.unwrap().where((order) => ((order.status == 'CREATED') | (order.status == 'BEING PROCESSED'))).toList();
+    } else {
+      ordersSelected = orders.unwrap().where((order) => ((order.status == 'CANCELLED') | (order.status == 'DELIVERED') | (order.status == 'SHIPPED'))).toList();
+    }
+    return ordersSelected;
+  }
+
+  Future<String> getActiveQuantity() async {
+    final orders = await ref.read(orderRepositoryProvider).getOrders();
+    return orders.unwrap().where((order) => ((order.status == 'CREATED') | (order.status == 'BEING PROCESSED'))).toList().length.toString();
+  }
+
+  Future<String> getPastQuantity() async {
+    final orders = await ref.read(orderRepositoryProvider).getOrders();
+    return orders.unwrap().where((order) => ((order.status == 'CANCELLED') | (order.status == 'DELIVERED') | (order.status == 'SHIPPED'))).toList().length.toString();
+  }
+
+  Future<List<String>> getQuantities() async {
+    final activeQuantity = await getActiveQuantity();
+    final pastQuantity = await getPastQuantity();
+    return [activeQuantity, pastQuantity];
   }
 
   @override
   Widget build(BuildContext context) {
-
     final orderSelected = ref.read(orderSelectedProvider.notifier).state;
 
     final controller = ValueNotifier(orderSelected);
@@ -67,84 +88,92 @@ class _ContentState extends ConsumerState<_Content> {
 
     controller.addListener(() {
       ref.read(orderSelectedProvider.notifier).update((state) => controller.value);
+      setState(() {});
     });
-    
 
     return RefreshIndicator(
       triggerMode: RefreshIndicatorTriggerMode.anywhere,
       color: const Color(0xFF5D9558),
       onRefresh: () async {
         setState(() {}); // Forzar la reconstrucción de la pantalla
-        await getOrders(); // Esperar a que se obtengan las órdenes
+        await getOrders();
       },
-      child: SingleChildScrollView(
-        child: Column(
-          children: [
-            Padding(
-              padding: const EdgeInsets.all(10),
-              child: AdvancedSegment(
-                controller: controller, // AdvancedSegmentController
-                segments: const { // Map<String, String>
-                  'Active': 'Active',
-                  'Past Orders': 'Past Orders',
+      child: CustomScrollView(
+        slivers: [
+          SliverAppBar(
+            pinned: true,
+            floating: true,
+            flexibleSpace: Padding(
+              padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 50),
+              child: FutureBuilder<List<String>>(
+                future: getQuantities(),
+                builder: (context, snapshot) {
+                  final quantities = snapshot.data!;
+                  final activeQuantity = quantities[0];
+                  final pastQuantity = quantities[1];
+                  return AdvancedSegment(
+                    controller: controller, // AdvancedSegmentController
+                    segments: { // Map<String, String>
+                      'Active': 'Active ($activeQuantity)',
+                      'Past Orders': 'Past Orders ($pastQuantity)',
+                    },
+                    activeStyle: const TextStyle( // TextStyle
+                      color: Colors.white,
+                      fontWeight: FontWeight.w600,
+                    ),
+                    inactiveStyle: TextStyle( // TextStyle
+                      color: secondaryColor,
+                    ),
+                    backgroundColor: backgroundColor, // Color
+                    sliderColor: primaryColor, // Color
+                    sliderOffset: 2.0, // Double
+                    borderRadius: const BorderRadius.all(Radius.circular(8.0)), // BorderRadius
+                    itemPadding: const EdgeInsets.symmetric( // EdgeInsets
+                      horizontal: 30,
+                      vertical: 10,
+                    ),
+                    animationDuration: const Duration(milliseconds: 250), // Duration
+                  );
                 },
-                activeStyle: const TextStyle( // TextStyle
-                  color: Colors.white,
-                  fontWeight: FontWeight.w600,
-                ),
-                inactiveStyle: TextStyle( // TextStyle
-                  color: secondaryColor,
-                ),
-                backgroundColor: backgroundColor, // Color
-                sliderColor: primaryColor, // Color
-                sliderOffset: 2.0, // Double
-                borderRadius: const BorderRadius.all(Radius.circular(8.0)), // BorderRadius
-                itemPadding: const EdgeInsets.symmetric( // EdgeInsets
-                  horizontal: 30,
-                  vertical: 10,
-                ),
-                animationDuration: const Duration(milliseconds: 250), // Duration
               ),
             ),
-            SingleChildScrollView(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  FutureBuilder<List<Order>>(
-                    future: getOrders(), 
-                    builder: (context, snapshot) {
-                      if (snapshot.connectionState == ConnectionState.waiting) {
-                        return const Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          crossAxisAlignment: CrossAxisAlignment.center,
-                          children: [
-                            Center(child: CircularProgressIndicator()),
-                          ],
-                        );
-                      } else if (snapshot.hasError) {
-                        return Center(child: Text('Error loading orders ${snapshot.error}'));
-                      } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
-                        return const Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          crossAxisAlignment: CrossAxisAlignment.center,
-                          children: [
-                            Center(child: Text('No orders available')),
-                          ],
-                        );
-                      } else {
-                        final orders = snapshot.data!;
-                        return Column(
-                          children: orders.map((order) => _OrderContent(order: order)).toList(),
-                        );
-                      }
-                    },
-                  ),
-            
-                ],
-              )
+          ),
+          SliverList(
+            delegate: SliverChildListDelegate(
+              [
+                FutureBuilder<List<Order>>(
+                  future: getOrders(), // Llama a la función que obtiene las órdenes
+                  builder: (context, snapshot) {
+                    if (snapshot.connectionState == ConnectionState.waiting) {
+                      return Center(
+                              child: Column(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  SizedBox(height: MediaQuery.of(context).size.height*0.3,),
+                                  const SizedBox(
+                                    width: 80.0, // Ancho deseado
+                                    height: 80.0, // Alto deseado
+                                    child: CircularProgressIndicator(),
+                                  ),
+                                ],
+                              ),
+                            );
+                    } else if (snapshot.hasError) {
+                      return Center(child: Text('Error loading orders: ${snapshot.error}'));
+                    } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
+                      return const Center(child: Text('No orders available'));
+                    } else {
+                      final orders = snapshot.data!;
+                      return Column(
+                        children: orders.map((order) => _OrderContent(order: order)).toList(),
+                      );
+                    }
+                  },
+                ),
+              ],
             ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }
@@ -155,7 +184,7 @@ class _OrderContent extends StatelessWidget {
 
   final Order order;
 
-  const _OrderContent({super.key, required this.order});
+  const _OrderContent({required this.order});
 
   Color getColor(String status) {
     switch (status) {
@@ -274,59 +303,118 @@ class _OrderContent extends StatelessWidget {
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceEvenly, // Distribuye los botones uniformemente
                     children: [
-                      Expanded(
-                        child: FilledButton(
-                          onPressed: () {},
-                          style: ButtonStyle(
-                            shape: WidgetStateProperty.all<RoundedRectangleBorder>(
-                              RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(10),
+                      ['DELIVERED'].contains(order.status)
+                      ? Expanded(
+                        child: Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 7),
+                          child: FilledButton(
+                            onPressed: () {},
+                            style: ButtonStyle(
+                              shape: WidgetStateProperty.all<RoundedRectangleBorder>(
+                                RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(10),
+                                ),
                               ),
-                            ),
-                            padding: WidgetStateProperty.all<EdgeInsets>(
-                              const EdgeInsets.symmetric(vertical: 5), // Ajusta el padding vertical
-                            ),
-                            backgroundColor: WidgetStateProperty.all<Color>(Colors.yellow.shade800), // Cambia el color de fondo del botón
-                          ),
-                          child: const Text("Ask Refund", style: TextStyle(color: Colors.white)), // Cambia el color del texto
-                        ),
-                      ),
-                      const SizedBox(width: 10),
-                      Expanded(
-                        child: FilledButton(
-                          onPressed: () {},
-                          style: ButtonStyle(
-                            shape: WidgetStateProperty.all<RoundedRectangleBorder>(
-                              RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(10),
+                              padding: WidgetStateProperty.all<EdgeInsets>(
+                                const EdgeInsets.symmetric(vertical: 5), // Ajusta el padding vertical
                               ),
+                              backgroundColor: WidgetStateProperty.all<Color>(Colors.yellow.shade800), // Cambia el color de fondo del botón
                             ),
-                            padding: WidgetStateProperty.all<EdgeInsets>(
-                              const EdgeInsets.symmetric(vertical: 5), // Ajusta el padding vertical
-                            ),
-                            backgroundColor: WidgetStateProperty.all<Color>(primaryColor), // Cambia el color de fondo del botón
+                            child: const Text("Ask Refund", style: TextStyle(color: Colors.white)), // Cambia el color del texto
                           ),
-                          child: const Text("Reorder Items", style: TextStyle(color: Colors.white)), // Cambia el color del texto
                         ),
-                      ),
-                      const SizedBox(width: 10),
-                      Expanded(
-                        child: FilledButton(
-                          onPressed: () {},
-                          style: ButtonStyle(
-                            shape: WidgetStateProperty.all<RoundedRectangleBorder>(
-                              RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(10),
+                      )
+                      : const SizedBox(),
+                      ['CANCELLED', 'DELIVERED'].contains(order.status)
+                      ? Expanded(
+                        child: Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 7),
+                          child: FilledButton(
+                            onPressed: () {},
+                            style: ButtonStyle(
+                              shape: WidgetStateProperty.all<RoundedRectangleBorder>(
+                                RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(10),
+                                ),
                               ),
+                              padding: WidgetStateProperty.all<EdgeInsets>(
+                                const EdgeInsets.symmetric(vertical: 5), // Ajusta el padding vertical
+                              ),
+                              backgroundColor: WidgetStateProperty.all<Color>(primaryColor), // Cambia el color de fondo del botón
                             ),
-                            padding: WidgetStateProperty.all<EdgeInsets>(
-                              const EdgeInsets.symmetric(vertical: 5), // Ajusta el padding vertical
-                            ),
-                            backgroundColor: WidgetStateProperty.all<Color>(Colors.redAccent.shade200), // Cambia el color de fondo del botón
+                            child: const Text("Reorder Items", style: TextStyle(color: Colors.white)), // Cambia el color del texto
                           ),
-                          child: const Text("Report a Problem", style: TextStyle(color: Colors.white)), // Cambia el color del texto
                         ),
-                      ),
+                      )
+                      : const SizedBox(),
+                      ['CANCELLED', 'DELIVERED'].contains(order.status)
+                      ? Expanded(
+                        child: Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 7),
+                          child: FilledButton(
+                            onPressed: () {},
+                            style: ButtonStyle(
+                              shape: WidgetStateProperty.all<RoundedRectangleBorder>(
+                                RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(10),
+                                ),
+                              ),
+                              padding: WidgetStateProperty.all<EdgeInsets>(
+                                const EdgeInsets.symmetric(vertical: 5), // Ajusta el padding vertical
+                              ),
+                              backgroundColor: WidgetStateProperty.all<Color>(Colors.redAccent.shade200), // Cambia el color de fondo del botón
+                            ),
+                            child: const Text("Report a Problem", style: TextStyle(color: Colors.white)), // Cambia el color del texto
+                          ),
+                        ),
+                      )
+                      : const SizedBox(),
+                      ['CREATED', 'BEING PROCESSED'].contains(order.status)
+                      ? Expanded(
+                        child: Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 7),
+                          child: FilledButton(
+                            onPressed: () {
+                              
+                            },
+                            style: ButtonStyle(
+                              shape: WidgetStateProperty.all<RoundedRectangleBorder>(
+                                RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(10),
+                                ),
+                              ),
+                              padding: WidgetStateProperty.all<EdgeInsets>(
+                                const EdgeInsets.symmetric(vertical: 5), // Ajusta el padding vertical
+                              ),
+                              backgroundColor: WidgetStateProperty.all<Color>(Colors.redAccent.shade400), // Cambia el color de fondo del botón
+                            ),
+                            child: const Text("Cancel Order", style: TextStyle(color: Colors.white)), // Cambia el color del texto
+                          ),
+                        ),
+                      )
+                      : const SizedBox(),
+                      ['BEING PROCESSED', 'SHIPPED'].contains(order.status)
+                      ? Expanded(
+                        child: Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 7),
+                          child: FilledButton(
+                            onPressed: () {},
+                            style: ButtonStyle(
+                              shape: WidgetStateProperty.all<RoundedRectangleBorder>(
+                                RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(10),
+                                ),
+                              ),
+                              padding: WidgetStateProperty.all<EdgeInsets>(
+                                const EdgeInsets.symmetric(vertical: 5), // Ajusta el padding vertical
+                              ),
+                              backgroundColor: WidgetStateProperty.all<Color>(Colors.teal), // Cambia el color de fondo del botón
+                            ),
+                            child: const Text("Track Order", style: TextStyle(color: Colors.white)), // Cambia el color del texto
+                          ),
+                        ),
+                      )
+                      : const SizedBox(),
                     ],
                   ),
                 ),
