@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_dely/aplication/providers/bottom_appbar_provider.dart';
+import 'package:go_dely/aplication/providers/order/current_order_provider.dart';
 import 'package:go_dely/aplication/providers/order/order_repository_provider.dart';
 import 'package:go_dely/aplication/providers/order/order_selected_provider.dart';
 import 'package:go_dely/domain/order/order.dart';
@@ -254,7 +255,8 @@ class _OrderContentState extends ConsumerState<_OrderContent> {
                   ),
                   IconButton(
                     onPressed: () {
-
+                      ref.read(currentOrderId.notifier).update((state) => widget.order.id,);
+                      context.push("/orderDetails");
                     },
                     icon: const Icon(Icons.keyboard_double_arrow_down_rounded),
                   ),
