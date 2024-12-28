@@ -92,18 +92,17 @@ class _ContentRegisterState extends ConsumerState<ContentRegister> {
     }
 
 
-    void registerUser() async{
+    void registerUser() async {
       
       if (email != '' && password != '' && fullname != '' && ci != '' && phone != ''){
         User usuario = User( 
-          email,
-          fullname,
-          password,
-          phone,
-          ci,
+          email: email,
+          fullname: fullname,
+          password: password,
+          phone: phone,
+          ci: ci,
         );
 
-        
           var response = await ref.read(authRepositoryProvider).register(usuario);
 
           if (response.unwrap() != ""){
@@ -121,22 +120,6 @@ class _ContentRegisterState extends ConsumerState<ContentRegister> {
               mostrarTexto = false;
             });
           }
-        
-          /*final data = {
-          'cuerpo': user,
-          };
-  
-    try {
-    final response = await dio.post('/auth/register', data: data);
-    if (response.statusCode == 200) {
-      print('Usuario registrado');
-    } else {
-      print('Error al registar el ususario: ${response.statusCode}');
-    }
-    } catch (e) {
-    print('Error al enviar la solicitud: $e');
-    }*/
-
       }
       else{
         setState(() {

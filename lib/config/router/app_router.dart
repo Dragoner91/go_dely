@@ -47,7 +47,7 @@ final appRouter = GoRouter(
         return  CustomTransitionPage(
           transitionDuration: const Duration(seconds: 1),
           key: state.pageKey,
-          child: const ProfileScreen(),
+          child: ProfileScreen(),
           transitionsBuilder: (context, animation, secondaryAnimation, child) {
             return FadeTransition(
               opacity:

@@ -3,17 +3,14 @@ import 'package:go_dely/infraestructure/models/user_db.dart';
 
 class UserMapper{
 
-  static User userToEntity(UserDB UserDB) => 
+  static User userToEntity(UserDB userDB) => 
     User(
-      
-      UserDB.ci, 
-      UserDB.fullname, 
-      UserDB.phone,
-      UserDB.email,
-      UserDB.password
-      
-      
-
+      ci: userDB.ci, 
+      fullname: userDB.fullname, 
+      image: userDB.image,
+      phone: userDB.phone,
+      email: userDB.email,
+      password: userDB.password
     ); 
     
    }
