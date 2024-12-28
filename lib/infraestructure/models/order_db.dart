@@ -65,7 +65,7 @@ class OrderDB {
 
   factory OrderDB.fromJson(Map<String, dynamic> json) {
     List<ICart> items = [];
-print(items);
+
     if (json['order_combos'] != null) {
       items.addAll((json['order_combos'] as List)
           .map((e) => CartItemMapper.cartItemToEntity(CartLocal.fromEntity( ComboMapper.comboToEntity(ComboDB.fromJson(e)) , e['quantity'], "", "Combo")))

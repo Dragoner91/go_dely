@@ -29,6 +29,8 @@ class OrderRepositoryImpl extends IOrderRepository{
       'order_combos': order.combos
     };
 
+    print(queryParameters);
+
     final result = await petition.makeRequest(
       urlPath: '/orders/create',
       httpMethod: 'POST',

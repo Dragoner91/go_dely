@@ -1,14 +1,19 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_dely/aplication/dto/payment_validator_dto.dart';
 import 'package:go_dely/aplication/providers/cart/address_selected_provider.dart';
 import 'package:go_dely/aplication/providers/cart/cart_items_provider.dart';
 import 'package:go_dely/aplication/providers/cart/date_selected_provider.dart';
 import 'package:go_dely/aplication/providers/cart/payment_method_selected_provider.dart';
+import 'package:go_dely/aplication/providers/cart/payment_methods/payment_methods_providers.dart';
 import 'package:go_dely/aplication/providers/order/order_repository_provider.dart';
 import 'package:go_dely/aplication/providers/paymentMethod/payment_method_repository_provider.dart';
+import 'package:go_dely/aplication/use_cases/cart/payment_validartor.use_case.dart';
 import 'package:go_dely/domain/order/order.dart';
 import 'package:go_dely/domain/paymentMethod/payment_method.dart';
 import 'package:go_router/go_router.dart';
+import 'package:flutter/cupertino.dart';
+import 'package:month_year_picker/month_year_picker.dart';
 
 
 class CheckoutScreen extends StatelessWidget {
@@ -91,9 +96,33 @@ class _PlaceOrderButtonState extends ConsumerState<_PlaceOrderButton> {
               
               final items = await ref.read(cartItemsProvider.notifier).getAllItemsFromCart();
               final date = ref.read(dateSelected.notifier).state;
-              final paymentMethod = ref.read(paymentMethodSelected.notifier).state;
+              final paymentMethod = ref.read(paymentMethodSelectedId.notifier).state;
               final address = ref.read(addressSelected.notifier).state;
-              final total = await ref.read(cartItemsProvider.notifier).calculateTotal(); 
+              final total = await ref.read(cartItemsProvider.notifier).calculateTotal();
+              // final coupon = ; 
+
+              final paymentValidator = PaymentValidatorUseCase();
+
+              final dto = PaymentValidatorDto(
+                paymentMethod: ref.read(paymentMethodSelected.notifier).state,
+                cardCVV: ref.read(cardCVVProvider.notifier).state,
+                cardExpiryDate: ref.read(cardExpiryDateProvider.notifier).state,
+                cardNumber: ref.read(cardNumberProvider.notifier).state,
+                pagoMovilReferenceNumber: ref.read(pagoMovilReferenceNumberProvider.notifier).state,
+                cashAmount: ref.read(cashAmountProvider.notifier).state
+              ); 
+
+              try {
+                paymentValidator.validatePaymentMethod(dto);
+              } catch (e) {
+                if (context.mounted) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(content: Text(e.toString())),
+                  );
+                  Navigator.of(context).pop();
+                  return;
+                }
+              }
 
               final List<Map<String, dynamic>> combos = items
                   .where((item) => item.type == 'Combo')
@@ -141,9 +170,11 @@ class _PlaceOrderButtonState extends ConsumerState<_PlaceOrderButton> {
                             child: const Text("OK"),
                             onPressed: () async {
                               await ref.read(cartItemsProvider.notifier).cleanItems();
-                              Navigator.of(context).pop();
-                              context.go("/home");
-                              context.push("/orderHistory");
+                              if (context.mounted) {
+                                Navigator.of(context).pop();
+                                context.go("/home");
+                                context.push("/orderHistory"); 
+                              }
                             },
                           ),
                         ],
@@ -201,7 +232,10 @@ class _ContentState extends ConsumerState<_Content> {
             future: getPaymentMethods(),
             builder: (context, snapshot) {
               if (snapshot.connectionState == ConnectionState.waiting) {
-                return const Center(child: CircularProgressIndicator());
+                return const Padding(
+                  padding: EdgeInsets.symmetric(vertical: 100),
+                  child: Center(child: CircularProgressIndicator()),
+                );
               } else if (snapshot.hasError) {
                 return const Center(child: Text('Error loading payment methods'));
               } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
@@ -251,7 +285,7 @@ class _AddressesState extends ConsumerState<_Addresses> {
             ),),
           ),
           SizedBox(
-            height: 325,
+            height: 225,
             child: ListView.builder(
               itemCount: widget.addresses.length,
               shrinkWrap: true,
@@ -368,7 +402,6 @@ class _DatePickerState extends ConsumerState<_DatePicker> {
       ref.read(dateSelected.notifier).update((state) => picked.toString(),);  //*ARREGLAR ESTO
       setState(() {
         selectedDate = picked;
-        
       });
     }
   }
@@ -456,17 +489,36 @@ class _PaymentMethod extends ConsumerStatefulWidget {
 
   final List<PaymentMethod> paymentMethods;
 
-  const _PaymentMethod({super.key, required this.paymentMethods});
+  const _PaymentMethod({required this.paymentMethods});
 
   @override
   ConsumerState<_PaymentMethod> createState() => _PaymentMethodState();
 }
 
 class _PaymentMethodState extends ConsumerState<_PaymentMethod> {
-  String? selectedMethod;
+  String? expiryDate;
+
+  Future<void> _selectExpiryDate(BuildContext context) async {
+    final pickedDate = await showMonthYearPicker(
+      context: context,
+      initialDate: DateTime.now(),
+      firstDate: DateTime(2000),
+      lastDate: DateTime(2040),
+    );
+
+    if (pickedDate != null) {
+        setState(() {
+          expiryDate = '${pickedDate.month.toString().padLeft(2, '0')}/${pickedDate.year}';
+        });
+        ref.read(cardExpiryDateProvider.notifier).update((state) => expiryDate!);
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
+    final selectedMethod = ref.watch(paymentMethodSelected);
+    final theme = Theme.of(context);
+
     return Padding(
       padding: const EdgeInsets.all(8.0),
       child: Column(
@@ -480,21 +532,135 @@ class _PaymentMethodState extends ConsumerState<_PaymentMethod> {
             ),
           ),
           ListView.builder(
+            physics: const NeverScrollableScrollPhysics(),
             shrinkWrap: true,
             itemCount: widget.paymentMethods.length,
             itemBuilder: (context, index) {
-              return RadioListTile<String>(
-                title: Text(widget.paymentMethods[index].name),
-                value: widget.paymentMethods[index].id,
-                groupValue: selectedMethod,
-                onChanged: (String? value) {
-                  setState(() {
-                    selectedMethod = value;
-                    ref.read(paymentMethodSelected.notifier).update((state) => value!,);
-                  });
-                },
-                contentPadding: const EdgeInsets.symmetric(vertical: 0.0, horizontal: 8.0),
-                visualDensity: const VisualDensity(horizontal: 0, vertical: -4),
+              final method = widget.paymentMethods[index].name;
+              return Column(
+                children: [
+                  RadioListTile<String>(
+                    title: Text(method),
+                    value: method,
+                    groupValue: selectedMethod,
+                    onChanged: (String? value) {
+                      setState(() {
+                        ref.read(paymentMethodSelectedId.notifier).update((state) => widget.paymentMethods[index].id);
+                        ref.read(paymentMethodSelected.notifier).update((state) => value!);
+                      });
+                    },
+                    contentPadding: const EdgeInsets.symmetric(vertical: 0.0, horizontal: 8.0),
+                    visualDensity: const VisualDensity(horizontal: 0, vertical: -4),
+                  ),
+                  if (selectedMethod == method) ...[
+                    if (method == 'Credit Card' || method == 'Debit Card') ...[
+                      Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                        child: TextField(
+                          decoration: InputDecoration(
+                            labelText: 'Card Number',
+                            border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(8.0),
+                            ),
+                            filled: true,
+                            fillColor: theme.colorScheme.surface,
+                            prefixIcon: const Icon(Icons.credit_card),
+                          ),
+                          keyboardType: TextInputType.number,
+                          onChanged: (value) {
+                            ref.read(cardNumberProvider.notifier).update((state) => value);
+                          },
+                        ),
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                        child: Row(
+                          children: [
+                            Expanded(
+                              flex: 2,
+                              child: GestureDetector(
+                                onTap: () {
+                                  _selectExpiryDate(context);
+                                },
+                                child: AbsorbPointer(
+                                  child: TextField(
+                                    decoration: InputDecoration(
+                                      labelText: 'Expiry Date',
+                                      border: OutlineInputBorder(
+                                        borderRadius: BorderRadius.circular(8.0),
+                                      ),
+                                      filled: true,
+                                      fillColor: theme.colorScheme.surface,
+                                      prefixIcon: const Icon(Icons.date_range),
+                                    ),
+                                    controller: TextEditingController(text: expiryDate),
+                                  ),
+                                ),
+                              ),
+                            ),
+                            const SizedBox(width: 16),
+                            Expanded(
+                              flex: 1,
+                              child: TextField(
+                                decoration: InputDecoration(
+                                  labelText: 'CVV',
+                                  border: OutlineInputBorder(
+                                    borderRadius: BorderRadius.circular(8.0),
+                                  ),
+                                  filled: true,
+                                  fillColor: theme.colorScheme.surface,
+                                  prefixIcon: const Icon(Icons.lock),
+                                ),
+                                keyboardType: TextInputType.number,
+                                onChanged: (value) {
+                                  ref.read(cardCVVProvider.notifier).update((state) => value);
+                                },
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ] else if (method == 'Mobile Payment') ...[
+                      Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                        child: TextField(
+                          decoration: InputDecoration(
+                            labelText: 'Reference Number',
+                            border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(8.0),
+                            ),
+                            filled: true,
+                            fillColor: theme.colorScheme.surface,
+                            prefixIcon: const Icon(Icons.confirmation_number),
+                          ),
+                          keyboardType: TextInputType.number,
+                          onChanged: (value) {
+                            ref.read(pagoMovilReferenceNumberProvider.notifier).update((state) => value);
+                          },
+                        ),
+                      ),
+                    ] else if (method == 'Cash') ...[
+                      Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                        child: TextField(
+                          decoration: InputDecoration(
+                            labelText: 'Cash Amount',
+                            border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(8.0),
+                            ),
+                            filled: true,
+                            fillColor: theme.colorScheme.surface,
+                            prefixIcon: const Icon(Icons.attach_money),
+                          ),
+                          keyboardType: TextInputType.number,
+                          onChanged: (value) {
+                            ref.read(cashAmountProvider.notifier).update((state) => double.tryParse(value) ?? 0.0);
+                          },
+                        ),
+                      ),
+                    ],
+                  ],
+                ],
               );
             },
           ),

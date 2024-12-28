@@ -5,3 +5,9 @@ final paymentMethodSelected = StateProvider<String>(
     return "";
   },
 );
+
+final paymentMethodSelectedId = StateProvider<String>(
+  (ref) {
+    return "";
+  },
+);
