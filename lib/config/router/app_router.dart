@@ -210,13 +210,19 @@ final appRouter = GoRouter(
       path: '/orderDetails',
       pageBuilder: (context, state) {
         return  CustomTransitionPage(
-          transitionDuration: const Duration(seconds: 1),
+          transitionDuration: const Duration(milliseconds: 400),
           key: state.pageKey,
           child: const OrderDetailsScreen(),
           transitionsBuilder: (context, animation, secondaryAnimation, child) {
-            return FadeTransition(
-              opacity:
-                  CurveTween(curve: Curves.easeInOutCirc).animate(animation),
+            const begin = Offset(0.0, -1.0); // Comienza fuera de la pantalla, arriba
+            const end = Offset(0.0, 0.0); // Termina en su posición normal
+            const curve = Curves.easeInOut;
+    
+            var tween = Tween(begin: begin, end: end).chain(CurveTween(curve: curve));
+            var offsetAnimation = animation.drive(tween);
+    
+            return SlideTransition(
+              position: offsetAnimation,
               child: child,
             );
           },

@@ -85,8 +85,8 @@ class AuthRepositoryImpl extends IAuthRepository {
       urlPath: '/auth/private',
       httpMethod: 'GET',
       mapperCallBack: (data) {
-        print(data);
         if (data['message'] == "Authorized") {
+          print(token);
           return true;
         }
         return false;

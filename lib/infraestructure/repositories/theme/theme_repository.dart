@@ -8,11 +8,13 @@ class ThemeRepository {
   
   bool getCurrentTheme() {
     final bool? theme = prefs.getBool('isThemeDark');
-    return theme!;
+    print(theme);
+    return theme ?? false;
   }
 
   Future<void> changeTheme() async {
     final bool? theme = prefs.getBool('isThemeDark');
-    prefs.setBool("isThemeDark", !theme!);
+    final currentTheme = theme ?? false;
+    prefs.setBool("isThemeDark", !currentTheme);
   }
 }

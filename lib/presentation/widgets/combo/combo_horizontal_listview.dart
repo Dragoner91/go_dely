@@ -188,7 +188,8 @@ class _SlideState extends ConsumerState<_Slide> {
                       ),
                     ],
                   ),
-                  Row(
+                  widget.combo.discount > 0 
+                  ? Row(
                     children: [
                       Padding(
                         padding: const EdgeInsets.all(8.0),
@@ -205,6 +206,7 @@ class _SlideState extends ConsumerState<_Slide> {
                       )
                     ],
                   )
+                  : const SizedBox.shrink(),
                 ],
               ),
             ),
@@ -230,18 +232,42 @@ class _SlideState extends ConsumerState<_Slide> {
             ),
           ),
 
-          //*rating
+          //*price
           SizedBox(
             width: 150,
             child: Row( //*arreglar cuando este producto listo
               children: [
+
                 const SizedBox(width: 5,),
-                Text(
-                  "US\$${HumanFormarts.numberCurrency(widget.combo.price)}", //*arreglar cuando este producto listo
-                  style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
-                ),
+                if (widget.combo.discount > 0) ...[
+                  Text(
+                    "${HumanFormarts.numberCurrency(widget.combo.price)} ${widget.combo.currency}",
+                    style: const TextStyle(
+                      fontWeight: FontWeight.bold,
+                      fontSize: 14,
+                      color: Colors.red,
+                      decoration: TextDecoration.lineThrough,
+                      decorationColor: Colors.red,
+                    ),
+                  ),
+                  const SizedBox(width: 5,),
+                  Text(
+                    "${HumanFormarts.numberCurrency(widget.combo.price - ( widget.combo.price * widget.combo.discount))} ${widget.combo.currency}",
+                    style: const TextStyle(
+                      fontWeight: FontWeight.bold,
+                      fontSize: 16,
+                    ),
+                  ),
+                ] else ...[
+                  Text(
+                    "${HumanFormarts.numberCurrency(widget.combo.price)} ${widget.combo.currency}",
+                    style: const TextStyle(
+                      fontWeight: FontWeight.bold,
+                      fontSize: 16,
+                    ),
+                  ),
+                ],
                 const SizedBox(width: 5,), 
-                
               ],
             ),
           )

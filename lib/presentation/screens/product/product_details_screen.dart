@@ -260,6 +260,7 @@ class _ContentState extends ConsumerState<_Content> {
             child: Stack(
               children: [
                 _Slider(productImages: [...widget.product!.imageUrl]),
+                if(widget.product!.discount > 0)
                 Row(
                     children: [
                       Padding(

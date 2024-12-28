@@ -32,6 +32,7 @@ class PetitionImpl extends IPetition {
         return Result.failure<T>(handleException(e));
       } 
       catch (e) {
+        print(e);
         return Result.failure<T>(const UnknownException());
       } 
   }

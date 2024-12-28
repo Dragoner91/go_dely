@@ -25,7 +25,26 @@ class ProductDB {
     required this.discount
     });
 
-  factory ProductDB.fromJson(Map<String, dynamic> json) => ProductDB(
+  factory ProductDB.fromJson(Map<String, dynamic> json) { 
+    try {
+      return ProductDB(
+        id: json["product_id"], 
+        name: json["product_name"], 
+        price: double.parse(json["product_price"]), 
+        currency: json["product_currency"], 
+        weight: json["product_weight"], 
+        imageUrl: json["images"] != null
+          ? List<String>.from(json["images"].map((e) => e))
+          : [],
+        description: json["product_description"], 
+        stock: json["product_stock"],
+        category: json["product_category"] ?? "No category",
+        discount: json["discount"] == null ? 0.0 : double.tryParse(json["discount"]["value"]) ?? 0.1,
+      );
+    } catch (e) {
+      print(e);
+    }
+    return ProductDB(
     id: json["product_id"], 
     name: json["product_name"], 
     price: double.parse(json["product_price"]), 
@@ -37,6 +56,7 @@ class ProductDB {
     category: json["product_category"],
     discount: json["discount"] == null ? 0.0 : double.tryParse(json["discount"]["value"]) ?? 0.1,
   );
+  }
 
   Map<String, dynamic> toJson() => {
     "product_id": id,

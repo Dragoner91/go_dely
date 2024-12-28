@@ -14,26 +14,28 @@ class OrderRepositoryImpl extends IOrderRepository{
   OrderRepositoryImpl({required this.petition, required this.auth});
 
   @override
-  Future<Result<String>> createOrder(Order order) async {
+  Future<Result<String>> createOrder(CreateOrder order) async {
 
     final tokenResult = await auth.getToken();
     if(tokenResult.isError) return throw tokenResult.error;
 
+    petition.updateHeaders(headerKey: "Authorization", headerValue: "Bearer ${tokenResult.unwrap()}");
     var queryParameters = {
-      'user_id': tokenResult.unwrap(), //*VERIFICAR
       'address': order.address,
       'paymentMethodId': order.paymentMethod,
       'currency': order.currency,
       'total': order.total,
-      //*lista de productos
-      //*lista de combos
+      'order_products': order.products,
+      'order_combos': order.combos
     };
+
+    print(queryParameters);
 
     final result = await petition.makeRequest(
       urlPath: '/orders/create',
       httpMethod: 'POST',
       mapperCallBack: (data) {
-        final String orderId = data['']; //*TERMINAR
+        final String orderId = data['order_id']; //*TERMINAR
         return orderId;
       },
       body: queryParameters
@@ -47,9 +49,7 @@ class OrderRepositoryImpl extends IOrderRepository{
     final tokenResult = await auth.getToken();
     if(tokenResult.isError) return throw tokenResult.error;
 
-    var queryParameters = {
-      'token': tokenResult.unwrap(), //*VERIFICAR
-    };
+    petition.updateHeaders(headerKey: "Authorization", headerValue: "Bearer ${tokenResult.unwrap()}");
 
     final result = await petition.makeRequest(
       urlPath: '/orders/$id',
@@ -60,7 +60,6 @@ class OrderRepositoryImpl extends IOrderRepository{
         );
         return order;
       },
-      body: queryParameters
     );
     return result;
   }
@@ -71,9 +70,7 @@ class OrderRepositoryImpl extends IOrderRepository{
     final tokenResult = await auth.getToken();
     if(tokenResult.isError) return throw tokenResult.error;
 
-    var queryParameters = {
-      'token': tokenResult.unwrap(), //*VERIFICAR
-    };
+    petition.updateHeaders(headerKey: "Authorization", headerValue: "Bearer ${tokenResult.unwrap()}");
 
     final result = await petition.makeRequest(
       urlPath: '/orders',
@@ -89,10 +86,32 @@ class OrderRepositoryImpl extends IOrderRepository{
         }
         return orders;
       },
-      body: queryParameters
     );
     return result;
   }
 
+  @override
+  Future<Result<void>> changeStatus(String id, String status) async {
+    final tokenResult = await auth.getToken();
+    if(tokenResult.isError) return throw tokenResult.error;
+
+    petition.updateHeaders(headerKey: "Authorization", headerValue: "Bearer ${tokenResult.unwrap()}");
+
+    var queryParameters = {
+      'status': status,
+    };
+
+    final result = await petition.makeRequest(
+      urlPath: '/orders/$id/status',
+      httpMethod: 'PATCH',
+      mapperCallBack: (data) {
+        return data['message'];
+      },
+      body: queryParameters
+    );
+    
+    return result;
+
+  }
 
 }
