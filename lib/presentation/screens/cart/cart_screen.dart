@@ -14,11 +14,16 @@ class CartScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     final scaffoldkey = GlobalKey<ScaffoldState>();
 
+    final theme = Theme.of(context);
+    final primaryColor = theme.colorScheme.primary;
+    final bottomAppBarColor = theme.colorScheme.surfaceContainer;
+
     return Scaffold(
         key: scaffoldkey,
         appBar: AppBar(
           title: const Text("Cart"),
           centerTitle: true,
+          backgroundColor: primaryColor.withAlpha(124),
           leading: IconButton(
             onPressed: () {
               context.pop();
@@ -26,23 +31,29 @@ class CartScreen extends StatelessWidget {
             icon: const Icon(Icons.arrow_back_ios_new),
           ),
         ),
-        bottomNavigationBar: Padding(
-          padding: const EdgeInsets.all(5),
-          child: SizedBox(
-              height: 165,
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.start,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  const SizedBox(
-                    height: 10,
-                  ),
-                  _CheckoutInfo(),
-                  _CheckoutButton(),
-                ],
-              )),
+        bottomNavigationBar: Container(
+          decoration: BoxDecoration(
+            color: bottomAppBarColor
+          ),
+          child: Padding(
+            padding: const EdgeInsets.all(5),
+            child: SizedBox(
+                height: 165,
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const SizedBox(
+                      height: 10,
+                    ),
+                    _CheckoutInfo(),
+                    _CheckoutButton(),
+                  ],
+                )),
+          ),
         ),
-        body: _Content());
+        body: _Content()
+        );
   }
 }
 
@@ -234,6 +245,11 @@ class _ContentState extends ConsumerState<_Content> {
     final cartItemsFuture =
         ref.watch(cartItemsProvider.notifier).watchAllItemsFromCart();
 
+    final theme = Theme.of(context);
+    final primaryColor = theme.colorScheme.primary;
+    final bottomAppBarColor = theme.colorScheme.surfaceContainer;
+    final shadowColor = theme.colorScheme.shadow;
+
     return FutureBuilder<Stream<List<ICart>>>(
       future: cartItemsFuture,
       builder: (context, snapshot) {
@@ -248,18 +264,55 @@ class _ContentState extends ConsumerState<_Content> {
                 return const SizedBox(height: 150 ,child: Center(child: CircularProgressIndicator()));
               } else {
                 final items = snapshot.data!;
-                return SingleChildScrollView(
-                  child: Column(
-                    children: [
-                      ListView.builder(
-                        shrinkWrap: true,
-                        physics: const NeverScrollableScrollPhysics(),
-                        itemCount: items.length,
-                        itemBuilder: (context, index) {
-                          return _Item(cartItem: items[index] as CartItem);
-                        },
+                
+                if (items.isEmpty) {
+                  return Container(
+                    decoration: BoxDecoration(
+                    gradient: LinearGradient(
+                      colors: [primaryColor.withAlpha(124), bottomAppBarColor],
+                      begin: Alignment.topCenter,
+                      end: Alignment.bottomCenter,
+                    )
+                  ),
+                    child: Center(
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Icon(Icons.shopping_cart, size: 100, color: shadowColor),
+                          const SizedBox(height: 20),
+                          Text(
+                            'No items in the cart',
+                            style: TextStyle(fontSize: 24, color: shadowColor),
+                          ),
+                        ],
                       ),
-                    ],
+                    ),
+                  );
+                }
+
+
+
+                return Container(
+                  decoration: BoxDecoration(
+                    gradient: LinearGradient(
+                      colors: [primaryColor.withAlpha(124), bottomAppBarColor],
+                      begin: Alignment.topCenter,
+                      end: Alignment.bottomCenter,
+                    )
+                  ),
+                  child: SingleChildScrollView(
+                    child: Column(
+                      children: [
+                        ListView.builder(
+                          shrinkWrap: true,
+                          physics: const NeverScrollableScrollPhysics(),
+                          itemCount: items.length,
+                          itemBuilder: (context, index) {
+                            return _Item(cartItem: items[index] as CartItem);
+                          },
+                        ),
+                      ],
+                    ),
                   ),
                 );
               }
