@@ -23,7 +23,7 @@ class _CustomAppBarState extends ConsumerState<CustomAppBar> {
   Widget build(BuildContext context) {
 
     final theme = Theme.of(context);
-    final secondaryColor = theme.colorScheme.secondary;
+    final shadowColor = theme.colorScheme.shadow;
 
     final cartItemsFuture = ref.watch(cartItemsProvider.notifier).watchAllItemsFromCart();
 
@@ -32,7 +32,8 @@ class _CustomAppBarState extends ConsumerState<CustomAppBar> {
       width: double.infinity,
       child: AppBar(
         centerTitle: true,
-        iconTheme: IconThemeData(color: secondaryColor),
+        iconTheme: IconThemeData(color: shadowColor),
+        backgroundColor: Theme.of(context).colorScheme.primary.withAlpha(124),
         title: IconButton(
           onPressed: () {
             
@@ -52,7 +53,7 @@ class _CustomAppBarState extends ConsumerState<CustomAppBar> {
           ),
         ),
         actions: [
-          IconButton(onPressed: () {}, icon: Icon(Icons.notifications, color: secondaryColor,),),
+          IconButton(onPressed: () {}, icon: Icon(Icons.notifications, color: shadowColor,),),
           FutureBuilder<Stream<List<ICart>>>(
             future: cartItemsFuture,
             builder: (context, snapshot) {
@@ -70,7 +71,7 @@ class _CustomAppBarState extends ConsumerState<CustomAppBar> {
                   position: badges.BadgePosition.topEnd(top: 0, end: 5),
                   child: IconButton(
                     onPressed: () {context.push("/cart");}, 
-                    icon: Icon(Icons.shopping_cart, color: secondaryColor,)
+                    icon: Icon(Icons.shopping_cart, color: shadowColor,)
                   )
                 );
               } else if (snapshot.hasData) {
@@ -91,7 +92,7 @@ class _CustomAppBarState extends ConsumerState<CustomAppBar> {
                         position: badges.BadgePosition.topEnd(top: 0, end: 5),
                         child: IconButton(
                           onPressed: () {context.push("/cart");}, 
-                          icon: Icon(Icons.shopping_cart, color: secondaryColor,)
+                          icon: Icon(Icons.shopping_cart, color: shadowColor,)
                         )
                       );
                     } else {
@@ -109,7 +110,7 @@ class _CustomAppBarState extends ConsumerState<CustomAppBar> {
                         position: badges.BadgePosition.topEnd(top: 0, end: 5),
                         child: IconButton(
                           onPressed: () {context.push("/cart");}, 
-                          icon: Icon(Icons.shopping_cart, color: secondaryColor,)
+                          icon: Icon(Icons.shopping_cart, color: shadowColor,)
                         )
                       );
                     }

@@ -118,6 +118,7 @@ class BottomAppBarCustomState extends ConsumerState<BottomAppBarCustom> {
             IconButton(
               icon: const Icon(Icons.person_outline_outlined),
               onPressed: () { 
+                context.go("/profile");
                 ref.read(currentStateNavBar.notifier).update((state) => 4);
                 ref.read(currentProduct.notifier).update((state) => [] );
               },
