@@ -38,22 +38,37 @@ class CartScreen extends StatelessWidget {
           child: Padding(
             padding: const EdgeInsets.all(5),
             child: SizedBox(
-                height: 165,
+                height: 185,
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.start,
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     const SizedBox(
-                      height: 10,
+                      height: 5,
                     ),
                     _CheckoutInfo(),
+                    const SizedBox(
+                      height: 15,
+                    ),
                     _CheckoutButton(),
                   ],
                 )),
           ),
         ),
-        body: _Content()
-        );
+        body: Expanded(
+          child: Container(
+            height: MediaQuery.of(context).size.height,
+            decoration: BoxDecoration(
+              gradient: LinearGradient(
+                colors: [primaryColor.withAlpha(124), bottomAppBarColor],
+                begin: Alignment.topCenter,
+                end: Alignment.bottomCenter,
+              )
+            ),
+            child: _Content()
+          )
+        )
+      );
   }
 }
 
@@ -207,28 +222,60 @@ class _CheckoutInfoState extends ConsumerState<_CheckoutInfo> {
   }
 }
 
-class _CheckoutButton extends StatelessWidget {
+class _CheckoutButton extends ConsumerStatefulWidget {
+  @override
+  ConsumerState<_CheckoutButton> createState() => _CheckoutButtonState();
+}
+
+class _CheckoutButtonState extends ConsumerState<_CheckoutButton> {
+  Future<int> getQuantity() async {
+    final items = await ref.read(cartItemsProvider.notifier).getAllItemsFromCart();
+    return items.length;
+  }
+
   @override
   Widget build(BuildContext context) {
+
+    final cartItems = ref.watch(cartItemsProvider);
+
+    final theme = Theme.of(context);
+    final scrimColor = theme.colorScheme.scrim;
+
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 20),
       child: SizedBox(
         height: 50,
         width: double.infinity,
-        child: FilledButton(
-            style: ButtonStyle(
-                backgroundColor:
-                    WidgetStateProperty.all(const Color(0xFF5D9558))),
-            onPressed: () {
-              context.push("/checkout");
-            },
-            child: const Text(
-              "Proceed to checkout",
-              style: TextStyle(
+        child: FutureBuilder<int>(
+          future: getQuantity(),
+          builder: (context, snapshot) {
+            final isButtonEnabled = snapshot.hasData && snapshot.data! > 0;
+            return FilledButton(
+              style: ButtonStyle(
+                backgroundColor: WidgetStateProperty.resolveWith<Color>(
+              (Set<WidgetState> states) {
+                if (states.contains(WidgetState.disabled)) {
+                  return Colors.grey.shade600; // Color for disabled state
+                }
+                return const Color(0xFF5D9558); // Default color
+              },
+            ),
+              ),
+              onPressed: isButtonEnabled ? () {
+                context.push("/checkout");
+              } : null,
+              child: const Text(
+                "Proceed to checkout",
+                style: TextStyle(
                   fontSize: 18,
                   fontWeight: FontWeight.bold,
-                  fontStyle: FontStyle.normal),
-            )),
+                  fontStyle: FontStyle.normal,
+                  color: Colors.white
+                ),
+              ),
+            );
+          },
+        ),
       ),
     );
   }
@@ -246,8 +293,6 @@ class _ContentState extends ConsumerState<_Content> {
         ref.watch(cartItemsProvider.notifier).watchAllItemsFromCart();
 
     final theme = Theme.of(context);
-    final primaryColor = theme.colorScheme.primary;
-    final bottomAppBarColor = theme.colorScheme.surfaceContainer;
     final shadowColor = theme.colorScheme.shadow;
 
     return FutureBuilder<Stream<List<ICart>>>(
@@ -266,53 +311,35 @@ class _ContentState extends ConsumerState<_Content> {
                 final items = snapshot.data!;
                 
                 if (items.isEmpty) {
-                  return Container(
-                    decoration: BoxDecoration(
-                    gradient: LinearGradient(
-                      colors: [primaryColor.withAlpha(124), bottomAppBarColor],
-                      begin: Alignment.topCenter,
-                      end: Alignment.bottomCenter,
-                    )
-                  ),
-                    child: Center(
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Icon(Icons.shopping_cart, size: 100, color: shadowColor),
-                          const SizedBox(height: 20),
-                          Text(
-                            'No items in the cart',
-                            style: TextStyle(fontSize: 24, color: shadowColor),
-                          ),
-                        ],
-                      ),
-                    ),
-                  );
-                }
-
-
-
-                return Container(
-                  decoration: BoxDecoration(
-                    gradient: LinearGradient(
-                      colors: [primaryColor.withAlpha(124), bottomAppBarColor],
-                      begin: Alignment.topCenter,
-                      end: Alignment.bottomCenter,
-                    )
-                  ),
-                  child: SingleChildScrollView(
+                  return Center(
                     child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        ListView.builder(
-                          shrinkWrap: true,
-                          physics: const NeverScrollableScrollPhysics(),
-                          itemCount: items.length,
-                          itemBuilder: (context, index) {
-                            return _Item(cartItem: items[index] as CartItem);
-                          },
+                        Icon(Icons.shopping_cart, size: 100, color: shadowColor),
+                        const SizedBox(height: 20),
+                        Text(
+                          'No items in the cart',
+                          style: TextStyle(fontSize: 24, color: shadowColor),
                         ),
                       ],
                     ),
+                  );
+                }
+    
+    
+    
+                return SingleChildScrollView(
+                  child: Column(
+                    children: [
+                      ListView.builder(
+                        shrinkWrap: true,
+                        physics: const NeverScrollableScrollPhysics(),
+                        itemCount: items.length,
+                        itemBuilder: (context, index) {
+                          return _Item(cartItem: items[index] as CartItem);
+                        },
+                      ),
+                    ],
                   ),
                 );
               }

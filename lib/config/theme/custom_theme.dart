@@ -11,7 +11,8 @@ class AppTheme {
           seedColor: const Color(0xFF5D9558),
           primary: const Color(0xFF5D9558),
           secondary: const Color(0xFF6B6B6B),
-          shadow: Colors.black
+          shadow: Colors.black,
+          scrim: Colors.white,
         )
     );
   }
@@ -25,7 +26,8 @@ class AppTheme {
           primary: const Color(0xFF5D9558),
           secondary: Colors.white,
           brightness: Brightness.dark,
-          shadow: Colors.white
+          shadow: Colors.white,
+          scrim: Colors.black,
         ),
     );
   }

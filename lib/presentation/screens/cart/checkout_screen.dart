@@ -14,7 +14,6 @@ import 'package:go_dely/domain/paymentMethod/payment_method.dart';
 import 'package:go_router/go_router.dart';
 import 'package:month_year_picker/month_year_picker.dart';
 
-
 class CheckoutScreen extends StatelessWidget {
   const CheckoutScreen({super.key});
 
