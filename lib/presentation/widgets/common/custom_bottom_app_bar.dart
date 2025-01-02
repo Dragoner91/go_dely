@@ -26,7 +26,6 @@ class BottomAppBarCustomState extends ConsumerState<BottomAppBarCustom> {
 
     final currentState = ref.watch(currentStateNavBar);
     const Color currentColor = Color(0xFF5D9558);
-    const Color colorOptions = Colors.black45;
 
     final theme = Theme.of(context);
     final primaryColor = theme.colorScheme.primary;
@@ -70,7 +69,7 @@ class BottomAppBarCustomState extends ConsumerState<BottomAppBarCustom> {
               borderRadius: BorderRadius.circular(100),
                 color: Colors.white,
                 border: Border.all(
-                  color: currentColor,
+                  color: currentState == 2 ? primaryColor : secondaryColor,
                   width: 2
                 )
             ),
@@ -85,8 +84,8 @@ class BottomAppBarCustomState extends ConsumerState<BottomAppBarCustom> {
                   child: Container(
                     alignment: Alignment.center,
                     child: Column(children: [
-                      Icon(Icons.home_outlined, color: currentState == 2 ? Colors.white : primaryColor,),
-                      Text("Home", style: TextStyle(color: currentState == 2 ? Colors.white : primaryColor, fontSize: 12))
+                      Icon(Icons.home_outlined, color: currentState == 2 ? Colors.white : secondaryColor,),
+                      Text("Home", style: TextStyle(color: currentState == 2 ? Colors.white : secondaryColor, fontSize: 12))
                     ]),
                   ),
                   onPressed: () { 

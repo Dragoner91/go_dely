@@ -140,7 +140,7 @@ class _PlaceOrderButtonState extends ConsumerState<_PlaceOrderButton> {
                       })
                   .toList();
 
-              final CreateOrder order = CreateOrder( 
+              final CreateOrder order = CreateOrder( //*MOVER A APLICACION
                 id: "",
                 address: address, 
                 combos: combos, 
@@ -295,14 +295,28 @@ class _AddressesState extends ConsumerState<_Addresses> {
     
     
           //* agregar boton para nueva direccion y lo que involucre
-          Padding(
-            padding: const EdgeInsets.only(left: 5, bottom: 5),
-            child: Text("Add New Address", style: TextStyle(
-                fontSize: 14,
-                fontWeight: FontWeight.bold,
-                color: primaryColor.primary
+          Row(
+            children: [
+              Padding(
+                padding: const EdgeInsets.only(left: 5, bottom: 5, top: 5),
+                child: Text("Add New Address", style: TextStyle(
+                    fontSize: 14,
+                    fontWeight: FontWeight.bold,
+                    color: primaryColor.primary
+                  ),
+                ),
               ),
-            ),
+              const Spacer(),
+              Padding(
+                padding: const EdgeInsets.only(right: 5, bottom: 5, top: 5),
+                child: Text("Use Another Address", style: TextStyle(
+                    fontSize: 14,
+                    fontWeight: FontWeight.bold,
+                    color: primaryColor.primary
+                  ),
+                ),
+              ),
+            ],
           )
         ],
       ),

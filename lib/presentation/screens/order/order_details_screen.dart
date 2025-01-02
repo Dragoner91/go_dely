@@ -24,6 +24,11 @@ class _OrderDetailsScreenState extends ConsumerState<OrderDetailsScreen> {
 
   @override
   Widget build(BuildContext context) {
+
+    final theme = Theme.of(context);
+    final primaryColor = theme.colorScheme.primary;
+    final bottomAppBarColor = theme.colorScheme.surfaceContainer;
+
     return Scaffold(
       appBar: AppBar(
         title: const Text("Order Summary"),
@@ -35,45 +40,54 @@ class _OrderDetailsScreenState extends ConsumerState<OrderDetailsScreen> {
           icon: const Icon(Icons.arrow_back_ios_new),
         ),
       ),
-      body: FutureBuilder<Order>(
-        future: fetchOrder(),
-        builder: (context, snapshot) {
-          if (snapshot.connectionState == ConnectionState.waiting) {
-            return const Center(
-                child: SizedBox(
-                  width: 120,
-                  height: 120,
-                  child: CircularProgressIndicator(
-                    strokeWidth: 4, 
-                    color: Color(0xFF5D9558),
+      body: Container(
+        decoration: BoxDecoration(
+            gradient: LinearGradient(
+              colors: [primaryColor.withAlpha(124), bottomAppBarColor],
+              begin: Alignment.topCenter,
+              end: Alignment.bottomCenter,
+            ),
+          ),
+        child: FutureBuilder<Order>(
+          future: fetchOrder(),
+          builder: (context, snapshot) {
+            if (snapshot.connectionState == ConnectionState.waiting) {
+              return const Center(
+                  child: SizedBox(
+                    width: 120,
+                    height: 120,
+                    child: CircularProgressIndicator(
+                      strokeWidth: 4, 
+                      color: Color(0xFF5D9558),
+                    ),
+                  )
+                );
+            } else if (snapshot.hasError) {
+              return Center(child: Text('Error: ${snapshot.error}'));
+            } else if (!snapshot.hasData) {
+              return const Center(child: Text('No order found'));
+            } else {
+              final order = snapshot.data!;
+              return RefreshIndicator(
+                triggerMode: RefreshIndicatorTriggerMode.anywhere,
+                color: const Color(0xFF5D9558),
+                onRefresh: () async {
+                  setState(() {}); // Forzar la reconstrucción de la pantalla
+                  await fetchOrder();
+                },
+                child: SingleChildScrollView(
+                  physics: const AlwaysScrollableScrollPhysics(),
+                  child: Column(
+                    children: [
+                      OrderInfo(order: order),
+                      ItemsInfo(order: order),
+                    ],
                   ),
-                )
-              );
-          } else if (snapshot.hasError) {
-            return Center(child: Text('Error: ${snapshot.error}'));
-          } else if (!snapshot.hasData) {
-            return const Center(child: Text('No order found'));
-          } else {
-            final order = snapshot.data!;
-            return RefreshIndicator(
-              triggerMode: RefreshIndicatorTriggerMode.anywhere,
-              color: const Color(0xFF5D9558),
-              onRefresh: () async {
-                setState(() {}); // Forzar la reconstrucción de la pantalla
-                await fetchOrder();
-              },
-              child: SingleChildScrollView(
-                physics: const AlwaysScrollableScrollPhysics(),
-                child: Column(
-                  children: [
-                    OrderInfo(order: order),
-                    ItemsInfo(order: order),
-                  ],
                 ),
-              ),
-            );
-          }
-        },
+              );
+            }
+          },
+        ),
       ),
     );
   }

@@ -11,4 +11,5 @@ export 'screens/combo/combo_details_screen.dart';
 export 'screens/coupon/coupons_available_screen.dart';
 export 'screens/order/order_details_screen.dart';
 export 'screens/order/order_history_screen.dart';
+export 'screens/address/address_selector.dart';
 

@@ -93,6 +93,10 @@ class _LogincontentState extends ConsumerState<Logincontent> {
           },
         );
 
+        //*quitar despues
+        email = "asd@gmail.com";
+        password = "Matematica1";
+
         AuthDto usuario = AuthDto(
           email,
           password

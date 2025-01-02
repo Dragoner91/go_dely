@@ -5,7 +5,7 @@ import 'package:go_router/go_router.dart';
 
 // GoRouter configuration
 final appRouter = GoRouter(
-  initialLocation: '/welcome',
+  initialLocation: '/map',
   routes: [
     GoRoute(
       path: '/home',
@@ -246,5 +246,23 @@ final appRouter = GoRouter(
         );
       },
     ), 
+
+    GoRoute(
+      path: '/map',
+      pageBuilder: (context, state) {
+        return  CustomTransitionPage(
+          transitionDuration: const Duration(seconds: 1),
+          key: state.pageKey,
+          child: const AddressSelector(),
+          transitionsBuilder: (context, animation, secondaryAnimation, child) {
+            return FadeTransition(
+              opacity:
+                  CurveTween(curve: Curves.easeInOutCirc).animate(animation),
+              child: child,
+            );
+          },
+        );
+      },
+    ),
   ],
 );

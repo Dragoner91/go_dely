@@ -19,10 +19,16 @@ class OrderHistoryScreen extends ConsumerStatefulWidget {
 class _OrderHistoryScreenState extends ConsumerState<OrderHistoryScreen> {
   @override
   Widget build(BuildContext context) {
+
+    final theme = Theme.of(context);
+    final primaryColor = theme.colorScheme.primary;
+    final bottomAppBarColor = theme.colorScheme.surfaceContainer;
+
     return Scaffold(
       appBar: AppBar(
           title: const Text("Orders"),
           centerTitle: true,
+          backgroundColor: primaryColor.withAlpha(124),
           leading: IconButton(
             onPressed: () {
               context.go("/home");
@@ -32,7 +38,16 @@ class _OrderHistoryScreenState extends ConsumerState<OrderHistoryScreen> {
           ),
         ),
       bottomNavigationBar: const BottomAppBarCustom(),
-      body: const _Content(),
+      body: Container(
+          decoration: BoxDecoration(
+            gradient: LinearGradient(
+              colors: [primaryColor.withAlpha(124), bottomAppBarColor],
+              begin: Alignment.topCenter,
+              end: Alignment.bottomCenter,
+            ),
+          ),
+          child: const _Content()
+        ),
     );
   }
 }
@@ -60,6 +75,9 @@ class _ContentState extends ConsumerState<_Content> {
 
   Future<void> _loadOrders() async {
     final orders = await ref.read(orderRepositoryProvider).getOrders();
+    if(orders.isError){
+      return;
+    }
     setState(() {
       _ordersActive = orders.unwrap().where((order) => ((order.status == 'CREATED') | (order.status == 'BEING PROCESSED') | (order.status == 'SHIPPED'))).toList();
       _ordersPast = orders.unwrap().where((order) => ((order.status == 'CANCELLED') | (order.status == 'DELIVERED'))).toList();
@@ -70,6 +88,9 @@ class _ContentState extends ConsumerState<_Content> {
     final orders = await ref.read(orderRepositoryProvider).getOrders();
     final selected = ref.read(orderSelectedProvider.notifier).state;
     final List<Order> ordersSelected;
+    if(orders.isError){
+      return [];
+    }
     if(selected == "Active"){
       ordersSelected = orders.unwrap().where((order) => ((order.status == 'CREATED') | (order.status == 'BEING PROCESSED') | (order.status == 'SHIPPED'))).toList();
     } else {
@@ -112,6 +133,7 @@ class _ContentState extends ConsumerState<_Content> {
     final primaryColor = theme.colorScheme.primary;
     final secondaryColor = theme.colorScheme.secondary;
     final backgroundColor = theme.colorScheme.surfaceContainer;
+    final shadowColor = theme.colorScheme.shadow;
 
     controller.addListener(() {
       ref.read(orderSelectedProvider.notifier).update((state) => controller.value);
@@ -130,6 +152,7 @@ class _ContentState extends ConsumerState<_Content> {
           SliverAppBar(
             pinned: true,
             floating: true,
+            backgroundColor: Colors.transparent,
             flexibleSpace: Padding(
               padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 50),
               child: FutureBuilder<List<String>>(
@@ -166,7 +189,7 @@ class _ContentState extends ConsumerState<_Content> {
                         horizontal: 30,
                         vertical: 10,
                       ),
-                      animationDuration: const Duration(milliseconds: 250), // Duration
+                      animationDuration: const Duration(seconds: 2), // Duration
                     );
                   }
                 },
@@ -196,7 +219,20 @@ class _ContentState extends ConsumerState<_Content> {
                     } else if (snapshot.hasError) {
                       return Center(child: Text('Error loading orders: ${snapshot.error}'));
                     } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
-                      return const Center(child: Text('No orders available'));
+                      return Center(
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            SizedBox(height: MediaQuery.of(context).size.height*0.25,),
+                            Icon(Icons.list_alt, size: 100, color: shadowColor),
+                            const SizedBox(height: 20),
+                            Text(
+                              'No Orders Available',
+                              style: TextStyle(fontSize: 24, color: shadowColor),
+                            ),
+                          ],
+                        ),
+                      );
                     } else {
                       final orders = snapshot.data!;
                       return Column(
