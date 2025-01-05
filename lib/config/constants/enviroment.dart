@@ -10,15 +10,11 @@ class Environment{
 
   static String getAPI(String team){
     switch (team) {
-      case 'verde':
+      case 'Team Verde':
         return verdeAPI;
-      case 'rojo':
-        return rojoAPI;
-      case 'naranja':
+      case 'Team Naranja':
         return naranjaAPI;
-      case 'azul':
-        return azulAPI;
-      case 'amarillo':
+      case 'Team Amarillo':
         return amarilloAPI;
       default:
         return 'No hay API URL';

@@ -27,9 +27,10 @@ class AuthRepositoryImpl extends IAuthRepository {
       body: queryParameters,
       mapperCallBack: (data) {
         if (data['error'] != null) {
-          return "error";
+          return data['error'].toString();
         }
         final String token = data['token'];
+        print(token);
         return token;
       },
     );

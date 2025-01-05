@@ -21,7 +21,7 @@ class _WelcomeScreenState extends ConsumerState<WelcomeScreen> {
 
   Future<void> changeScreen(BuildContext context, String route) async {
     await Future.delayed(const Duration(milliseconds: 1000));
-    context.go(route);
+    context.push(route);
   }
 
   Future<void> checkSessionToken() async {
@@ -67,7 +67,7 @@ class _WelcomeScreenState extends ConsumerState<WelcomeScreen> {
                     child: const Text("OK"),
                     onPressed: () {
                       Navigator.of(context).pop(); // Close the error dialog
-                      context.go("/login");
+                      context.push("/login");
                     },
                   ),
                 ],
@@ -143,6 +143,10 @@ class _WelcomeScreenState extends ConsumerState<WelcomeScreen> {
                       ),
                       const SizedBox(width: 8),
                       Text(value),
+                      if (value == selectedTeam) ...[
+                        const SizedBox(width: 8),
+                        const Icon(Icons.check, size: 16),
+                      ],
                     ],
                   ),
                 );

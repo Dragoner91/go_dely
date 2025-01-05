@@ -20,9 +20,10 @@ class PetitionImpl extends IPetition {
       Map<String, dynamic>? queryParams, 
       body
     }) async {
-      print(providerContainer.read(currentBackendProvider.notifier).state);
+      final apiUrl = Environment.getAPI(providerContainer.read(currentBackendProvider.notifier).state);
       try {
-        final url = providerContainer.read(currentBackendProvider.notifier).state + urlPath;
+        final url = apiUrl + urlPath;
+        print("URL: $url");
         final response = await dio.request(
           url,
           data: body,
@@ -30,13 +31,15 @@ class PetitionImpl extends IPetition {
             method: httpMethod,
           ),
           queryParameters: queryParams);
+        print(response.data);
         return Result.success<T>(mapperCallBack(response.data));
       } 
       on DioException catch (e) {
+        print("EXEPTION: ${e.toString()}");
         return Result.failure<T>(handleException(e));
       } 
       catch (e) {
-        print(e);
+        print("EXEPTION: ${e.toString()}");
         return Result.failure<T>(const UnknownException());
       } 
   }
