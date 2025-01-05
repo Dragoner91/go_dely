@@ -251,7 +251,7 @@ class _ContentState extends ConsumerState<_Content> {
           Padding(
             padding: const EdgeInsets.all(8.0),
             child: Container(
-              height: 225,
+              height: 275,
               decoration: const BoxDecoration(
                 color: Colors.white,
                 borderRadius: BorderRadius.all(Radius.circular(15)),
