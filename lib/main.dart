@@ -12,8 +12,15 @@ import 'package:month_year_picker/month_year_picker.dart';
 
 Future<void> main() async{
   await dotenv.load(fileName: '.env');
-  await IoCContainer.init();
-  runApp(const ProviderScope(child: MyApp()));
+  WidgetsFlutterBinding.ensureInitialized();
+  final providerContainer = ProviderContainer();
+  await IoCContainer.init(providerContainer);
+  runApp(
+    UncontrolledProviderScope(
+      container: providerContainer,
+      child: const MyApp(),
+    ),
+  );
 }
 
 class MyApp extends ConsumerStatefulWidget {

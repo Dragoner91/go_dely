@@ -24,11 +24,11 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 
 class IoCContainer {
-  static Future<void> init() async {
+  static Future<void> init(ProviderContainer providerContainer) async {
     final getIt = GetIt.instance;
 
     //*COMMONS
-    final petitions = PetitionImpl();
+    final petitions = PetitionImpl(providerContainer: providerContainer);
     final SharedPreferencesAsync asyncPrefs = SharedPreferencesAsync();
     final SharedPreferences prefs = await SharedPreferences.getInstance();
 

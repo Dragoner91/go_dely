@@ -1,4 +1,6 @@
 import 'package:dio/dio.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_dely/aplication/providers/backend_provider.dart';
 import 'package:go_dely/config/constants/enviroment.dart';
 import 'package:go_dely/core/exception.dart';
 import 'package:go_dely/core/result.dart';
@@ -6,8 +8,9 @@ import 'package:go_dely/infraestructure/datasources/petitions/i_petition.dart';
 
 class PetitionImpl extends IPetition {
   final Dio dio;
+  ProviderContainer providerContainer;
 
-  PetitionImpl() : dio = Dio();
+  PetitionImpl({required this.providerContainer}) : dio = Dio();
 
   @override
   Future<Result<T>> makeRequest<T>({
@@ -17,8 +20,9 @@ class PetitionImpl extends IPetition {
       Map<String, dynamic>? queryParams, 
       body
     }) async {
+      print(providerContainer.read(currentBackendProvider.notifier).state);
       try {
-        final url = Environment.verdeAPI + urlPath;
+        final url = providerContainer.read(currentBackendProvider.notifier).state + urlPath;
         final response = await dio.request(
           url,
           data: body,
