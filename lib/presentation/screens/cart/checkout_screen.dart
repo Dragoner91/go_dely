@@ -11,18 +11,26 @@ import 'package:go_dely/aplication/providers/paymentMethod/payment_method_reposi
 import 'package:go_dely/aplication/use_cases/cart/payment_validartor.use_case.dart';
 import 'package:go_dely/domain/order/order.dart';
 import 'package:go_dely/domain/paymentMethod/payment_method.dart';
+import 'package:go_dely/presentation/screens/address/address_selector.dart';
 import 'package:go_router/go_router.dart';
 import 'package:month_year_picker/month_year_picker.dart';
 
 class CheckoutScreen extends StatelessWidget {
   const CheckoutScreen({super.key});
 
+
   @override
   Widget build(BuildContext context) {
+
+    final theme = Theme.of(context);
+    final primaryColor = theme.colorScheme.primary;
+    final bottomAppBarColor = theme.colorScheme.surfaceContainer;
+
     return Scaffold(
         appBar: AppBar(
           title: const Text("Checkout"),
           centerTitle: true,
+          backgroundColor: primaryColor.withAlpha(124),
           leading: IconButton(
             onPressed: () {
               context.pop();
@@ -30,21 +38,36 @@ class CheckoutScreen extends StatelessWidget {
             icon: const Icon(Icons.arrow_back_ios_new),
           ),
         ),
-        body: _Content(),
-        bottomNavigationBar: Padding(
-          padding: const EdgeInsets.all(5),
-          child: SizedBox(
-              height: 80,
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.start,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  const SizedBox(
-                    height: 10,
-                  ),
-                  _PlaceOrderButton()
-                ],
-              )),
+        body: Container(
+          height: MediaQuery.of(context).size.height,
+          decoration: BoxDecoration(
+            gradient: LinearGradient(
+              colors: [primaryColor.withAlpha(124), bottomAppBarColor],
+              begin: Alignment.topCenter,
+              end: Alignment.bottomCenter,
+            ),
+          ),
+          child: _Content()
+        ),
+        bottomNavigationBar: Container(
+          decoration: BoxDecoration(
+                color: bottomAppBarColor
+              ),
+          child: Padding(
+            padding: const EdgeInsets.all(5),
+            child: SizedBox(
+                height: 80,
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const SizedBox(
+                      height: 10,
+                    ),
+                    _PlaceOrderButton()
+                  ],
+                )),
+          ),
         ),
       );
   }
@@ -185,6 +208,7 @@ class _PlaceOrderButtonState extends ConsumerState<_PlaceOrderButton> {
             child: const Text(
               "Place Order",
               style: TextStyle(
+                  color: Colors.white,
                   fontSize: 18,
                   fontWeight: FontWeight.bold,
                   fontStyle: FontStyle.normal
@@ -224,7 +248,28 @@ class _ContentState extends ConsumerState<_Content> {
     return SingleChildScrollView(
       child: Column(
         children: [
-          _Addresses(addresses: addresses,), //*mandarle las direcciones
+          Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: Container(
+              height: 225,
+              decoration: const BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.all(Radius.circular(15)),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black26,
+                    blurRadius: 10,
+                    offset: Offset(0, 5),
+                  ),
+                ],
+              ),
+              child: const ClipRRect(
+              borderRadius: BorderRadius.all(Radius.circular(15)),
+              child: AddressSelector(),
+            ),
+            ),
+          ),
+          //_Addresses(addresses: addresses,), //*mandarle las direcciones
           const _DatePicker(), //*implementar un provider para toda esta info
           FutureBuilder<List<PaymentMethod>>(
             future: getPaymentMethods(),
