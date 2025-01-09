@@ -92,6 +92,7 @@ class OrderRepositoryImpl extends IOrderRepository{
 
   @override
   Future<Result<void>> changeStatus(String id, String status) async {
+    
     final tokenResult = await auth.getToken();
     if(tokenResult.isError) return throw tokenResult.error;
 

@@ -97,6 +97,11 @@ class _LogincontentState extends ConsumerState<Logincontent> {
         email = "asd@gmail.com";
         password = "Matematica1";
 
+        /*
+        email = "der2600@gmail.com";
+        password = "dev123";
+        */
+
         AuthDto usuario = AuthDto(
           email,
           password
@@ -113,6 +118,7 @@ class _LogincontentState extends ConsumerState<Logincontent> {
             context.go("/home");
           }
         } else {
+          print(response.error);
           showDialog(
             context: context,
             builder: (BuildContext context) {
