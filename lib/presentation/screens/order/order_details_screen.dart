@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_dely/aplication/providers/order/current_order_provider.dart';
 import 'package:go_dely/aplication/providers/order/order_repository_provider.dart';
 import 'package:go_dely/domain/cart/i_cart.dart';
+import 'package:go_dely/domain/order/i_order_repository.dart';
 import 'package:go_dely/domain/order/order.dart';
 import 'package:go_router/go_router.dart';
 
@@ -18,7 +19,8 @@ class _OrderDetailsScreenState extends ConsumerState<OrderDetailsScreen> {
   Future<Order> fetchOrder() async {
     await Future.delayed(const Duration(milliseconds: 700));
     final orderId = ref.read(currentOrderId.notifier).state;
-    final order = await ref.read(orderRepositoryProvider).getOrderById(orderId);
+    final orderDto = GetOrderByIdDto(id: orderId);
+    final order = await ref.read(orderRepositoryProvider).getOrderById(orderDto);
     return order.unwrap();
   }
 

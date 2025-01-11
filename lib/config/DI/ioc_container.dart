@@ -3,6 +3,14 @@ import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:get_it/get_it.dart';
 import 'package:go_dely/aplication/providers/theme/theme_provider.dart';
+import 'package:go_dely/aplication/use_cases/auth/login.use_case.dart';
+import 'package:go_dely/aplication/use_cases/auth/register.use_case.dart';
+import 'package:go_dely/aplication/use_cases/combo/get_combo_by_id.use_case.dart';
+import 'package:go_dely/aplication/use_cases/combo/get_combos.use_case.dart';
+import 'package:go_dely/aplication/use_cases/order/check_order_current_location.use_case.dart';
+import 'package:go_dely/aplication/use_cases/order/create_order.use_case.dart';
+import 'package:go_dely/aplication/use_cases/order/get_order_by_id.use_case.dart';
+import 'package:go_dely/aplication/use_cases/order/get_orders.use_case.dart';
 import 'package:go_dely/aplication/use_cases/product/get_product_by_id.use_case.dart';
 import 'package:go_dely/aplication/use_cases/product/get_products.use_case.dart';
 import 'package:go_dely/domain/cart/i_cart_repository.dart';
@@ -80,9 +88,25 @@ class IoCContainer {
 
     //*USE CASES
     final getProductsUseCase = GetProductsUseCase(productRepository);
-    
+    getIt.registerSingleton<GetProductsUseCase>(getProductsUseCase);
     final getProductByIdUseCase = GetProductByIdUseCase(productRepository);
     getIt.registerSingleton<GetProductByIdUseCase>(getProductByIdUseCase);
+    final getCombosUseCase = GetCombosUseCase(comboRepository);
+    getIt.registerSingleton<GetCombosUseCase>(getCombosUseCase);
+    final getCombosByIdUseCase = GetCombosByIdUseCase(comboRepository);
+    getIt.registerSingleton<GetCombosByIdUseCase>(getCombosByIdUseCase);
+    final getOrdersUseCase = GetOrdersUseCase(orderRepository);
+    getIt.registerSingleton<GetOrdersUseCase>(getOrdersUseCase);
+    final getOrderByIdUseCase = GetOrderByIdUseCase(orderRepository);
+    getIt.registerSingleton<GetOrderByIdUseCase>(getOrderByIdUseCase);
+    final createOrderUseCase = CreateOrderUseCase(orderRepository);
+    getIt.registerSingleton<CreateOrderUseCase>(createOrderUseCase);
+    final checkOrderCurrentLocationUseCase = CheckOrderCurrentLocationUseCase(orderRepository);
+    getIt.registerSingleton<CheckOrderCurrentLocationUseCase>(checkOrderCurrentLocationUseCase);
+    final loginUseCase = LoginUseCase(authRepository);
+    getIt.registerSingleton<LoginUseCase>(loginUseCase);
+    final registerUseCase = RegisterUseCase(authRepository);
+    getIt.registerSingleton<RegisterUseCase>(registerUseCase);
     
   }
 

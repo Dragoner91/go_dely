@@ -163,7 +163,7 @@ class _PlaceOrderButtonState extends ConsumerState<_PlaceOrderButton> {
                       })
                   .toList();
 
-              final CreateOrder order = CreateOrder( //*MOVER A APLICACION
+              final CreateOrderDto order = CreateOrderDto( //*MOVER A APLICACION
                 id: "",
                 address: address, 
                 combos: combos, 

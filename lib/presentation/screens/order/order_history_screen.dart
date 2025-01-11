@@ -4,6 +4,7 @@ import 'package:go_dely/aplication/providers/bottom_appbar_provider.dart';
 import 'package:go_dely/aplication/providers/order/current_order_provider.dart';
 import 'package:go_dely/aplication/providers/order/order_repository_provider.dart';
 import 'package:go_dely/aplication/providers/order/order_selected_provider.dart';
+import 'package:go_dely/domain/order/i_order_repository.dart';
 import 'package:go_dely/domain/order/order.dart';
 import 'package:go_dely/presentation/widgets/widgets.dart';
 import 'package:go_router/go_router.dart';
@@ -74,7 +75,8 @@ class _ContentState extends ConsumerState<_Content> {
   }
 
   Future<void> _loadOrders() async {
-    final orders = await ref.read(orderRepositoryProvider).getOrders();
+    final ordersDto = GetOrdersDto();
+    final orders = await ref.read(orderRepositoryProvider).getOrders(ordersDto);
     if(orders.isError){
       return;
     }
@@ -85,7 +87,8 @@ class _ContentState extends ConsumerState<_Content> {
   }
 
   Future<List<Order>> getOrders() async {
-    final orders = await ref.read(orderRepositoryProvider).getOrders();
+    final ordersDto = GetOrdersDto();
+    final orders = await ref.read(orderRepositoryProvider).getOrders(ordersDto);
     final selected = ref.read(orderSelectedProvider.notifier).state;
     final List<Order> ordersSelected;
     if(orders.isError){
@@ -501,7 +504,8 @@ class _OrderContentState extends ConsumerState<_OrderContent> {
                                       TextButton(
                                         child: const Text("YES", style: TextStyle(color: Colors.red),),
                                         onPressed: () async {
-                                          await ref.read(orderRepositoryProvider).changeStatus(widget.order.id, 'CANCELLED');
+                                          final changeStatusDto = ChangeStatusDto(id: widget.order.id, status: 'CANCELLED');
+                                          await ref.read(orderRepositoryProvider).changeStatus(changeStatusDto);
                                           print("cambio");
                                           widget.onRefresh();
                                           Navigator.of(context).pop(); // Close the error dialog
