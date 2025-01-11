@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:animate_do/animate_do.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_dely/aplication/providers/auth/auth_repository_provider.dart';
+import 'package:go_dely/domain/users/i_auth_repository.dart';
 import 'package:go_dely/domain/users/user.dart';
 import 'package:go_router/go_router.dart';
 
@@ -103,23 +104,23 @@ class _ContentRegisterState extends ConsumerState<ContentRegister> {
           ci: ci,
         );
 
-          var response = await ref.read(authRepositoryProvider).register(usuario);
+        RegisterDto registro = RegisterDto();
+        
+        var response = await ref.read(authRepositoryProvider).register(registro);
 
-          if (response.unwrap() != ""){
-            //print(response);
-            setState(() {
-              mostrarTexto = true;
-              mostrarTexto2 = false;
-            });
-
-
-          }
-          else{
-            setState(() {
-              mostrarTexto2 = true;
-              mostrarTexto = false;
-            });
-          }
+        if (response.unwrap() != ""){
+          //print(response);
+          setState(() {
+            mostrarTexto = true;
+            mostrarTexto2 = false;
+          });
+        }
+        else{
+          setState(() {
+            mostrarTexto2 = true;
+            mostrarTexto = false;
+          });
+        }
       }
       else{
         setState(() {

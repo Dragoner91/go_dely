@@ -3,8 +3,8 @@ import 'package:go_dely/infraestructure/models/order_db.dart';
 
 class OrderMapper {
 
-  static CreateOrder createOrderToEntity(OrderDB orderDB) =>
-    CreateOrder(
+  static CreateOrderDto createOrderToEntity(OrderDB orderDB) =>
+    CreateOrderDto(
       id: orderDB.id,
       address: orderDB.address, 
       combos:  [{}], //orderDB.combos, 

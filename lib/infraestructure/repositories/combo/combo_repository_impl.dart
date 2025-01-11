@@ -24,7 +24,7 @@ class ComboRepositoryImpl extends IComboRepository {
     var queryString = Uri(queryParameters: queryParameters).query;
 
     final result = await petition.makeRequest(
-      urlPath: '/combos?$queryString',
+      urlPath: '/combos/many?$queryString',
       httpMethod: 'GET',
       mapperCallBack: (data) {
         List<Combo> combos = [];

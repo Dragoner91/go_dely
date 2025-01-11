@@ -9,7 +9,7 @@ class User{
   
 
  User({
-  required this.ci, 
+  required this.ci,
   this.image,
   required this.fullname,
   required this.phone, 

@@ -1,11 +1,10 @@
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:go_dely/core/exception.dart';
 import 'package:go_dely/core/result.dart';
-import 'package:go_dely/domain/users/auth.dart';
 import 'package:go_dely/domain/users/user.dart';
 import 'package:go_dely/domain/users/i_auth_repository.dart';
 import 'package:go_dely/infraestructure/datasources/petitions/i_petition.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-
 
 class AuthRepositoryImpl extends IAuthRepository {
 
@@ -15,10 +14,10 @@ class AuthRepositoryImpl extends IAuthRepository {
   AuthRepositoryImpl({required this.petition, required this.asyncPrefs});
 
   @override
-  Future<Result<String>> login(AuthDto dto) async{
+  Future<Result<String>> login(LoginDto dto) async{
     var queryParameters = {
-      'user_email': dto.userEmail,
-      'user_password': dto.userPassword,
+      'user_email': dto.email,
+      'user_password': dto.password,
     };
 
     final result = await petition.makeRequest(
@@ -34,14 +33,32 @@ class AuthRepositoryImpl extends IAuthRepository {
         return token;
       },
     );
+
+    if(result.isSuccessful){
+      var token = result.unwrap();
+      var notificationToken = await FirebaseMessaging.instance.getToken();
+      queryParameters = {
+        'notification_token': notificationToken!,
+      };
+      petition.updateHeaders(headerKey: "Authorization", headerValue: "Bearer $token");
+      await petition.makeRequest(
+        urlPath: '/notifications/savetoken',
+        httpMethod: 'POST',
+        body: queryParameters,
+        mapperCallBack: (data) {
+          print(data['message']);
+        },
+      );
+    }
+    
     return result;
   }
 
   @override
-  Future<Result<String>> register(User user) async {
+  Future<Result<String>> register(RegisterDto dto) async {
     var queryParameters = {
-      'user_email': user.email,
-      'user_password': user.password,
+      'user_email': dto.email,
+      'user_password': dto.password,
     };
 
     var queryString = Uri(queryParameters: queryParameters).query;  //*terminar cuando este bien implmentado registro
