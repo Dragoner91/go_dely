@@ -6,18 +6,15 @@ class Environment{
   static String naranjaAPI = dotenv.env['TEAM_NARANJA_API'] ?? 'No hay API URL NARANJA';
   static String azulAPI = dotenv.env['TEAM_AZUL_API'] ?? 'No hay API URL AZUL';
   static String amarilloAPI = dotenv.env['TEAM_AMARILLO_API'] ?? 'No hay API URL AMARILLO';
+  static String routeAPI = dotenv.env['GEOAPIFY_API_KEY'] ?? 'No hay GEOAPIFY API KEY';
 
   static String getAPI(String team){
     switch (team) {
-      case 'verde':
+      case 'Team Verde':
         return verdeAPI;
-      case 'rojo':
-        return rojoAPI;
-      case 'naranja':
+      case 'Team Naranja':
         return naranjaAPI;
-      case 'azul':
-        return azulAPI;
-      case 'amarillo':
+      case 'Team Amarillo':
         return amarilloAPI;
       default:
         return 'No hay API URL';

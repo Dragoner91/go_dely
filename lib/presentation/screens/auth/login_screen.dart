@@ -4,7 +4,8 @@ import 'package:animate_do/animate_do.dart';
 import 'package:flutter/material.dart';
 import 'package:go_dely/aplication/providers/auth/auth_provider.dart';
 import 'package:go_dely/aplication/providers/auth/auth_repository_provider.dart';
-import 'package:go_dely/domain/users/auth.dart';
+import 'package:go_dely/aplication/use_cases/auth/login.use_case.dart';
+import 'package:go_dely/domain/users/i_auth_repository.dart';
 import 'package:go_dely/presentation/widgets/common/textfield.dart';
 import 'package:go_router/go_router.dart';
 //import 'package:shared_preferences/shared_preferences.dart';
@@ -57,7 +58,7 @@ class _LogincontentState extends ConsumerState<Logincontent> {
     //late SharedPreferences prefs;
 
     void actualizarEmail(String nuevoTexto) {
-          email = nuevoTexto;
+      email = nuevoTexto;
     }
     void actualizarPassword(String nuevoTexto) {
       password = nuevoTexto;
@@ -93,10 +94,18 @@ class _LogincontentState extends ConsumerState<Logincontent> {
           },
         );
 
-        AuthDto usuario = AuthDto(
-          email,
-          password
-        );
+        //*quitar despues
+        email = "dragoner919@gmail.com";
+        password = "Matematica1";
+
+        /*
+        email = "der2600@gmail.com";
+        password = "dev123";
+        */
+
+        LoginDto usuario = LoginDto(email: email, password: password);
+
+        // final response = await LoginUseCase(usuario);
 
         var response = await ref.read(authRepositoryProvider).login(usuario);
 
@@ -109,6 +118,7 @@ class _LogincontentState extends ConsumerState<Logincontent> {
             context.go("/home");
           }
         } else {
+          print(response.error);
           showDialog(
             context: context,
             builder: (BuildContext context) {

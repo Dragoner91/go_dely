@@ -1,4 +1,4 @@
-package com.example.go_dely
+package com.app.go_dely
 
 import io.flutter.embedding.android.FlutterActivity
 

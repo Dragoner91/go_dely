@@ -1,25 +1,27 @@
 import 'package:animate_do/animate_do.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:get_it/get_it.dart';
+import 'package:go_dely/aplication/providers/backend_provider.dart';
 import 'package:go_dely/domain/users/i_auth_repository.dart';
 import 'package:go_router/go_router.dart';
 
 
-class WelcomeScreen extends StatefulWidget {
+class WelcomeScreen extends ConsumerStatefulWidget {
 
   const WelcomeScreen({super.key});
 
   @override
-  State<WelcomeScreen> createState() => _WelcomeScreenState();
+  ConsumerState<WelcomeScreen> createState() => _WelcomeScreenState();
 }
 
-class _WelcomeScreenState extends State<WelcomeScreen> {
+class _WelcomeScreenState extends ConsumerState<WelcomeScreen> {
 
   final String name = "WelcomeScreen";
 
   Future<void> changeScreen(BuildContext context, String route) async {
     await Future.delayed(const Duration(milliseconds: 1000));
-    context.go(route);
+    context.push(route);
   }
 
   Future<void> checkSessionToken() async {
@@ -65,7 +67,7 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
                     child: const Text("OK"),
                     onPressed: () {
                       Navigator.of(context).pop(); // Close the error dialog
-                      context.go("/login");
+                      context.push("/login");
                     },
                   ),
                 ],
@@ -83,10 +85,28 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
     checkSessionToken();
   }
 
+  Color getTeamColor(String team) {
+    switch (team) {
+      case 'Team Verde':
+        return Colors.green;
+      case 'Team Naranja':
+        return Colors.orange;
+      case 'Team Amarillo':
+        return Colors.yellow;
+      default:
+        return Colors.grey;
+    }
+  }
+
   bool isAnimating = false;
+  String selectedTeam = 'Team Verde';
 
   @override
   Widget build(BuildContext context) {
+
+    
+    final theme = Theme.of(context);
+    final primaryColor = theme.colorScheme.primary;
 
     
     
@@ -96,16 +116,46 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
         actions: [
           Padding(
             padding: const EdgeInsets.all(10), //*implementar seleccionar api de otros equipos
-            child: IconButton(
-            onPressed: () {
-              
-            }, 
-            icon: const Icon(Icons.settings, size: 25,)
+            child: DropdownButton<String>(
+              icon: const Icon(Icons.settings, size: 25),
+              iconEnabledColor: getTeamColor(selectedTeam), // Cambiar el color del icono
+              underline: const SizedBox.shrink(),
+              onChanged: (String? newValue) {
+                setState(() {
+                  selectedTeam = newValue!;
+                  ref.read(currentBackendProvider.notifier).update((state) => selectedTeam);
+                });
+              },
+              items: <String>['Team Verde', 'Team Naranja', 'Team Amarillo']
+                  .map<DropdownMenuItem<String>>((String value) {
+                Color circleColor = getTeamColor(value);
+                return DropdownMenuItem<String>(
+                  value: value,
+                  child: Row(
+                    children: [
+                      Container(
+                        width: 10,
+                        height: 10,
+                        decoration: BoxDecoration(
+                          shape: BoxShape.circle,
+                          color: circleColor,
+                        ),
+                      ),
+                      const SizedBox(width: 8),
+                      Text(value),
+                      if (value == selectedTeam) ...[
+                        const SizedBox(width: 8),
+                        const Icon(Icons.check, size: 16),
+                      ],
+                    ],
+                  ),
+                );
+              }).toList(),
             ),
           )
         ],
       ),
-      backgroundColor: const Color(0xFF94ED8C),
+      backgroundColor: primaryColor,
       body: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         crossAxisAlignment: CrossAxisAlignment.center,

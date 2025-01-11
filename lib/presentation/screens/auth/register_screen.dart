@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:animate_do/animate_do.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_dely/aplication/providers/auth/auth_repository_provider.dart';
+import 'package:go_dely/domain/users/i_auth_repository.dart';
 import 'package:go_dely/domain/users/user.dart';
 import 'package:go_router/go_router.dart';
 
@@ -92,51 +93,34 @@ class _ContentRegisterState extends ConsumerState<ContentRegister> {
     }
 
 
-    void registerUser() async{
+    void registerUser() async {
       
       if (email != '' && password != '' && fullname != '' && ci != '' && phone != ''){
         User usuario = User( 
-          email,
-          fullname,
-          password,
-          phone,
-          ci,
+          email: email,
+          fullname: fullname,
+          password: password,
+          phone: phone,
+          ci: ci,
         );
 
+        RegisterDto registro = RegisterDto(email: usuario.email, password: usuario.password);
         
-          var response = await ref.read(authRepositoryProvider).register(usuario);
+        var response = await ref.read(authRepositoryProvider).register(registro);
 
-          if (response.unwrap() != ""){
-            //print(response);
-            setState(() {
-              mostrarTexto = true;
-              mostrarTexto2 = false;
-            });
-
-
-          }
-          else{
-            setState(() {
-              mostrarTexto2 = true;
-              mostrarTexto = false;
-            });
-          }
-        
-          /*final data = {
-          'cuerpo': user,
-          };
-  
-    try {
-    final response = await dio.post('/auth/register', data: data);
-    if (response.statusCode == 200) {
-      print('Usuario registrado');
-    } else {
-      print('Error al registar el ususario: ${response.statusCode}');
-    }
-    } catch (e) {
-    print('Error al enviar la solicitud: $e');
-    }*/
-
+        if (response.unwrap() != ""){
+          //print(response);
+          setState(() {
+            mostrarTexto = true;
+            mostrarTexto2 = false;
+          });
+        }
+        else{
+          setState(() {
+            mostrarTexto2 = true;
+            mostrarTexto = false;
+          });
+        }
       }
       else{
         setState(() {

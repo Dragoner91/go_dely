@@ -41,17 +41,23 @@ class _ContentState extends ConsumerState<_Content> {
   @override
   void initState() {
     super.initState();
-    _loadData();
+    if(mounted){
+      _loadData();
+    }
   }
 
   Future<void> _loadData() async {
-    await ref.read(productsProvider.notifier).loadNextPage();
-    await ref.read(combosProvider.notifier).loadNextPage();
+    if(mounted){
+      await ref.read(productsProvider.notifier).loadNextPage();
+      await ref.read(combosProvider.notifier).loadNextPage();
+    }
   }
 
   Future<void> _refreshData() async {
-    await ref.read(productsProvider.notifier).refresh();
-    await ref.read(combosProvider.notifier).refresh();
+    if(mounted){
+      await ref.read(productsProvider.notifier).refresh();
+      await ref.read(combosProvider.notifier).refresh();
+    }
   }
 
   @override
@@ -60,46 +66,59 @@ class _ContentState extends ConsumerState<_Content> {
     final products = ref.watch(productsProvider);
     final combos = ref.watch(combosProvider);
 
+    final theme = Theme.of(context);
+    final primaryColor = theme.colorScheme.primary;
+    final bottomAppBarColor = theme.colorScheme.surfaceContainer;
+
     return RefreshIndicator(
       triggerMode: RefreshIndicatorTriggerMode.anywhere,
       color: const Color(0xFF5D9558),
       onRefresh: _refreshData,
-      child: SingleChildScrollView(
-        child: Column(
-          children: [
-      
-            ProductHorizontalListView(
-              products: [
-                ...products.where((product) => product.discount == 0)
-              ],
-              title: 'Products',
-              subTitle: 'View All',
-              loadNextPage: () => ref.read(productsProvider.notifier).loadNextPage(),
-            ),
-
-            
-            ComboHorizontalListView(
-              combos: [
-                ...combos
-              ],
-              title: 'Products Combos',
-              subTitle: 'View All',
-              loadNextPage: () => ref.read(combosProvider.notifier).loadNextPage(),
-            ),
-            
-
-            ProductHorizontalListView(
-              products: [
-                ...products.where((product) => product.discount > 0)
-              ],
-              title: 'Limited Offers',
-              subTitle: 'View All',
-              loadNextPage: () => ref.read(productsProvider.notifier).loadNextPage(),
-            ),
-      
-            const SizedBox(height: 15,)
-      
-          ],
+      child: Container(
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            colors: [primaryColor.withAlpha(124), bottomAppBarColor],
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter,
+          ),
+        ),
+        child: SingleChildScrollView(
+          child: Column(
+            children: [
+                
+              ProductHorizontalListView(
+                products: [
+                  ...products.where((product) => product.discount == 0)
+                ],
+                title: 'Products',
+                subTitle: 'View All',
+                loadNextPage: () => ref.read(productsProvider.notifier).loadNextPage(),
+              ),
+          
+              
+              ComboHorizontalListView(
+                combos: [
+                  ...combos
+                ],
+                title: 'Products Combos',
+                subTitle: 'View All',
+                loadNextPage: () => ref.read(combosProvider.notifier).loadNextPage(),
+              ),
+              
+          
+              ProductHorizontalListView(
+                products: [
+                  ...products.where((product) => product.discount > 0)
+                ],
+                title: 'Limited Offers',
+                subTitle: 'View All',
+                loadNextPage: () => ref.read(productsProvider.notifier).loadNextPage(),
+              ),
+                
+              const SizedBox(height: 15,)
+                
+            ],
+          ),
         ),
       ),
     );

@@ -47,7 +47,7 @@ final appRouter = GoRouter(
         return  CustomTransitionPage(
           transitionDuration: const Duration(seconds: 1),
           key: state.pageKey,
-          child: const ProfileScreen(),
+          child: ProfileScreen(),
           transitionsBuilder: (context, animation, secondaryAnimation, child) {
             return FadeTransition(
               opacity:
@@ -246,5 +246,23 @@ final appRouter = GoRouter(
         );
       },
     ), 
+
+    GoRoute(
+      path: '/map',
+      pageBuilder: (context, state) {
+        return  CustomTransitionPage(
+          transitionDuration: const Duration(seconds: 1),
+          key: state.pageKey,
+          child: const AddressSelector(),
+          transitionsBuilder: (context, animation, secondaryAnimation, child) {
+            return FadeTransition(
+              opacity:
+                  CurveTween(curve: Curves.easeInOutCirc).animate(animation),
+              child: child,
+            );
+          },
+        );
+      },
+    ),
   ],
 );

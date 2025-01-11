@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_dely/aplication/providers/order/current_order_provider.dart';
 import 'package:go_dely/aplication/providers/order/order_repository_provider.dart';
 import 'package:go_dely/domain/cart/i_cart.dart';
+import 'package:go_dely/domain/order/i_order_repository.dart';
 import 'package:go_dely/domain/order/order.dart';
 import 'package:go_router/go_router.dart';
 
@@ -18,12 +19,18 @@ class _OrderDetailsScreenState extends ConsumerState<OrderDetailsScreen> {
   Future<Order> fetchOrder() async {
     await Future.delayed(const Duration(milliseconds: 700));
     final orderId = ref.read(currentOrderId.notifier).state;
-    final order = await ref.read(orderRepositoryProvider).getOrderById(orderId);
+    final orderDto = GetOrderByIdDto(id: orderId);
+    final order = await ref.read(orderRepositoryProvider).getOrderById(orderDto);
     return order.unwrap();
   }
 
   @override
   Widget build(BuildContext context) {
+
+    final theme = Theme.of(context);
+    final primaryColor = theme.colorScheme.primary;
+    final bottomAppBarColor = theme.colorScheme.surfaceContainer;
+
     return Scaffold(
       appBar: AppBar(
         title: const Text("Order Summary"),
@@ -35,45 +42,54 @@ class _OrderDetailsScreenState extends ConsumerState<OrderDetailsScreen> {
           icon: const Icon(Icons.arrow_back_ios_new),
         ),
       ),
-      body: FutureBuilder<Order>(
-        future: fetchOrder(),
-        builder: (context, snapshot) {
-          if (snapshot.connectionState == ConnectionState.waiting) {
-            return const Center(
-                child: SizedBox(
-                  width: 120,
-                  height: 120,
-                  child: CircularProgressIndicator(
-                    strokeWidth: 4, 
-                    color: Color(0xFF5D9558),
+      body: Container(
+        decoration: BoxDecoration(
+            gradient: LinearGradient(
+              colors: [primaryColor.withAlpha(124), bottomAppBarColor],
+              begin: Alignment.topCenter,
+              end: Alignment.bottomCenter,
+            ),
+          ),
+        child: FutureBuilder<Order>(
+          future: fetchOrder(),
+          builder: (context, snapshot) {
+            if (snapshot.connectionState == ConnectionState.waiting) {
+              return const Center(
+                  child: SizedBox(
+                    width: 120,
+                    height: 120,
+                    child: CircularProgressIndicator(
+                      strokeWidth: 4, 
+                      color: Color(0xFF5D9558),
+                    ),
+                  )
+                );
+            } else if (snapshot.hasError) {
+              return Center(child: Text('Error: ${snapshot.error}'));
+            } else if (!snapshot.hasData) {
+              return const Center(child: Text('No order found'));
+            } else {
+              final order = snapshot.data!;
+              return RefreshIndicator(
+                triggerMode: RefreshIndicatorTriggerMode.anywhere,
+                color: const Color(0xFF5D9558),
+                onRefresh: () async {
+                  setState(() {}); // Forzar la reconstrucción de la pantalla
+                  await fetchOrder();
+                },
+                child: SingleChildScrollView(
+                  physics: const AlwaysScrollableScrollPhysics(),
+                  child: Column(
+                    children: [
+                      OrderInfo(order: order),
+                      ItemsInfo(order: order),
+                    ],
                   ),
-                )
-              );
-          } else if (snapshot.hasError) {
-            return Center(child: Text('Error: ${snapshot.error}'));
-          } else if (!snapshot.hasData) {
-            return const Center(child: Text('No order found'));
-          } else {
-            final order = snapshot.data!;
-            return RefreshIndicator(
-              triggerMode: RefreshIndicatorTriggerMode.anywhere,
-              color: const Color(0xFF5D9558),
-              onRefresh: () async {
-                setState(() {}); // Forzar la reconstrucción de la pantalla
-                await fetchOrder();
-              },
-              child: SingleChildScrollView(
-                physics: const AlwaysScrollableScrollPhysics(),
-                child: Column(
-                  children: [
-                    OrderInfo(order: order),
-                    ItemsInfo(order: order),
-                  ],
                 ),
-              ),
-            );
-          }
-        },
+              );
+            }
+          },
+        ),
       ),
     );
   }

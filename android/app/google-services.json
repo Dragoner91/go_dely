@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "901261351739",
+    "project_id": "godely-push-notification",
+    "storage_bucket": "godely-push-notification.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:901261351739:android:3e0f595147c92d7ea5f51e",
+        "android_client_info": {
+          "package_name": "com.app.go_dely"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyB31hl-t7Po86EN5lJXpSoHCxHslWMNlk4"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

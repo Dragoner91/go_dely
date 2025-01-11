@@ -14,7 +14,7 @@ class OrderRepositoryImpl extends IOrderRepository{
   OrderRepositoryImpl({required this.petition, required this.auth});
 
   @override
-  Future<Result<String>> createOrder(CreateOrder order) async {
+  Future<Result<String>> createOrder(CreateOrderDto order) async {  //*CAMBIAR A CreateOrderDto
 
     final tokenResult = await auth.getToken();
     if(tokenResult.isError) return throw tokenResult.error;
@@ -44,7 +44,7 @@ class OrderRepositoryImpl extends IOrderRepository{
   }
 
   @override
-  Future<Result<Order>> getOrderById(String id) async {
+  Future<Result<Order>> getOrderById(GetOrderByIdDto dto) async {  //* CAMBIAR A GetOrderByIdDto
 
     final tokenResult = await auth.getToken();
     if(tokenResult.isError) return throw tokenResult.error;
@@ -52,7 +52,7 @@ class OrderRepositoryImpl extends IOrderRepository{
     petition.updateHeaders(headerKey: "Authorization", headerValue: "Bearer ${tokenResult.unwrap()}");
 
     final result = await petition.makeRequest(
-      urlPath: '/orders/$id',
+      urlPath: '/orders/${dto.id}',
       httpMethod: 'GET',
       mapperCallBack: (data) {
           final Order order = OrderMapper.orderToEntity(
@@ -65,7 +65,7 @@ class OrderRepositoryImpl extends IOrderRepository{
   }
 
   @override
-  Future<Result<List<Order>>> getOrders() async {
+  Future<Result<List<Order>>> getOrders(GetOrdersDto dto) async {
 
     final tokenResult = await auth.getToken();
     if(tokenResult.isError) return throw tokenResult.error;
@@ -91,18 +91,19 @@ class OrderRepositoryImpl extends IOrderRepository{
   }
 
   @override
-  Future<Result<void>> changeStatus(String id, String status) async {
+  Future<Result<void>> changeStatus(ChangeStatusDto dto) async {  //* CAMBIAR A ChangeStatusDto
+    
     final tokenResult = await auth.getToken();
     if(tokenResult.isError) return throw tokenResult.error;
 
     petition.updateHeaders(headerKey: "Authorization", headerValue: "Bearer ${tokenResult.unwrap()}");
 
     var queryParameters = {
-      'status': status,
+      'status': dto.status,
     };
 
     final result = await petition.makeRequest(
-      urlPath: '/orders/$id/status',
+      urlPath: '/orders/${dto.id}/status',
       httpMethod: 'PATCH',
       mapperCallBack: (data) {
         return data['message'];

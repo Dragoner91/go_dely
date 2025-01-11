@@ -32,7 +32,7 @@ class ProductDB {
         name: json["product_name"], 
         price: double.parse(json["product_price"]), 
         currency: json["product_currency"], 
-        weight: json["product_weight"], 
+        weight: json["product_weight"].toString(), 
         imageUrl: json["images"] != null
           ? List<String>.from(json["images"].map((e) => e))
           : [],

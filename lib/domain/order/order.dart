@@ -1,9 +1,7 @@
 
 import 'package:go_dely/domain/cart/i_cart.dart';
-import 'package:go_dely/domain/combo/combo.dart';
-import 'package:go_dely/domain/product/product.dart';
 
-class CreateOrder {
+class CreateOrderDto {
   final String id;
   final String address;
   final String paymentMethod;
@@ -13,7 +11,7 @@ class CreateOrder {
   final List<Map<String, dynamic>> products;
   final List<Map<String, dynamic>> combos;
 
-  CreateOrder({
+  CreateOrderDto({
     required this.id,
     required this.address, 
     required this.combos,

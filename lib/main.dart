@@ -1,3 +1,4 @@
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -12,8 +13,15 @@ import 'package:month_year_picker/month_year_picker.dart';
 
 Future<void> main() async{
   await dotenv.load(fileName: '.env');
-  await IoCContainer.init();
-  runApp(const ProviderScope(child: MyApp()));
+  WidgetsFlutterBinding.ensureInitialized();
+  final providerContainer = ProviderContainer();
+  await IoCContainer.init(providerContainer);
+  runApp(
+    UncontrolledProviderScope(
+      container: providerContainer,
+      child: const MyApp(),
+    ),
+  );
 }
 
 class MyApp extends ConsumerStatefulWidget {

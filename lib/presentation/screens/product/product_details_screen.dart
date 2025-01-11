@@ -41,13 +41,17 @@ class _ProductDetailsScreenState extends ConsumerState<ProductDetailsScreen> {
     
     // final productId = ref.watch(currentProduct).lastOrNull?.id;
     // if(productId == null) return const SizedBox();
-    
+
+    final theme = Theme.of(context);
+    final primaryColor = theme.colorScheme.primary;
+    final bottomAppBarColor = theme.colorScheme.surfaceContainer;
 
 
     return Scaffold(
       appBar: AppBar(
         centerTitle: true,
         title: const Text("GoDely!!"),
+        backgroundColor: primaryColor.withAlpha(124),
         leading: IconButton(onPressed: () {
             ref.read(currentProduct.notifier).update((state) {
               state.removeLast();
@@ -65,71 +69,81 @@ class _ProductDetailsScreenState extends ConsumerState<ProductDetailsScreen> {
           return isVisible ? const BottomAppBarCustom() : const SizedBox.shrink();
         },
       ),
-      body: SlidingUpPanel(
-        controller: _panelController,
-        maxHeight: MediaQuery.of(context).size.height * 0.20,
-        minHeight: 0,
-        color: Colors.transparent,
-        onPanelSlide: (position) {
-          if (position > 0.1) {
-            _isBottomAppBarVisible.value = false;
-          } else {
-            _isBottomAppBarVisible.value = true;
-          }
-        },
-        panel: FutureBuilder(
-          future: _loadProduct(),
-          builder: (context, snapshot) {
-            if (snapshot.connectionState == ConnectionState.waiting) {
-              return const Center(
-                child: SizedBox(
-                  width: 120,
-                  height: 120,
-                  child: CircularProgressIndicator(
-                    strokeWidth: 4, 
-                    color: Color(0xFF5D9558),
-                  ),
-                )
-              );
+      body: Container(
+        height: MediaQuery.of(context).size.height,
+          decoration: BoxDecoration(
+            gradient: LinearGradient(
+              colors: [primaryColor.withAlpha(124), bottomAppBarColor],
+              begin: Alignment.topCenter,
+              end: Alignment.bottomCenter,
+            )
+          ),
+        child: SlidingUpPanel(
+          controller: _panelController,
+          maxHeight: MediaQuery.of(context).size.height * 0.20,
+          minHeight: 0,
+          color: Colors.transparent,
+          onPanelSlide: (position) {
+            if (position > 0.1) {
+              _isBottomAppBarVisible.value = false;
+            } else {
+              _isBottomAppBarVisible.value = true;
             }
-            if (snapshot.hasError) {
-              return const Center(child: Text('Error loading product'),);
-            }
-            if (snapshot.hasData) {
-              return Container(
-                decoration: BoxDecoration(
-                  color: Theme.of(context).scaffoldBackgroundColor,
-                  borderRadius: const BorderRadius.only(topLeft: Radius.circular(20), topRight: Radius.circular(20))
-                ),
-                child: _PanelContent(product: snapshot.data as Product, panelController: _panelController)
-              );
-            }
-            return const Center(child: Text('No data available'),);
           },
-        ),
-        body: FutureBuilder(
-          future: _loadProduct(),
-          builder: (context, snapshot) {
-            if (snapshot.connectionState == ConnectionState.waiting) {
-              return const Center(
-                child: SizedBox(
-                  width: 120,
-                  height: 120,
-                  child: CircularProgressIndicator(
-                    strokeWidth: 4, 
-                    color: Color(0xFF5D9558),
+          panel: FutureBuilder(
+            future: _loadProduct(),
+            builder: (context, snapshot) {
+              if (snapshot.connectionState == ConnectionState.waiting) {
+                return const Center(
+                  child: SizedBox(
+                    width: 120,
+                    height: 120,
+                    child: CircularProgressIndicator(
+                      strokeWidth: 4, 
+                      color: Color(0xFF5D9558),
+                    ),
+                  )
+                );
+              }
+              if (snapshot.hasError) {
+                return const Center(child: Text('Error loading product'),);
+              }
+              if (snapshot.hasData) {
+                return Container(
+                  decoration: BoxDecoration(
+                    color: Theme.of(context).scaffoldBackgroundColor,
+                    borderRadius: const BorderRadius.only(topLeft: Radius.circular(20), topRight: Radius.circular(20))
                   ),
-                )
-              );
-            }
-            if (snapshot.hasError) {
-              return const Center(child: Text('Error loading product'),);
-            }
-            if (snapshot.hasData) {
-              return _Content(product: snapshot.data as Product, panelController: _panelController,);
-            }
-            return const Center(child: Text('No data available'),);
-          },
+                  child: _PanelContent(product: snapshot.data as Product, panelController: _panelController)
+                );
+              }
+              return const Center(child: Text('No data available'),);
+            },
+          ),
+          body: FutureBuilder(
+            future: _loadProduct(),
+            builder: (context, snapshot) {
+              if (snapshot.connectionState == ConnectionState.waiting) {
+                return const Center(
+                  child: SizedBox(
+                    width: 120,
+                    height: 120,
+                    child: CircularProgressIndicator(
+                      strokeWidth: 4, 
+                      color: Color(0xFF5D9558),
+                    ),
+                  )
+                );
+              }
+              if (snapshot.hasError) {
+                return const Center(child: Text('Error loading product'),);
+              }
+              if (snapshot.hasData) {
+                return _Content(product: snapshot.data as Product, panelController: _panelController,);
+              }
+              return const Center(child: Text('No data available'),);
+            },
+          ),
         ),
       ),
     );

@@ -1,12 +1,31 @@
 import 'package:go_dely/core/result.dart';
-import 'package:go_dely/domain/users/auth.dart';
-import 'package:go_dely/domain/users/user.dart';
+
+class LoginDto {
+  final String email;
+  final String password;
+
+  LoginDto({
+    required this.email,
+    required this.password
+  });
+
+}
+
+class RegisterDto {
+  final String email;
+  final String password;
+
+  RegisterDto({
+    required this.email,
+    required this.password
+  });
+}
 
 abstract class IAuthRepository{
 
-  Future<Result<String>> login(AuthDto dto);
+  Future<Result<String>> login(LoginDto dto);
 
-  Future<Result<String>> register(User user);
+  Future<Result<String>> register(RegisterDto dto);
 
   Future<Result<String?>> getToken();
 
