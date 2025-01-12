@@ -31,7 +31,6 @@ class PetitionImpl extends IPetition {
             method: httpMethod,
           ),
           queryParameters: queryParams);
-        print(response.data);
         return Result.success<T>(mapperCallBack(response.data));
       } 
       on DioException catch (e) {

@@ -13,8 +13,9 @@ class Product extends ProductAbstract{
   final List<String> imageUrl;
   final String description;
   final int stock;
-  final String category;
+  final List<String> categories;
   final double discount; 
+  final String measurement;
 
   Product({
     required this.id, 
@@ -25,14 +26,15 @@ class Product extends ProductAbstract{
     required this.weight, 
     required this.currency,
     required this.stock, 
-    required this.category,
-    required this.discount
+    required this.categories,
+    required this.discount,
+    required this.measurement
     }) : super(
     id: id, 
     name: name, 
     price: price,
     description: description,
-    category: category,
+    categories: categories,
     currency: currency,
     discount: discount
   );

@@ -16,8 +16,8 @@ class AuthRepositoryImpl extends IAuthRepository {
   @override
   Future<Result<String>> login(LoginDto dto) async{
     var queryParameters = {
-      'user_email': dto.email,
-      'user_password': dto.password,
+      'email': dto.email,
+      'password': dto.password,
     };
 
     final result = await petition.makeRequest(
@@ -57,8 +57,8 @@ class AuthRepositoryImpl extends IAuthRepository {
   @override
   Future<Result<String>> register(RegisterDto dto) async {
     var queryParameters = {
-      'user_email': dto.email,
-      'user_password': dto.password,
+      'email': dto.email,
+      'password': dto.password,
     };
 
     var queryString = Uri(queryParameters: queryParameters).query;  //*terminar cuando este bien implmentado registro
@@ -100,9 +100,10 @@ class AuthRepositoryImpl extends IAuthRepository {
 
     petition.updateHeaders(headerKey: "Authorization", headerValue: "Bearer $token");
     final result = await petition.makeRequest(
-      urlPath: '/auth/private',
+      urlPath: '/auth/current',
       httpMethod: 'GET',
       mapperCallBack: (data) {
+        print(data);
         if (data['message'] == "Authorized") {
           print(token);
           return true;

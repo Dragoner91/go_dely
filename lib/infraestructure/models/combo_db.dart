@@ -1,44 +1,46 @@
 
+import 'package:get_it/get_it.dart';
+import 'package:go_dely/domain/product/i_product_repository.dart';
 import 'package:go_dely/domain/product/product.dart';
-import 'package:go_dely/infraestructure/mappers/product_mapper.dart';
-import 'package:go_dely/infraestructure/models/product_db.dart';
 
 class ComboDB {
   final String id;
   final String name;
   final double price;
-  final String category;
+  final List<String> categories;
   final String currency;
-  final String imageUrl;
-  final List<Product> products;
+  final List<String> imageUrl;
+  final List<String> products;
   final String description;
   final double discount;
-
+  
   ComboDB({
     required this.id, 
     required this.name, 
     required this.price, 
     required this.description,
     required this.products, 
-    required this.category,
+    required this.categories,
     required this.currency,
     required this.imageUrl,
     required this.discount
   });
 
-  factory ComboDB.fromJson(Map<String, dynamic> json) => ComboDB(
-    id: json["combo_id"].toString(), 
-    name: json["combo_name"], 
-    price: double.parse(json["combo_price"]), 
-    products: json["products"] == null
-        ? []
-        : List<Product>.from(json["products"].map((e) => ProductMapper.productToEntity(ProductDB.fromJson(e)))), 
-    description: json["combo_description"], 
-    category: json["combo_category"] ?? "",
-    currency: json["combo_currency"],
-    imageUrl: json["combo_image"] ?? "",
-    discount: json["discount"] == null ? 0.0 : double.tryParse(json["discount"]["value"]) ?? 0.1,
-  );
+  static ComboDB fromJson(Map<String, dynamic> json) {
+    final productRepository = GetIt.instance.get<IProductRepository>();
+
+    return ComboDB(
+      id: json["id"], 
+      name: json["name"], 
+      price: json["price"] is String ? double.parse(json["price"]) : json["price"].toDouble(),
+      products: List<String>.from(json["products"].map((e) => e)),
+      description: json["description"], 
+      categories: List<String>.from(json["categories"].map((e) => e)),
+      currency: json["currency"],
+      imageUrl: List<String>.from(json["images"].map((e) => e)),
+      discount: json["discount"] == null ? 0.0 : (json["discount"] is String ? double.tryParse(json["discount"]) ?? 0.1 : json["discount"].toDouble()),
+    );
+  }
 
   Map<String, dynamic> toJson() => {
     "combo_id": id,
@@ -46,7 +48,7 @@ class ComboDB {
     "combo_price": price,
     "products": List<Product>.from(products.map((e) => e,)),
     "combo_description": description,
-    "combo_category": category,
+    "combo_category": categories,
     "combo_currency": currency,
     "combo_image": imageUrl,
     "combo_discount": discount

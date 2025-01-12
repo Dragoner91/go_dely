@@ -6,7 +6,7 @@ class CartLocal {
   final String id;
   final String name;
   final String description;
-  final String category;
+  final List<String> categories;
   final double price;
   final String currency;
   final String image;
@@ -18,7 +18,7 @@ class CartLocal {
     required this.id,
     required this.name,
     required this.description,
-    required this.category,
+    required this.categories,
     required this.price,
     required this.currency,
     required this.image,
@@ -31,7 +31,7 @@ class CartLocal {
     id: item.id,
     name: item.name,
     description: item.description,
-    category: item.category,
+    categories: item.categories,
     price: item.price,
     currency: item.currency,
     image: image,
@@ -44,7 +44,7 @@ class CartLocal {
     'id': id,
     'name': name,
     'description': description,
-    'category': category,
+    'category': categories,
     'price': price,
     'currency': currency,
     'image': image,

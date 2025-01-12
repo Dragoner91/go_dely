@@ -2,6 +2,7 @@ import 'package:animate_do/animate_do.dart';
 import 'package:card_swiper/card_swiper.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_dely/aplication/providers/products/product_repository_provider.dart';
 import 'package:go_dely/config/helpers/human_formats.dart';
 import 'package:go_dely/domain/combo/combo.dart';
 import 'package:go_dely/domain/product/product.dart';
@@ -15,7 +16,6 @@ import 'package:go_dely/aplication/providers/combos/current_combo_provider.dart'
 import 'package:go_dely/presentation/widgets/combo/combo_horizontal_listview.dart';
 import 'package:go_dely/presentation/widgets/common/custom_bottom_app_bar.dart';
 import 'package:go_router/go_router.dart';
-import 'package:card_swiper/card_swiper.dart';
 import 'package:sliding_up_panel/sliding_up_panel.dart';
 
 
@@ -31,6 +31,19 @@ class ComboDetailsScreen extends ConsumerStatefulWidget {
 class _ComboDetailsScreenState extends ConsumerState<ComboDetailsScreen> {
   final PanelController _panelController = PanelController();
   final ValueNotifier<bool> _isBottomAppBarVisible = ValueNotifier(true);
+  late List<Product> products;
+
+  Future<Combo> _loadCombo() async {
+    products = [];
+    final comboId = ref.read(currentCombo).lastOrNull?.id;
+    final resultCombo = await ref.read(combosRepositoryProvider).getComboById(comboId!);
+    final combo = resultCombo.unwrap();
+    for( var productId in combo.products ) {
+      final resultProducts = await ref.read(productRepositoryProvider).getProductById(productId);
+      products.add(resultProducts.unwrap());
+    }
+    return combo;
+  }
 
   Future<Combo> _loadProduct() async {
     final comboId = ref.read(currentCombo).lastOrNull?.id;
@@ -79,7 +92,7 @@ class _ComboDetailsScreenState extends ConsumerState<ComboDetailsScreen> {
           }
         },
         panel: FutureBuilder(
-          future: _loadProduct(),
+          future: _loadCombo(),
           builder: (context, snapshot) {
             if (snapshot.connectionState == ConnectionState.waiting) {
               return const Center(
@@ -109,7 +122,7 @@ class _ComboDetailsScreenState extends ConsumerState<ComboDetailsScreen> {
           },
         ),
         body: FutureBuilder(
-          future: _loadProduct(),
+          future: _loadCombo(),
           builder: (context, snapshot) {
             if (snapshot.connectionState == ConnectionState.waiting) {
               return const Center(
@@ -127,7 +140,7 @@ class _ComboDetailsScreenState extends ConsumerState<ComboDetailsScreen> {
               return const Center(child: Text('Error loading combo'),);
             }
             if (snapshot.hasData) {
-              return _Content(combo: snapshot.data as Combo, panelController: _panelController,);
+              return _Content(combo: snapshot.data as Combo, products: products, panelController: _panelController,);
             }
             return const Center(child: Text('No data available'),);
           },
@@ -211,7 +224,7 @@ class __PanelContentState extends ConsumerState<_PanelContent> {
           ),
           onPressed: () {
             final cart = ref.watch(cartItemsProvider.notifier).addItemToCart;
-            cart(CartItemMapper.cartItemToEntity(CartLocal.fromEntity(widget.combo, _quantity, widget.combo.imageUrl, "Combo")));
+            cart(CartItemMapper.cartItemToEntity(CartLocal.fromEntity(widget.combo, _quantity, widget.combo.imageUrl[0], "Combo")));
             widget.panelController.close();
           },
           child: const SizedBox(
@@ -227,9 +240,10 @@ class __PanelContentState extends ConsumerState<_PanelContent> {
 class _Content extends ConsumerStatefulWidget{
 
   final Combo? combo;
+  final List<Product> products;
   final PanelController panelController;
 
-  const _Content({this.combo, required this.panelController});
+  const _Content({this.combo, required this.panelController, required this.products});
 
   @override
   ConsumerState<_Content> createState() => _ContentState();
@@ -260,7 +274,7 @@ class _ContentState extends ConsumerState<_Content> {
             padding: const EdgeInsets.all(20),
             child: Stack(
               children: [
-                _Slider(comboImages: [widget.combo!.imageUrl]),
+                _Slider(comboImages: widget.combo!.imageUrl),
                 if(widget.combo!.discount > 0)
                 Row(
                     children: [
@@ -338,7 +352,7 @@ class _ContentState extends ConsumerState<_Content> {
                       const SizedBox(width: 20,),
                       const Text("Category: ", style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),),
                       const SizedBox(width: 5,),
-                      Text(widget.combo!.category, style: const TextStyle(fontSize: 18),),
+                      Text(widget.combo!.categories.toString(), style: const TextStyle(fontSize: 18),),
                       const SizedBox(width: 20,),
                     ],
                   ),
@@ -401,7 +415,7 @@ class _ContentState extends ConsumerState<_Content> {
           ),
           const SizedBox(height: 5,),
           _ListProducts(
-            products: widget.combo!.products
+            products: widget.products
           ),
           const SizedBox(height: 20,),
           Padding(

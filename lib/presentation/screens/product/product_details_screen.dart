@@ -352,9 +352,9 @@ class _ContentState extends ConsumerState<_Content> {
                   Row(
                     children: [
                       const SizedBox(width: 20,),
-                      const Text("Category: ", style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),),
+                      const Text("Categories: ", style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),),
                       const SizedBox(width: 5,),
-                      Text(widget.product!.category, style: const TextStyle(fontSize: 18),),
+                      Text(widget.product!.categories.toString(), style: const TextStyle(fontSize: 18),),
                       const SizedBox(width: 20,),
                     ],
                   ),

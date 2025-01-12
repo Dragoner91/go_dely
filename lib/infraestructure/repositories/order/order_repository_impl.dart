@@ -91,7 +91,7 @@ class OrderRepositoryImpl extends IOrderRepository{
   }
 
   @override
-  Future<Result<void>> changeStatus(ChangeStatusDto dto) async {  //* CAMBIAR A ChangeStatusDto
+  Future<Result<void>> changeStatus(ChangeStatusDto dto) async {  
     
     final tokenResult = await auth.getToken();
     if(tokenResult.isError) return throw tokenResult.error;

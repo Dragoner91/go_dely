@@ -71,14 +71,14 @@ class IoCContainer {
 
 
     //*REPOSITORIES
-    final productRepository = ProductRepositoryImpl(petition: petitions);
+    final authRepository = AuthRepositoryImpl(petition: petitions, asyncPrefs: asyncPrefs);
+    getIt.registerSingleton<IAuthRepository>(authRepository);
+    final productRepository = ProductRepositoryImpl(petition: petitions, auth: authRepository);
     getIt.registerSingleton<IProductRepository>(productRepository);
-    final comboRepository = ComboRepositoryImpl(petition: petitions);
+    final comboRepository = ComboRepositoryImpl(petition: petitions, auth: authRepository, productRepository: productRepository);
     getIt.registerSingleton<IComboRepository>(comboRepository);
     final cartRepository = CartItemRepository();
     getIt.registerSingleton<ICartRepository>(cartRepository);
-    final authRepository = AuthRepositoryImpl(petition: petitions, asyncPrefs: asyncPrefs);
-    getIt.registerSingleton<IAuthRepository>(authRepository);
     final themeRepository = ThemeRepository(prefs: prefs);
     getIt.registerSingleton<ThemeRepository>(themeRepository);
     final orderRepository = OrderRepositoryImpl(petition: petitions, auth: authRepository);
