@@ -574,7 +574,7 @@ class _Slide extends StatelessWidget {
         borderRadius: BorderRadius.circular(20),
         child: Image.network(
           image, 
-          fit: BoxFit.cover,
+          fit: BoxFit.scaleDown,
           loadingBuilder: (context, child, loadingProgress) {
             if(loadingProgress != null){
               return const DecoratedBox(decoration: BoxDecoration(color: Colors.black12));

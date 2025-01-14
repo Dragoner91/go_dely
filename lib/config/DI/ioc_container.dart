@@ -27,6 +27,7 @@ import 'package:go_dely/infraestructure/repositories/combo/combo_repository_impl
 import 'package:go_dely/infraestructure/repositories/order/order_repository_impl.dart';
 import 'package:go_dely/infraestructure/repositories/paymentMethod/payment_method_repository_impl.dart';
 import 'package:go_dely/infraestructure/repositories/product/product_repository_impl.dart';
+import 'package:go_dely/infraestructure/repositories/search/search_repository.dart';
 import 'package:go_dely/infraestructure/repositories/theme/theme_repository.dart';
 import 'package:go_dely/infraestructure/services/firebase/firebase_handler.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -85,6 +86,8 @@ class IoCContainer {
     getIt.registerSingleton<IOrderRepository>(orderRepository);
     final paymentMethodRepository = PaymentMethodRepositoryImpl(petition: petitions);
     getIt.registerSingleton<IPaymentMethodRepository>(paymentMethodRepository);
+    final searchRepository = SearchRepository(petition: petitions, auth: authRepository);
+    getIt.registerSingleton<SearchRepository>(searchRepository);
 
     //*USE CASES
     final getProductsUseCase = GetProductsUseCase(productRepository);

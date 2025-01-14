@@ -56,7 +56,7 @@ class ComboRepositoryImpl extends IComboRepository {
     petition.updateHeaders(headerKey: "Authorization", headerValue: "Bearer ${tokenResult.unwrap()}");
 
     final response = await petition.makeRequest(
-      urlPath: '/bundle/$id',
+      urlPath: '/bundle/one/$id',
       httpMethod: 'GET',
       mapperCallBack: (data) {
         final Combo combo = ComboMapper.comboToEntity(
