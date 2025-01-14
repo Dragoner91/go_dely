@@ -131,7 +131,7 @@ class _SlideState extends ConsumerState<_Slide> {
                         context.push("/combo");
                       },
                       child: Image.network(
-                        widget.combo.imageUrl,  //*siempre se visualiza la primera imagen del arreglo de imagenes
+                        widget.combo.imageUrl[0],  //*siempre se visualiza la primera imagen del arreglo de imagenes
                         fit: BoxFit.contain,
                         height: 150,
                         width: 150,
@@ -178,7 +178,7 @@ class _SlideState extends ConsumerState<_Slide> {
                                 onPressed: inCart ? null : () async {
                                   //*agregar producto al carrito
                                   final cart = ref.watch(cartItemsProvider.notifier).addItemToCart;
-                                  cart(CartItemMapper.cartItemToEntity(CartLocal.fromEntity(widget.combo, 1, widget.combo.imageUrl, "Combo")));
+                                  cart(CartItemMapper.cartItemToEntity(CartLocal.fromEntity(widget.combo, 1, widget.combo.imageUrl[0], "Combo")));
                                 },
                                 icon: inCart ? const Icon(Icons.check, size: 14, color: Colors.white,) : const Icon(Icons.add, size: 14, color: Colors.white,),
                               );

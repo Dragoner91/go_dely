@@ -10,13 +10,13 @@ class Combo extends ProductAbstract{
   final String name;
   final String description;
   final double price;
-  final String category;
+  final List<String> categories;
   final String currency;
-  final String imageUrl;
+  final List<String> imageUrl;
   final double discount; 
-  final List<Product> products;
+  final List<String> products;
 
-  Combo({required this.id, required this.name, required this.price, required this.products, required this.description, required this.category, required this.currency, required this.imageUrl, required this.discount}) :
-   super(id: id, name: name, price: price, description: description, category: category, currency: currency, discount: discount);
+  Combo({required this.id, required this.name, required this.price, required this.products, required this.description, required this.categories, required this.currency, required this.imageUrl, required this.discount}) :
+   super(id: id, name: name, price: price, description: description, categories: categories, currency: currency, discount: discount);
 
 }

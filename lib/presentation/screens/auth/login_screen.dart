@@ -104,6 +104,7 @@ class _LogincontentState extends ConsumerState<Logincontent> {
         */
 
         LoginDto usuario = LoginDto(email: email, password: password);
+        print(usuario.toString());
 
         // final response = await LoginUseCase(usuario);
 

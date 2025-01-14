@@ -9,8 +9,9 @@ class ProductDB {
   final List<String> imageUrl;
   final String description;
   final int stock;
-  final String category;
+  final List<String> categories;
   final double discount; 
+  final String measurement;
 
   ProductDB({
     required this.id, 
@@ -21,40 +22,45 @@ class ProductDB {
     required this.imageUrl, 
     required this.description, 
     required this.stock,
-    required this.category,
-    required this.discount
+    required this.categories,
+    required this.discount,
+    required this.measurement
     });
 
   factory ProductDB.fromJson(Map<String, dynamic> json) { 
     try {
       return ProductDB(
-        id: json["product_id"], 
-        name: json["product_name"], 
-        price: double.parse(json["product_price"]), 
-        currency: json["product_currency"], 
-        weight: json["product_weight"].toString(), 
-        imageUrl: json["images"] != null
-          ? List<String>.from(json["images"].map((e) => e))
-          : [],
-        description: json["product_description"], 
-        stock: json["product_stock"],
-        category: json["product_category"] ?? "No category",
-        discount: json["discount"] == null ? 0.0 : double.tryParse(json["discount"]["value"]) ?? 0.1,
+          id: json["id"], 
+          name: json["name"], 
+          price: json["price"] is String ? double.parse(json["price"]) : json["price"].toDouble(),
+          currency: json["currency"], 
+          weight: json["weight"].toString(), 
+          measurement: json['measurement'],
+          imageUrl: json["images"] != null
+            ? List<String>.from(json["images"].map((e) => e))
+            : [],
+          description: json["description"], 
+          stock: json["stock"] is String ? double.parse(json["stock"]).toInt() : json["stock"].toInt(),
+          categories: List<String>.from(json["categories"].map((e) => e)),
+          discount: json["discount"] == null ? 0.0 : (json["discount"] is String ? double.tryParse(json["discount"]) ?? 0.0 : json["discount"].toDouble()),
       );
     } catch (e) {
       print(e);
     }
     return ProductDB(
-    id: json["product_id"], 
-    name: json["product_name"], 
-    price: double.parse(json["product_price"]), 
-    currency: json["product_currency"], 
-    weight: json["product_weight"], 
-    imageUrl: List<String>.from(json["images"].map((e) => e)), 
-    description: json["product_description"], 
-    stock: json["product_stock"],
-    category: json["product_category"],
-    discount: json["discount"] == null ? 0.0 : double.tryParse(json["discount"]["value"]) ?? 0.1,
+      id: json["id"], 
+          name: json["name"], 
+          price: json["price"] is String ? double.parse(json["price"]) : json["price"].toDouble(),
+          currency: json["currency"], 
+          weight: json["weight"].toString(), 
+          measurement: json['measurement'],
+          imageUrl: json["images"] != null
+            ? List<String>.from(json["images"].map((e) => e))
+            : [],
+          description: json["description"], 
+          stock: json["stock"] is String ? double.parse(json["stock"]).toInt() : json["stock"].toInt(),
+          categories: List<String>.from(json["categories"].map((e) => e)),
+          discount: json["discount"] == null ? 0.0 : (json["discount"] is String ? double.tryParse(json["discount"]) ?? 0.1 : json["discount"].toDouble()),
   );
   }
 
@@ -67,7 +73,7 @@ class ProductDB {
     "product_image": List<String>.from(imageUrl.map((e) => e,)),
     "product_description": description,
     "product_stock": stock,
-    "product_category": category,
+    "product_category": categories,
     "product_discount": discount
   };
 }

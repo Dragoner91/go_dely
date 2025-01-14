@@ -1,7 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:get_it/get_it.dart';
+import 'package:go_dely/aplication/providers/bottom_appbar_provider.dart';
 import 'package:go_dely/aplication/providers/cart/cart_items_provider.dart';
+import 'package:go_dely/aplication/providers/combos/current_combo_provider.dart';
+import 'package:go_dely/aplication/providers/products/current_product_provider.dart';
 import 'package:go_dely/domain/cart/i_cart.dart';
+import 'package:go_dely/domain/combo/combo.dart';
+import 'package:go_dely/domain/combo/i_combo_repository.dart';
+import 'package:go_dely/domain/product/i_product_repository.dart';
+import 'package:go_dely/domain/product/product.dart';
+import 'package:go_dely/infraestructure/models/search_item_db.dart';
+import 'package:go_dely/infraestructure/repositories/search/search_repository.dart';
 import 'package:go_router/go_router.dart';
 import 'package:badges/badges.dart' as badges;
 
@@ -154,11 +164,19 @@ class _ColumnaWidgetsBottomState extends State<_ColumnaWidgetsBottom> with Singl
 
 
 
-class _SearchButton extends StatelessWidget implements PreferredSizeWidget{
-  const _SearchButton();
+class _SearchButton extends ConsumerStatefulWidget implements PreferredSizeWidget{
 
   @override
   Size get preferredSize => const Size.fromHeight(kToolbarHeight);
+
+  const _SearchButton();
+
+  @override
+  ConsumerState<_SearchButton> createState() => _SearchButtonState();
+}
+
+class _SearchButtonState extends ConsumerState<_SearchButton> {
+  
 
   @override
   Widget build(BuildContext context) {
@@ -170,10 +188,12 @@ class _SearchButton extends StatelessWidget implements PreferredSizeWidget{
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 20),
       child: FilledButton(
-        onPressed: () {
+        onPressed: () async {
+          final items = await GetIt.instance.get<SearchRepository>().getItemsForSearch();
+          if(items.isError) return;
           showSearch(
             context: context, 
-            delegate: CustomSearchDelegate()
+            delegate: CustomSearchDelegate(items: items.unwrap(), ref: ref)
           );
         },
         style: ElevatedButton.styleFrom(
@@ -193,7 +213,12 @@ class _SearchButton extends StatelessWidget implements PreferredSizeWidget{
   }
 }
 
-class CustomSearchDelegate extends SearchDelegate{
+class CustomSearchDelegate extends SearchDelegate {
+
+  final WidgetRef ref;
+  final List<SearchItem> items;
+
+  CustomSearchDelegate({required this.items, required this.ref});
 
   @override
   List<Widget>? buildActions(BuildContext context) {
@@ -219,13 +244,61 @@ class CustomSearchDelegate extends SearchDelegate{
 
   @override
   Widget buildResults(BuildContext context) {
-    List<String> matchQuery = [];
-    throw UnimplementedError();
+    List<SearchItem> matchQuery = [];
+    for (var item in items) {
+      if (item.name.toLowerCase().contains(query.toLowerCase())) {
+        matchQuery.add(item);
+      }
+    }
+    return ListView.builder(
+      itemCount: matchQuery.length,
+      itemBuilder: (context, index) {
+        var result = matchQuery[index];
+        return ListTile(
+          title: Text(result.name),
+          onTap: () {
+            close(context, result);
+          },
+        );
+      },
+    );
   }
 
   @override
   Widget buildSuggestions(BuildContext context) {
-    throw UnimplementedError();
+    List<SearchItem> matchQuery = [];
+    for (var item in items) {
+      if (item.name.toLowerCase().contains(query.toLowerCase())) {
+        matchQuery.add(item);
+      }
+    }
+    return ListView.builder(
+      itemCount: matchQuery.length,
+      itemBuilder: (context, index) {
+        var result = matchQuery[index];
+        return ListTile(
+          title: Text(result.name),
+          onTap: () async {
+            query = result.name;
+            if (result.type == "Combo") {
+              final combo = await GetIt.instance.get<IComboRepository>().getComboById(result.id);
+              ref.read(currentCombo.notifier).update((state) => [...state, combo.unwrap()] ); //*arreglar
+              ref.read(currentStateNavBar.notifier).update((state) => -1);
+              context.push("/combo");
+            } 
+            if (result.type == "Product") {
+              final product = await GetIt.instance.get<IProductRepository>().getProductById(result.id);
+              ref.read(currentProduct.notifier).update((state) => [...state, product.unwrap()] ); //*arreglar
+              ref.read(currentStateNavBar.notifier).update((state) => -1);
+              context.push("/product");
+            } 
+            showResults(context);
+            close(context, result);
+
+          },
+        );
+      },
+    );
   }
 
 }

@@ -6,9 +6,63 @@ import 'package:go_dely/domain/cart/i_cart.dart';
 import 'package:go_dely/infraestructure/entities/cart/cart_items.dart';
 import 'package:go_dely/aplication/providers/cart/cart_items_provider.dart';
 import 'package:go_router/go_router.dart';
+import 'package:mobile_scanner/mobile_scanner.dart';
 
-class CartScreen extends StatelessWidget {
+class CartScreen extends ConsumerStatefulWidget {
   const CartScreen({super.key});
+
+  @override
+  ConsumerState<CartScreen> createState() => _CartScreenState();
+}
+
+class _CartScreenState extends ConsumerState<CartScreen> {
+
+  String couponCode = "";
+  final MobileScannerController controller = MobileScannerController();
+  bool isCameraOpen = false;
+  
+  @override
+  void initState() {
+    super.initState();
+  }
+
+  Future<void> _scanQRCode() async {
+
+    controller.start();
+    bool isBarcodeDetected = false;
+
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        content: SizedBox(
+          width: 300,
+          height: 300,
+          child: MobileScanner(
+            controller: controller,
+            onDetect: (BarcodeCapture capture) async {
+              if (isBarcodeDetected) return;
+
+              final List<Barcode> barcodes = capture.barcodes;
+              final barcode = barcodes.first;
+
+              if (barcode.rawValue != null) {
+                setState(() {
+                  couponCode = barcode.rawValue!;
+                  print(couponCode);
+                  isBarcodeDetected = true;
+                });
+
+                await controller.stop();
+                if (mounted) {
+                  Navigator.of(context).pop();
+                }
+              }
+            },
+          ),
+        ),
+      ),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -29,6 +83,25 @@ class CartScreen extends StatelessWidget {
               context.pop();
             },
             icon: const Icon(Icons.arrow_back_ios_new),
+          ),
+        ),
+        floatingActionButton: CircleAvatar(
+          radius: 25, // Ajusta el tamaño del botón
+          backgroundColor: primaryColor,
+          child: Material(
+            color: Colors.transparent,
+            child: InkWell(
+              onTap: _scanQRCode,
+              borderRadius: BorderRadius.circular(20),
+              child: const Center(
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Icon(Icons.discount, color: Colors.white, size: 18,),
+                  ],
+                ),
+              ),
+            ),
           ),
         ),
         bottomNavigationBar: Container(

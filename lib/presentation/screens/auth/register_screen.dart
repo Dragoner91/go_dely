@@ -104,7 +104,7 @@ class _ContentRegisterState extends ConsumerState<ContentRegister> {
           ci: ci,
         );
 
-        RegisterDto registro = RegisterDto(email: usuario.email, password: usuario.password);
+        RegisterDto registro = RegisterDto(email: usuario.email, password: usuario.password!);
         
         var response = await ref.read(authRepositoryProvider).register(registro);
 

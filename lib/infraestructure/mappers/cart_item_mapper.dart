@@ -6,7 +6,7 @@ class CartItemMapper{
 
   static CartItem cartItemToEntity(CartLocal cartLocal) => 
     CartItem(
-      category: cartLocal.category,
+      categories: cartLocal.categories,
       currency: cartLocal.currency,
       description: cartLocal.description,
       id: cartLocal.id,

@@ -12,7 +12,7 @@ class ComboMapper{
       price: comboDB.price, 
       description: comboDB.description, 
       products: comboDB.products, 
-      category: comboDB.category, 
+      categories: comboDB.categories, 
       currency: comboDB.currency,
       imageUrl: comboDB.imageUrl,
       discount: comboDB.discount,
