@@ -2,7 +2,9 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:get_it/get_it.dart';
+import 'package:go_dely/aplication/providers/notifications/notifications_provider.dart';
 import 'package:go_dely/aplication/providers/theme/theme_provider.dart';
+import 'package:go_dely/aplication/services/i_notification_handler.dart';
 import 'package:go_dely/aplication/use_cases/auth/login.use_case.dart';
 import 'package:go_dely/aplication/use_cases/auth/register.use_case.dart';
 import 'package:go_dely/aplication/use_cases/combo/get_combo_by_id.use_case.dart';
@@ -30,6 +32,7 @@ import 'package:go_dely/infraestructure/repositories/product/product_repository_
 import 'package:go_dely/infraestructure/repositories/search/search_repository.dart';
 import 'package:go_dely/infraestructure/repositories/theme/theme_repository.dart';
 import 'package:go_dely/infraestructure/services/firebase/firebase_handler.dart';
+import 'package:go_dely/infraestructure/services/notifications/notification_handler.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 
@@ -50,8 +53,11 @@ class IoCContainer {
       options: DefaultFirebaseOptions.currentPlatform,
     );
 
+    final notificationHandler = NotificationHandler();
+    getIt.registerSingleton<INotificationHandler>(notificationHandler);
+    final notifications = NotificationsProvider(notificationHandler);
+    notifications.init();
 
-    
     final FirebaseMessaging firebaseMessaging = FirebaseMessaging.instance;
 
     await firebaseMessaging.requestPermission(
