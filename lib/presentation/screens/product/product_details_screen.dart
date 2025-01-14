@@ -1,7 +1,11 @@
 import 'package:animate_do/animate_do.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:get_it/get_it.dart';
+import 'package:go_dely/aplication/use_cases/category/get_category_by_id.use_case.dart';
+import 'package:go_dely/aplication/use_cases/product/get_product_by_id.use_case.dart';
 import 'package:go_dely/config/helpers/human_formats.dart';
+import 'package:go_dely/domain/category/category.dart';
 import 'package:go_dely/domain/product/product.dart';
 import 'package:go_dely/infraestructure/mappers/cart_item_mapper.dart';
 import 'package:go_dely/infraestructure/models/cart_item_local.dart';
@@ -28,11 +32,20 @@ class ProductDetailsScreen extends ConsumerStatefulWidget {
 class _ProductDetailsScreenState extends ConsumerState<ProductDetailsScreen> {
   final PanelController _panelController = PanelController();
   final ValueNotifier<bool> _isBottomAppBarVisible = ValueNotifier(true);
+  late List<Category> categories;
 
   Future<Product> _loadProduct() async {
+    categories = [];
     final productId = ref.read(currentProduct).lastOrNull?.id;
-    final product = await ref.read(productRepositoryProvider).getProductById(productId!);
-    return product.unwrap();
+    final getProductByIdUseCase = GetIt.instance.get<GetProductByIdUseCase>();
+    final productResult = await getProductByIdUseCase.execute(GetProductByIdDto(productId!));
+    final Product product = productResult.unwrap();
+    final categoryByIdUseCase = GetIt.instance.get<GetCategoryByIdUseCase>();
+    for ( var categoryId in product.categories ) {
+      final category = await categoryByIdUseCase.execute(GetCategoryByIdDto(categoryId));
+      categories.add(category.unwrap());
+    }
+    return product;
   }
 
   @override 
@@ -139,7 +152,7 @@ class _ProductDetailsScreenState extends ConsumerState<ProductDetailsScreen> {
                 return const Center(child: Text('Error loading product'),);
               }
               if (snapshot.hasData) {
-                return _Content(product: snapshot.data as Product, panelController: _panelController,);
+                return _Content(product: snapshot.data as Product, panelController: _panelController, categories: categories,);
               }
               return const Center(child: Text('No data available'),);
             },
@@ -240,9 +253,10 @@ class __PanelContentState extends ConsumerState<_PanelContent> {
 class _Content extends ConsumerStatefulWidget{
 
   final Product? product;
+  final List<Category> categories;
   final PanelController panelController;
 
-  const _Content({this.product, required this.panelController});
+  const _Content({this.product, required this.panelController, required this.categories});
 
   @override
   ConsumerState<_Content> createState() => _ContentState();
@@ -354,7 +368,7 @@ class _ContentState extends ConsumerState<_Content> {
                       const SizedBox(width: 20,),
                       const Text("Categories: ", style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),),
                       const SizedBox(width: 5,),
-                      Text(widget.product!.categories.toString(), style: const TextStyle(fontSize: 18),),
+                      Text(widget.categories.toString(), style: const TextStyle(fontSize: 18),),
                       const SizedBox(width: 20,),
                     ],
                   ),

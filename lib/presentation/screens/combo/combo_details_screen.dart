@@ -2,8 +2,13 @@ import 'package:animate_do/animate_do.dart';
 import 'package:card_swiper/card_swiper.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:get_it/get_it.dart';
 import 'package:go_dely/aplication/providers/products/product_repository_provider.dart';
+import 'package:go_dely/aplication/use_cases/category/get_category_by_id.use_case.dart';
+import 'package:go_dely/aplication/use_cases/combo/get_combo_by_id.use_case.dart';
+import 'package:go_dely/aplication/use_cases/product/get_product_by_id.use_case.dart';
 import 'package:go_dely/config/helpers/human_formats.dart';
+import 'package:go_dely/domain/category/category.dart';
 import 'package:go_dely/domain/combo/combo.dart';
 import 'package:go_dely/domain/product/product.dart';
 import 'package:go_dely/infraestructure/mappers/cart_item_mapper.dart';
@@ -32,23 +37,26 @@ class _ComboDetailsScreenState extends ConsumerState<ComboDetailsScreen> {
   final PanelController _panelController = PanelController();
   final ValueNotifier<bool> _isBottomAppBarVisible = ValueNotifier(true);
   late List<Product> products;
+  late List<Category> categories;
 
   Future<Combo> _loadCombo() async {
     products = [];
+    categories = [];
     final comboId = ref.read(currentCombo).lastOrNull?.id;
-    final resultCombo = await ref.read(combosRepositoryProvider).getComboById(comboId!);
+    final getComboByIdUseCase = GetIt.instance.get<GetCombosByIdUseCase>();
+    final resultCombo = await getComboByIdUseCase.execute(GetComboByIdDto(comboId!));
     final combo = resultCombo.unwrap();
-    for( var productId in combo.products ) {
-      final resultProducts = await ref.read(productRepositoryProvider).getProductById(productId);
+    final getProductByIdUseCase = GetIt.instance.get<GetProductByIdUseCase>();
+    for ( var productId in combo.products ) {
+      final resultProducts = await getProductByIdUseCase.execute(GetProductByIdDto(productId));
       products.add(resultProducts.unwrap());
     }
+    final categoryByIdUseCase = GetIt.instance.get<GetCategoryByIdUseCase>();
+    for ( var categoryId in combo.categories ) {
+      final category = await categoryByIdUseCase.execute(GetCategoryByIdDto(categoryId));
+      categories.add(category.unwrap());
+    }
     return combo;
-  }
-
-  Future<Combo> _loadProduct() async {
-    final comboId = ref.read(currentCombo).lastOrNull?.id;
-    final combo = await ref.read(combosRepositoryProvider).getComboById(comboId!);
-    return combo.unwrap();
   }
 
   @override 
@@ -140,7 +148,7 @@ class _ComboDetailsScreenState extends ConsumerState<ComboDetailsScreen> {
               return const Center(child: Text('Error loading combo'),);
             }
             if (snapshot.hasData) {
-              return _Content(combo: snapshot.data as Combo, products: products, panelController: _panelController,);
+              return _Content(combo: snapshot.data as Combo, products: products, panelController: _panelController, categories: categories);
             }
             return const Center(child: Text('No data available'),);
           },
@@ -240,10 +248,11 @@ class __PanelContentState extends ConsumerState<_PanelContent> {
 class _Content extends ConsumerStatefulWidget{
 
   final Combo? combo;
+  final List<Category> categories;
   final List<Product> products;
   final PanelController panelController;
 
-  const _Content({this.combo, required this.panelController, required this.products});
+  const _Content({this.combo, required this.panelController, required this.products, required this.categories});
 
   @override
   ConsumerState<_Content> createState() => _ContentState();
@@ -352,7 +361,7 @@ class _ContentState extends ConsumerState<_Content> {
                       const SizedBox(width: 20,),
                       const Text("Category: ", style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),),
                       const SizedBox(width: 5,),
-                      Text(widget.combo!.categories.toString(), style: const TextStyle(fontSize: 18),),
+                      Text(widget.categories.toString(), style: const TextStyle(fontSize: 18),),
                       const SizedBox(width: 20,),
                     ],
                   ),
