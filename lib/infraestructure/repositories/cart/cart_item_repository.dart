@@ -106,9 +106,13 @@ class CartItemRepository extends ICartRepository{
   Future<double> calculateTotal() async {
     final items = await getItemsFromCart();
     double total = 0;
+    double discount = 0;
     for (var item in items) {
-      final discountResult = await discountRepo.getDiscountById(GetDiscountByIdDto(item.discount));
-      final double discount = discountResult.unwrap().percentage;
+      discount = 0;
+      if (item.discount != "No Discount"){
+        final discountResult = await discountRepo.getDiscountById(GetDiscountByIdDto(item.discount));
+        discount = discountResult.unwrap().percentage;
+      }
       total += item.price * item.quantity * (1 - discount);
     }
     return total;

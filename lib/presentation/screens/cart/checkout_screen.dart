@@ -119,7 +119,7 @@ class _PlaceOrderButtonState extends ConsumerState<_PlaceOrderButton> {
               
               final items = await ref.read(cartItemsProvider.notifier).getAllItemsFromCart();
               final date = ref.read(dateSelected.notifier).state;
-              final paymentMethod = ref.read(paymentMethodSelectedId.notifier).state;
+              final paymentMethod = ref.read(paymentMethodSelected.notifier).state;
               final address = ref.read(addressSelected.notifier).state;
               final total = await ref.read(cartItemsProvider.notifier).calculateTotal();
               // final coupon = ; 
@@ -150,8 +150,7 @@ class _PlaceOrderButtonState extends ConsumerState<_PlaceOrderButton> {
               final List<Map<String, dynamic>> combos = items
                   .where((item) => item.type == 'Combo')
                   .map((item) => {
-                        'combo_id': item.id,
-                        'combo_price': item.price,
+                        'id': item.id,
                         'quantity': item.quantity,
                       })
                   .toList();
@@ -159,8 +158,7 @@ class _PlaceOrderButtonState extends ConsumerState<_PlaceOrderButton> {
               final List<Map<String, dynamic>> products = items
                   .where((item) => item.type == 'Product')
                   .map((item) => {
-                        'product_id': item.id,
-                        'product_price': item.price,
+                        'id': item.id,
                         'quantity': item.quantity,
                       })
                   .toList();
@@ -176,6 +174,7 @@ class _PlaceOrderButtonState extends ConsumerState<_PlaceOrderButton> {
                 total: total,
                 status: "Active"
               );
+
               final createOrderUseCase = GetIt.instance.get<CreateOrderUseCase>();
               final response = await createOrderUseCase.execute(order);
               // final response = await ref.read(orderRepositoryProvider).createOrder(order);
@@ -576,7 +575,6 @@ class _PaymentMethodState extends ConsumerState<_PaymentMethod> {
   Widget build(BuildContext context) {
     final selectedMethod = ref.watch(paymentMethodSelected);
     final theme = Theme.of(context);
-    print("reset");
     return Padding(
       padding: const EdgeInsets.all(8.0),
       child: Column(
@@ -712,7 +710,6 @@ class _PaymentMethodState extends ConsumerState<_PaymentMethod> {
                           ),
                           keyboardType: TextInputType.number,
                           onChanged: (value) {
-                            print("reset");
                             ref.read(cashAmountProvider.notifier).update((state) => double.tryParse(value) ?? 0.0);
                           },
                         ),

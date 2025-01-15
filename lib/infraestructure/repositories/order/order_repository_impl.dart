@@ -22,20 +22,23 @@ class OrderRepositoryImpl extends IOrderRepository{
     petition.updateHeaders(headerKey: "Authorization", headerValue: "Bearer ${tokenResult.unwrap()}");
     var queryParameters = {
       'address': order.address,
-      'paymentMethodId': order.paymentMethod,
+      'paymentMethod': order.paymentMethod,
+      'latitude': double.parse(order.latitude),
+      'longitude': double.parse(order.longitude),
       'currency': order.currency,
       'total': order.total,
-      'order_products': order.products,
-      'order_combos': order.combos
+      'products': order.products,
+      'combos': order.combos,
+      if(order.couponCode != null) 'cupon_code': order.couponCode
     };
 
     print(queryParameters);
 
     final result = await petition.makeRequest(
-      urlPath: '/orders/create',
+      urlPath: '/order/create',
       httpMethod: 'POST',
       mapperCallBack: (data) {
-        final String orderId = data['order_id']; //*TERMINAR
+        final String orderId = data['incremental_id'] ?? data['id']; 
         return orderId;
       },
       body: queryParameters
