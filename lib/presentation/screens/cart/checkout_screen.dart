@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:get_it/get_it.dart';
 import 'package:go_dely/aplication/dto/payment_validator_dto.dart';
 import 'package:go_dely/aplication/providers/cart/address_selected_provider.dart';
 import 'package:go_dely/aplication/providers/cart/cart_items_provider.dart';
@@ -9,6 +10,7 @@ import 'package:go_dely/aplication/providers/cart/payment_methods/payment_method
 import 'package:go_dely/aplication/providers/order/order_repository_provider.dart';
 import 'package:go_dely/aplication/providers/paymentMethod/payment_method_repository_provider.dart';
 import 'package:go_dely/aplication/use_cases/cart/payment_validartor.use_case.dart';
+import 'package:go_dely/aplication/use_cases/order/create_order.use_case.dart';
 import 'package:go_dely/domain/order/order.dart';
 import 'package:go_dely/domain/paymentMethod/payment_method.dart';
 import 'package:go_dely/presentation/screens/address/address_selector.dart';
@@ -162,7 +164,7 @@ class _PlaceOrderButtonState extends ConsumerState<_PlaceOrderButton> {
                         'quantity': item.quantity,
                       })
                   .toList();
-
+              
               final CreateOrderDto order = CreateOrderDto(
                 address: address.address, 
                 combos: combos, 
@@ -172,11 +174,11 @@ class _PlaceOrderButtonState extends ConsumerState<_PlaceOrderButton> {
                 paymentMethod: paymentMethod, 
                 products: products, 
                 total: total,
-
                 status: "Active"
               );
-
-              final response = await ref.read(orderRepositoryProvider).createOrder(order);
+              final createOrderUseCase = GetIt.instance.get<CreateOrderUseCase>();
+              final response = await createOrderUseCase.execute(order);
+              // final response = await ref.read(orderRepositoryProvider).createOrder(order);
 
               if(response.isError){
                 throw response.error;
@@ -228,10 +230,17 @@ class _Content extends ConsumerStatefulWidget {
 }
 
 class _ContentState extends ConsumerState<_Content> {
+  late Future<List<PaymentMethod>> _paymentMethodsFuture;
 
   Future<List<PaymentMethod>> getPaymentMethods() async {
-    final paymentMethods = await ref.watch(paymentMethodRepositoryProvider).getPaymentMethods();
+    final paymentMethods = await ref.read(paymentMethodRepositoryProvider).getPaymentMethods();
     return paymentMethods.unwrap();
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    _paymentMethodsFuture = getPaymentMethods();
   }
 
   @override
@@ -264,7 +273,7 @@ class _ContentState extends ConsumerState<_Content> {
           //_Addresses(addresses: addresses,), //*mandarle las direcciones
           const _DatePicker(), //*implementar un provider para toda esta info
           FutureBuilder<List<PaymentMethod>>(
-            future: getPaymentMethods(),
+            future: _paymentMethodsFuture,
             builder: (context, snapshot) {
               if (snapshot.connectionState == ConnectionState.waiting) {
                 return const Padding(
@@ -567,7 +576,7 @@ class _PaymentMethodState extends ConsumerState<_PaymentMethod> {
   Widget build(BuildContext context) {
     final selectedMethod = ref.watch(paymentMethodSelected);
     final theme = Theme.of(context);
-
+    print("reset");
     return Padding(
       padding: const EdgeInsets.all(8.0),
       child: Column(
@@ -703,6 +712,7 @@ class _PaymentMethodState extends ConsumerState<_PaymentMethod> {
                           ),
                           keyboardType: TextInputType.number,
                           onChanged: (value) {
+                            print("reset");
                             ref.read(cashAmountProvider.notifier).update((state) => double.tryParse(value) ?? 0.0);
                           },
                         ),
