@@ -11,7 +11,7 @@ class CartLocal {
   final String currency;
   final String image;
   final String type;
-  final double discount;
+  final String discount;
   final int quantity;
 
   CartLocal({

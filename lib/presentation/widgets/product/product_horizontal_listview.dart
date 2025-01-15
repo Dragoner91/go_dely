@@ -1,7 +1,10 @@
 import 'package:animate_do/animate_do.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:get_it/get_it.dart';
+import 'package:go_dely/aplication/use_cases/discount/get_discount_by_id.use_case.dart';
 import 'package:go_dely/config/helpers/human_formats.dart';
+import 'package:go_dely/domain/discount/discount.dart';
 import 'package:go_dely/domain/product/product.dart';
 import 'package:go_dely/infraestructure/mappers/cart_item_mapper.dart';
 import 'package:go_dely/infraestructure/models/cart_item_local.dart';
@@ -45,7 +48,15 @@ class _ProductHorizontalListViewState extends State<ProductHorizontalListView> {
     super.dispose();
   }
   
-  
+  Future<double> checkDiscount(Product product) async {
+    double discount = 0;
+    if (product.discount != "No Discount") {
+        final getDiscountByIdUseCase = GetIt.instance.get<GetDiscountByIdUseCase>();
+        final discountResult = await getDiscountByIdUseCase.execute(GetDiscountByIdDto(product.discount));
+        discount = discountResult.unwrap().percentage;
+      }
+    return discount;
+  }
   
   @override
   Widget build(BuildContext context) {
@@ -63,7 +74,13 @@ class _ProductHorizontalListViewState extends State<ProductHorizontalListView> {
               scrollDirection: Axis.horizontal,
               physics: const BouncingScrollPhysics(),
               itemBuilder: (context, index) {
-                return _Slide(product: widget.products[index]);
+                return FutureBuilder<double>(
+                  future: checkDiscount(widget.products[index]),
+                  builder: (context, snapshot) {
+                    final discount = snapshot.data ?? 0.0;
+                    return _Slide(product: widget.products[index], discount: discount,);
+                  },
+                );
               },
             ),
           )
@@ -77,8 +94,9 @@ class _ProductHorizontalListViewState extends State<ProductHorizontalListView> {
 class _Slide extends ConsumerStatefulWidget {
   
   final Product product;
+  final double discount;
 
-  const _Slide({required this.product});
+  const _Slide({required this.product, required this.discount});
 
   @override
   ConsumerState<_Slide> createState() => _SlideState();
@@ -187,7 +205,7 @@ class _SlideState extends ConsumerState<_Slide> {
                     ),
                   ],
                 ),
-                widget.product.discount > 0 
+                widget.discount > 0 
                 ? Row(
                   children: [
                     Padding(
@@ -199,7 +217,7 @@ class _SlideState extends ConsumerState<_Slide> {
                         ),
                         child: Padding(
                           padding: const EdgeInsets.all(8.0),
-                          child: Text(HumanFormarts.percentage(widget.product.discount), style: const TextStyle(fontWeight: FontWeight.bold),),
+                          child: Text(HumanFormarts.percentage(widget.discount), style: const TextStyle(fontWeight: FontWeight.bold),),
                         ),
                       ),
                     )
@@ -246,7 +264,7 @@ class _SlideState extends ConsumerState<_Slide> {
                     children: [
                     
                       const SizedBox(width: 5,),
-                      if (widget.product.discount > 0) ...[
+                      if (widget.discount > 0) ...[
                         Text(
                           "${HumanFormarts.numberCurrency(widget.product.price)} ${widget.product.currency}",
                           style: const TextStyle(
@@ -259,7 +277,7 @@ class _SlideState extends ConsumerState<_Slide> {
                         ),
                         const SizedBox(width: 5,),
                         Text(
-                          "${HumanFormarts.numberCurrency(widget.product.price - ( widget.product.price * widget.product.discount))} ${widget.product.currency}",
+                          "${HumanFormarts.numberCurrency(widget.product.price - ( widget.product.price * widget.discount))} ${widget.product.currency}",
                           style: const TextStyle(
                             fontWeight: FontWeight.bold,
                             fontSize: 16,

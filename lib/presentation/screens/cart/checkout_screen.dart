@@ -164,13 +164,15 @@ class _PlaceOrderButtonState extends ConsumerState<_PlaceOrderButton> {
                   .toList();
 
               final CreateOrderDto order = CreateOrderDto(
-                id: "",
-                address: address, 
+                address: address.address, 
                 combos: combos, 
+                latitude: address.coordinates.latitude.toString(),
+                longitude: address.coordinates.longitude.toString(),  
                 currency: "USD", 
                 paymentMethod: paymentMethod, 
                 products: products, 
                 total: total,
+
                 status: "Active"
               );
 
@@ -235,21 +237,11 @@ class _ContentState extends ConsumerState<_Content> {
   @override
   Widget build(BuildContext context) {
 
-    //*Datos falsos
-    final List<String> addresses = [
-      "Calle 1, 123",
-      "Calle 2, 456",
-      "Calle 3, 789",
-      "Calle 4, 123",
-      "Calle 5, 456",
-      "Calle 6, 789",
-    ];
-
     return SingleChildScrollView(
       child: Column(
         children: [
           Padding(
-            padding: const EdgeInsets.all(8.0),
+            padding: const EdgeInsets.all(10.0),
             child: Container(
               height: 275,
               decoration: const BoxDecoration(
@@ -405,7 +397,7 @@ class _AddressState extends ConsumerState<_Address> {
                 shape: const CircleBorder(),
                 value: selected,
                 onChanged: (value) {
-                  ref.read(addressSelected.notifier).update((state) => widget.address);
+                  // ref.read(addressSelected.notifier).update((state) => widget.address);
                 },
               ),
             ),

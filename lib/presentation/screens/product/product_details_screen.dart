@@ -3,9 +3,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:get_it/get_it.dart';
 import 'package:go_dely/aplication/use_cases/category/get_category_by_id.use_case.dart';
+import 'package:go_dely/aplication/use_cases/discount/get_discount_by_id.use_case.dart';
 import 'package:go_dely/aplication/use_cases/product/get_product_by_id.use_case.dart';
 import 'package:go_dely/config/helpers/human_formats.dart';
 import 'package:go_dely/domain/category/category.dart';
+import 'package:go_dely/domain/discount/discount.dart';
 import 'package:go_dely/domain/product/product.dart';
 import 'package:go_dely/infraestructure/mappers/cart_item_mapper.dart';
 import 'package:go_dely/infraestructure/models/cart_item_local.dart';
@@ -33,9 +35,11 @@ class _ProductDetailsScreenState extends ConsumerState<ProductDetailsScreen> {
   final PanelController _panelController = PanelController();
   final ValueNotifier<bool> _isBottomAppBarVisible = ValueNotifier(true);
   late List<Category> categories;
+  late double discount;
 
   Future<Product> _loadProduct() async {
     categories = [];
+    discount = 0;
     final productId = ref.read(currentProduct).lastOrNull?.id;
     final getProductByIdUseCase = GetIt.instance.get<GetProductByIdUseCase>();
     final productResult = await getProductByIdUseCase.execute(GetProductByIdDto(productId!));
@@ -44,6 +48,11 @@ class _ProductDetailsScreenState extends ConsumerState<ProductDetailsScreen> {
     for ( var categoryId in product.categories ) {
       final category = await categoryByIdUseCase.execute(GetCategoryByIdDto(categoryId));
       categories.add(category.unwrap());
+    }
+    if (product.discount != "No Discount") {
+      final getDiscountById = GetIt.instance.get<GetDiscountByIdUseCase>();
+      final discountResult = await getDiscountById.execute(GetDiscountByIdDto(product.discount));
+      discount = discountResult.unwrap().percentage;
     }
     return product;
   }
@@ -152,7 +161,7 @@ class _ProductDetailsScreenState extends ConsumerState<ProductDetailsScreen> {
                 return const Center(child: Text('Error loading product'),);
               }
               if (snapshot.hasData) {
-                return _Content(product: snapshot.data as Product, panelController: _panelController, categories: categories,);
+                return _Content(product: snapshot.data as Product, panelController: _panelController, categories: categories, discount: discount,);
               }
               return const Center(child: Text('No data available'),);
             },
@@ -254,9 +263,10 @@ class _Content extends ConsumerStatefulWidget{
 
   final Product? product;
   final List<Category> categories;
+  final double discount;
   final PanelController panelController;
 
-  const _Content({this.product, required this.panelController, required this.categories});
+  const _Content({this.product, required this.panelController, required this.categories, required this.discount});
 
   @override
   ConsumerState<_Content> createState() => _ContentState();
@@ -288,7 +298,7 @@ class _ContentState extends ConsumerState<_Content> {
             child: Stack(
               children: [
                 _Slider(productImages: [...widget.product!.imageUrl]),
-                if(widget.product!.discount > 0)
+                if(widget.discount > 0)
                 Row(
                     children: [
                       Padding(
@@ -301,7 +311,7 @@ class _ContentState extends ConsumerState<_Content> {
                           ),
                           child: Padding(
                             padding: const EdgeInsets.all(10.0),
-                            child: Text("${HumanFormarts.percentage(widget.product!.discount)} OFF", style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 25),),
+                            child: Text("${HumanFormarts.percentage(widget.discount)} OFF", style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 25),),
                           ),
                         ),
                       )
@@ -319,7 +329,7 @@ class _ContentState extends ConsumerState<_Content> {
                 child: Text(widget.product!.name, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 26), maxLines: 3,)
               ),
               const Spacer(),
-              if (widget.product!.discount > 0) 
+              if (widget.discount > 0) 
                 Column(
                   children: [
                     Text(
@@ -334,7 +344,7 @@ class _ContentState extends ConsumerState<_Content> {
                     ),
                     const SizedBox(width: 5,),
                     Text(
-                      "${HumanFormarts.numberCurrency(widget.product!.price - ( widget.product!.price * widget.product!.discount))} ${widget.product!.currency}",
+                      "${HumanFormarts.numberCurrency(widget.product!.price - ( widget.product!.price * widget.discount))} ${widget.product!.currency}",
                       style: const TextStyle(
                         fontWeight: FontWeight.bold,
                         fontSize: 24,

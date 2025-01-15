@@ -1,8 +1,11 @@
 import 'package:animate_do/animate_do.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:get_it/get_it.dart';
+import 'package:go_dely/aplication/use_cases/discount/get_discount_by_id.use_case.dart';
 import 'package:go_dely/config/helpers/human_formats.dart';
 import 'package:go_dely/domain/cart/i_cart.dart';
+import 'package:go_dely/domain/discount/discount.dart';
 import 'package:go_dely/infraestructure/entities/cart/cart_items.dart';
 import 'package:go_dely/aplication/providers/cart/cart_items_provider.dart';
 import 'package:go_router/go_router.dart';
@@ -167,14 +170,22 @@ class _CheckoutInfoState extends ConsumerState<_CheckoutInfo> {
 
   Future<double> calculateDiscount() async {
     final items = await ref.read(cartItemsProvider.notifier).getAllItemsFromCart();
-    final double discount = items.fold(0, (sum, item) => sum + item.price * item.discount * item.quantity);
-    return discount;
+    var total = 0.0;
+    for (var item in items) {
+      final getDiscountByIdUseCase = GetIt.instance.get<GetDiscountByIdUseCase>();
+      if (item.discount != "No Discount") {
+        final discountResult = await getDiscountByIdUseCase.execute(GetDiscountByIdDto(item.discount));
+        final double discount = discountResult.unwrap().percentage;
+        total += item.price * item.quantity * (1 - discount);
+      }
+    }
+    return total;
   }
 
   Future<double> calculateTotal() async {
-    final items = await ref.read(cartItemsProvider.notifier).getAllItemsFromCart();
-    final double total = items.fold(0, (sum, item) => sum + item.price * item.quantity * (1 - item.discount));
-    return total;
+    final double subtotal = await calculateSubtotal();
+    final double discount = await calculateDiscount();
+    return subtotal - discount;
   }
 
   @override

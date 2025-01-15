@@ -10,6 +10,7 @@ import 'package:go_dely/aplication/use_cases/auth/register.use_case.dart';
 import 'package:go_dely/aplication/use_cases/category/get_category_by_id.use_case.dart';
 import 'package:go_dely/aplication/use_cases/combo/get_combo_by_id.use_case.dart';
 import 'package:go_dely/aplication/use_cases/combo/get_combos.use_case.dart';
+import 'package:go_dely/aplication/use_cases/discount/get_discount_by_id.use_case.dart';
 import 'package:go_dely/aplication/use_cases/order/check_order_current_location.use_case.dart';
 import 'package:go_dely/aplication/use_cases/order/create_order.use_case.dart';
 import 'package:go_dely/aplication/use_cases/order/get_order_by_id.use_case.dart';
@@ -19,6 +20,7 @@ import 'package:go_dely/aplication/use_cases/product/get_products.use_case.dart'
 import 'package:go_dely/domain/cart/i_cart_repository.dart';
 import 'package:go_dely/domain/category/i_category_repository.dart';
 import 'package:go_dely/domain/combo/i_combo_repository.dart';
+import 'package:go_dely/domain/discount/i_discount_repository.dart';
 import 'package:go_dely/domain/order/i_order_repository.dart';
 import 'package:go_dely/domain/paymentMethod/i_payment_method_repository.dart';
 import 'package:go_dely/domain/product/i_product_repository.dart';
@@ -29,6 +31,7 @@ import 'package:go_dely/infraestructure/repositories/auth/auth_repository_impl.d
 import 'package:go_dely/infraestructure/repositories/cart/cart_item_repository.dart';
 import 'package:go_dely/infraestructure/repositories/category/category_repository_impl.dart';
 import 'package:go_dely/infraestructure/repositories/combo/combo_repository_impl.dart';
+import 'package:go_dely/infraestructure/repositories/discount/discount_repository_impl.dart';
 import 'package:go_dely/infraestructure/repositories/order/order_repository_impl.dart';
 import 'package:go_dely/infraestructure/repositories/paymentMethod/payment_method_repository_impl.dart';
 import 'package:go_dely/infraestructure/repositories/product/product_repository_impl.dart';
@@ -87,7 +90,9 @@ class IoCContainer {
     getIt.registerSingleton<IProductRepository>(productRepository);
     final comboRepository = ComboRepositoryImpl(petition: petitions, auth: authRepository, productRepository: productRepository);
     getIt.registerSingleton<IComboRepository>(comboRepository);
-    final cartRepository = CartItemRepository();
+    final discountRepository = DiscountRepositoryImpl(auth: authRepository, petition: petitions);
+    getIt.registerSingleton<IDiscountRepository>(discountRepository);
+    final cartRepository = CartItemRepository(auth: authRepository, discountRepo: discountRepository);
     getIt.registerSingleton<ICartRepository>(cartRepository);
     final themeRepository = ThemeRepository(prefs: prefs);
     getIt.registerSingleton<ThemeRepository>(themeRepository);
@@ -123,6 +128,8 @@ class IoCContainer {
     getIt.registerSingleton<RegisterUseCase>(registerUseCase);
     final getCategoryByIdUseCase = GetCategoryByIdUseCase(categoryRepository);
     getIt.registerSingleton<GetCategoryByIdUseCase>(getCategoryByIdUseCase);
+    final getDiscountByIdUseCase = GetDiscountByIdUseCase(discountRepository);
+    getIt.registerSingleton<GetDiscountByIdUseCase>(getDiscountByIdUseCase);
     
   }
 

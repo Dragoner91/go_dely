@@ -35,7 +35,7 @@ const CartItemSchema = CollectionSchema(
     r'discount': PropertySchema(
       id: 3,
       name: r'discount',
-      type: IsarType.double,
+      type: IsarType.string,
     ),
     r'id': PropertySchema(
       id: 4,
@@ -97,6 +97,7 @@ int _cartItemEstimateSize(
   }
   bytesCount += 3 + object.currency.length * 3;
   bytesCount += 3 + object.description.length * 3;
+  bytesCount += 3 + object.discount.length * 3;
   bytesCount += 3 + object.id.length * 3;
   bytesCount += 3 + object.image.length * 3;
   bytesCount += 3 + object.name.length * 3;
@@ -113,7 +114,7 @@ void _cartItemSerialize(
   writer.writeStringList(offsets[0], object.categories);
   writer.writeString(offsets[1], object.currency);
   writer.writeString(offsets[2], object.description);
-  writer.writeDouble(offsets[3], object.discount);
+  writer.writeString(offsets[3], object.discount);
   writer.writeString(offsets[4], object.id);
   writer.writeString(offsets[5], object.image);
   writer.writeString(offsets[6], object.name);
@@ -132,7 +133,7 @@ CartItem _cartItemDeserialize(
     categories: reader.readStringList(offsets[0]) ?? [],
     currency: reader.readString(offsets[1]),
     description: reader.readString(offsets[2]),
-    discount: reader.readDouble(offsets[3]),
+    discount: reader.readString(offsets[3]),
     id: reader.readString(offsets[4]),
     image: reader.readString(offsets[5]),
     isarId: id,
@@ -158,7 +159,7 @@ P _cartItemDeserializeProp<P>(
     case 2:
       return (reader.readString(offset)) as P;
     case 3:
-      return (reader.readDouble(offset)) as P;
+      return (reader.readString(offset)) as P;
     case 4:
       return (reader.readString(offset)) as P;
     case 5:
@@ -754,54 +755,54 @@ extension CartItemQueryFilter
   }
 
   QueryBuilder<CartItem, CartItem, QAfterFilterCondition> discountEqualTo(
-    double value, {
-    double epsilon = Query.epsilon,
+    String value, {
+    bool caseSensitive = true,
   }) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.equalTo(
         property: r'discount',
         value: value,
-        epsilon: epsilon,
+        caseSensitive: caseSensitive,
       ));
     });
   }
 
   QueryBuilder<CartItem, CartItem, QAfterFilterCondition> discountGreaterThan(
-    double value, {
+    String value, {
     bool include = false,
-    double epsilon = Query.epsilon,
+    bool caseSensitive = true,
   }) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.greaterThan(
         include: include,
         property: r'discount',
         value: value,
-        epsilon: epsilon,
+        caseSensitive: caseSensitive,
       ));
     });
   }
 
   QueryBuilder<CartItem, CartItem, QAfterFilterCondition> discountLessThan(
-    double value, {
+    String value, {
     bool include = false,
-    double epsilon = Query.epsilon,
+    bool caseSensitive = true,
   }) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.lessThan(
         include: include,
         property: r'discount',
         value: value,
-        epsilon: epsilon,
+        caseSensitive: caseSensitive,
       ));
     });
   }
 
   QueryBuilder<CartItem, CartItem, QAfterFilterCondition> discountBetween(
-    double lower,
-    double upper, {
+    String lower,
+    String upper, {
     bool includeLower = true,
     bool includeUpper = true,
-    double epsilon = Query.epsilon,
+    bool caseSensitive = true,
   }) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.between(
@@ -810,7 +811,75 @@ extension CartItemQueryFilter
         includeLower: includeLower,
         upper: upper,
         includeUpper: includeUpper,
-        epsilon: epsilon,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<CartItem, CartItem, QAfterFilterCondition> discountStartsWith(
+    String value, {
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.startsWith(
+        property: r'discount',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<CartItem, CartItem, QAfterFilterCondition> discountEndsWith(
+    String value, {
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.endsWith(
+        property: r'discount',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<CartItem, CartItem, QAfterFilterCondition> discountContains(
+      String value,
+      {bool caseSensitive = true}) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.contains(
+        property: r'discount',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<CartItem, CartItem, QAfterFilterCondition> discountMatches(
+      String pattern,
+      {bool caseSensitive = true}) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.matches(
+        property: r'discount',
+        wildcard: pattern,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<CartItem, CartItem, QAfterFilterCondition> discountIsEmpty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.equalTo(
+        property: r'discount',
+        value: '',
+      ));
+    });
+  }
+
+  QueryBuilder<CartItem, CartItem, QAfterFilterCondition> discountIsNotEmpty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.greaterThan(
+        property: r'discount',
+        value: '',
       ));
     });
   }
@@ -1781,9 +1850,10 @@ extension CartItemQueryWhereDistinct
     });
   }
 
-  QueryBuilder<CartItem, CartItem, QDistinct> distinctByDiscount() {
+  QueryBuilder<CartItem, CartItem, QDistinct> distinctByDiscount(
+      {bool caseSensitive = true}) {
     return QueryBuilder.apply(this, (query) {
-      return query.addDistinctBy(r'discount');
+      return query.addDistinctBy(r'discount', caseSensitive: caseSensitive);
     });
   }
 
@@ -1854,7 +1924,7 @@ extension CartItemQueryProperty
     });
   }
 
-  QueryBuilder<CartItem, double, QQueryOperations> discountProperty() {
+  QueryBuilder<CartItem, String, QQueryOperations> discountProperty() {
     return QueryBuilder.apply(this, (query) {
       return query.addPropertyName(r'discount');
     });

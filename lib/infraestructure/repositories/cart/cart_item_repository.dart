@@ -1,13 +1,18 @@
 import 'package:go_dely/domain/cart/i_cart.dart';
 import 'package:go_dely/domain/cart/i_cart_repository.dart';
+import 'package:go_dely/domain/discount/discount.dart';
+import 'package:go_dely/domain/discount/i_discount_repository.dart';
+import 'package:go_dely/domain/users/i_auth_repository.dart';
 import 'package:go_dely/infraestructure/entities/cart/cart_items.dart';
 import 'package:isar/isar.dart';
 import 'package:path_provider/path_provider.dart';
 
 class CartItemRepository extends ICartRepository{
+  final IAuthRepository auth;
+  final IDiscountRepository discountRepo;
   late Future<Isar> db;
 
-  CartItemRepository(){
+  CartItemRepository({required this.auth, required this.discountRepo}){
     db = openDB();
   }
 
@@ -100,7 +105,12 @@ class CartItemRepository extends ICartRepository{
   @override
   Future<double> calculateTotal() async {
     final items = await getItemsFromCart();
-    final double total = items.fold(0, (sum, item) => sum + item.price * item.quantity * (1 - item.discount));
+    double total = 0;
+    for (var item in items) {
+      final discountResult = await discountRepo.getDiscountById(GetDiscountByIdDto(item.discount));
+      final double discount = discountResult.unwrap().percentage;
+      total += item.price * item.quantity * (1 - discount);
+    }
     return total;
   }
 
