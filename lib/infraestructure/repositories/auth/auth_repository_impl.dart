@@ -104,7 +104,7 @@ class AuthRepositoryImpl extends IAuthRepository {
       httpMethod: 'GET',
       mapperCallBack: (data) {
         print(data);
-        if (data['message'] == "Authorized") {
+        if (data['id'] != null && data['email'] != null && data['name'] != null) {
           print(token);
           return true;
         }

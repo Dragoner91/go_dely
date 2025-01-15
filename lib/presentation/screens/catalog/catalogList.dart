@@ -5,7 +5,7 @@ import 'package:go_dely/aplication/providers/categoria/category_provider.dart';
 import 'package:go_dely/presentation/widgets/categories/category_vertical_listview.dart';
 import 'package:go_dely/presentation/widgets/categories/category_icon_listview.dart';
 import 'package:go_dely/presentation/widgets/widgets.dart';
-import 'package:go_dely/domain/categories/categories.dart';
+import 'package:go_dely/domain/category/category.dart';
 
 
 
@@ -49,17 +49,8 @@ class _ContentCatalogListState extends ConsumerState<ContentCatalogList> {
   }
 
 
-  final List<Categories> categorias= [
-    Categories(1,'Comida','Frutas, verduras, Charcuteria','assets/food.png'),
-    Categories(2,'Medicina','Vitaminas, pastillas ','assets/medicine.png'),
-    Categories(3,'Hogar','mesas, sillas','assets/home.png'),
-    Categories(4,'Bebes','talco, pañales','assets/baby.png'),
-    Categories(5,'Mascotas','Comida, juguetes','assets/pets.png'),
-    Categories(6,'Limpieza','Aromatizante, deseinfectante','assets/cleaning.png'),
-    Categories(7,'Utiles','Martillo, destornillador','assets/tools.png'),
-    Categories(8,'Belleza','Maquillaje, ','assets/beauty.png'),
-    Categories(9,'Oficina','Boligrafos, engrapadoras','assets/supplies.png'),
-    Categories(10,'Carros','Ruedas, repuestos','assets/cars.png')
+  final List<Category> categorias= [
+    
   ];
     
   @override

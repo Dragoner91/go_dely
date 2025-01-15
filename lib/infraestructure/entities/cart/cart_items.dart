@@ -16,7 +16,7 @@ class CartItem extends ICart{
   final String currency;
   final String image; 
   final String type;
-  final double discount;
+  final String discount;
   int quantity;
 
   CartItem({

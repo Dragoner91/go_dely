@@ -1,7 +1,4 @@
 import 'package:go_dely/domain/cart/i_cart.dart';
-import 'package:go_dely/domain/combo/combo.dart';
-import 'package:go_dely/domain/product/product.dart';
-import 'package:go_dely/domain/product_abstract.dart';
 import 'package:go_dely/infraestructure/mappers/cart_item_mapper.dart';
 import 'package:go_dely/infraestructure/mappers/combo_mapper.dart';
 import 'package:go_dely/infraestructure/mappers/product_mapper.dart';
@@ -45,8 +42,11 @@ class CreateOrderDB {
 }
 
 class OrderDB {
+  final String uuid;
   final String id;
   final String address;
+  final String latitude;
+  final String longitude;
   final String paymentMethod;
   final String currency;
   final String status;
@@ -54,38 +54,44 @@ class OrderDB {
   final List<ICart> items;
 
   OrderDB({
+    required this.uuid,
     required this.id,
     required this.address, 
-    required this.paymentMethod, 
-    required this.currency, 
-    required this.total, 
-    required this.items, 
+    required this.latitude,
+    required this.longitude,
+    required this.currency,
+    required this.paymentMethod,
+    required this.items,
+    required this.total,
     required this.status
   });
 
   factory OrderDB.fromJson(Map<String, dynamic> json) {
     List<ICart> items = [];
 
-    if (json['order_combos'] != null) {
-      items.addAll((json['order_combos'] as List)
+    if (json['combos'] != null) {
+      items.addAll((json['combos'] as List)
           .map((e) => CartItemMapper.cartItemToEntity(CartLocal.fromEntity( ComboMapper.comboToEntity(ComboDB.fromJson(e)) , e['quantity'], "", "Combo")))
           .toList());
     }
 
-    if (json['order_products'] != null) {
-      items.addAll((json['order_products'] as List)
+    if (json['products'] != null) {
+      items.addAll((json['products'] as List)
           .map((e) => CartItemMapper.cartItemToEntity(CartLocal.fromEntity( ProductMapper.productToEntity(ProductDB.fromJson(e)) , e['quantity'], "", "Product")))
           .toList());
     }
     
     return OrderDB(
-      id: json['order_id'],
+      id: json['incremental_id'] ?? json['order_id'],
       address: json['address'],
       items: items,
       currency: json['currency'],
       status: json['status'],
       paymentMethod: json['paymentMethodId'],
-      total: json['total'] is String ? double.parse(json['total']) : json['total'].toDouble(),
+      total: json['total'] is String ? double.parse(json['total']) : json['total'].toDouble(), 
+      uuid: json['order_id'], 
+      latitude: json['total'], 
+      longitude: json['total'],
     );
   }
   

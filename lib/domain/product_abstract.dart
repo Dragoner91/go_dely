@@ -6,7 +6,7 @@ abstract class ProductAbstract {
   final List<String> categories;
   final double price;
   final String currency; 
-  final double discount; 
+  final String discount; 
 
 
 

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:get_it/get_it.dart';
 import 'package:go_dely/aplication/dto/payment_validator_dto.dart';
 import 'package:go_dely/aplication/providers/cart/address_selected_provider.dart';
 import 'package:go_dely/aplication/providers/cart/cart_items_provider.dart';
@@ -9,6 +10,7 @@ import 'package:go_dely/aplication/providers/cart/payment_methods/payment_method
 import 'package:go_dely/aplication/providers/order/order_repository_provider.dart';
 import 'package:go_dely/aplication/providers/paymentMethod/payment_method_repository_provider.dart';
 import 'package:go_dely/aplication/use_cases/cart/payment_validartor.use_case.dart';
+import 'package:go_dely/aplication/use_cases/order/create_order.use_case.dart';
 import 'package:go_dely/domain/order/order.dart';
 import 'package:go_dely/domain/paymentMethod/payment_method.dart';
 import 'package:go_dely/presentation/screens/address/address_selector.dart';
@@ -117,7 +119,7 @@ class _PlaceOrderButtonState extends ConsumerState<_PlaceOrderButton> {
               
               final items = await ref.read(cartItemsProvider.notifier).getAllItemsFromCart();
               final date = ref.read(dateSelected.notifier).state;
-              final paymentMethod = ref.read(paymentMethodSelectedId.notifier).state;
+              final paymentMethod = ref.read(paymentMethodSelected.notifier).state;
               final address = ref.read(addressSelected.notifier).state;
               final total = await ref.read(cartItemsProvider.notifier).calculateTotal();
               // final coupon = ; 
@@ -148,8 +150,7 @@ class _PlaceOrderButtonState extends ConsumerState<_PlaceOrderButton> {
               final List<Map<String, dynamic>> combos = items
                   .where((item) => item.type == 'Combo')
                   .map((item) => {
-                        'combo_id': item.id,
-                        'combo_price': item.price,
+                        'id': item.id,
                         'quantity': item.quantity,
                       })
                   .toList();
@@ -157,16 +158,16 @@ class _PlaceOrderButtonState extends ConsumerState<_PlaceOrderButton> {
               final List<Map<String, dynamic>> products = items
                   .where((item) => item.type == 'Product')
                   .map((item) => {
-                        'product_id': item.id,
-                        'product_price': item.price,
+                        'id': item.id,
                         'quantity': item.quantity,
                       })
                   .toList();
-
-              final CreateOrderDto order = CreateOrderDto( //*MOVER A APLICACION
-                id: "",
-                address: address, 
+              
+              final CreateOrderDto order = CreateOrderDto(
+                address: address.address, 
                 combos: combos, 
+                latitude: address.coordinates.latitude.toString(),
+                longitude: address.coordinates.longitude.toString(),  
                 currency: "USD", 
                 paymentMethod: paymentMethod, 
                 products: products, 
@@ -174,7 +175,9 @@ class _PlaceOrderButtonState extends ConsumerState<_PlaceOrderButton> {
                 status: "Active"
               );
 
-              final response = await ref.read(orderRepositoryProvider).createOrder(order);
+              final createOrderUseCase = GetIt.instance.get<CreateOrderUseCase>();
+              final response = await createOrderUseCase.execute(order);
+              // final response = await ref.read(orderRepositoryProvider).createOrder(order);
 
               if(response.isError){
                 throw response.error;
@@ -226,30 +229,27 @@ class _Content extends ConsumerStatefulWidget {
 }
 
 class _ContentState extends ConsumerState<_Content> {
+  late Future<List<PaymentMethod>> _paymentMethodsFuture;
 
   Future<List<PaymentMethod>> getPaymentMethods() async {
-    final paymentMethods = await ref.watch(paymentMethodRepositoryProvider).getPaymentMethods();
+    final paymentMethods = await ref.read(paymentMethodRepositoryProvider).getPaymentMethods();
     return paymentMethods.unwrap();
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    _paymentMethodsFuture = getPaymentMethods();
   }
 
   @override
   Widget build(BuildContext context) {
 
-    //*Datos falsos
-    final List<String> addresses = [
-      "Calle 1, 123",
-      "Calle 2, 456",
-      "Calle 3, 789",
-      "Calle 4, 123",
-      "Calle 5, 456",
-      "Calle 6, 789",
-    ];
-
     return SingleChildScrollView(
       child: Column(
         children: [
           Padding(
-            padding: const EdgeInsets.all(8.0),
+            padding: const EdgeInsets.all(10.0),
             child: Container(
               height: 275,
               decoration: const BoxDecoration(
@@ -272,7 +272,7 @@ class _ContentState extends ConsumerState<_Content> {
           //_Addresses(addresses: addresses,), //*mandarle las direcciones
           const _DatePicker(), //*implementar un provider para toda esta info
           FutureBuilder<List<PaymentMethod>>(
-            future: getPaymentMethods(),
+            future: _paymentMethodsFuture,
             builder: (context, snapshot) {
               if (snapshot.connectionState == ConnectionState.waiting) {
                 return const Padding(
@@ -405,7 +405,7 @@ class _AddressState extends ConsumerState<_Address> {
                 shape: const CircleBorder(),
                 value: selected,
                 onChanged: (value) {
-                  ref.read(addressSelected.notifier).update((state) => widget.address);
+                  // ref.read(addressSelected.notifier).update((state) => widget.address);
                 },
               ),
             ),
@@ -575,7 +575,6 @@ class _PaymentMethodState extends ConsumerState<_PaymentMethod> {
   Widget build(BuildContext context) {
     final selectedMethod = ref.watch(paymentMethodSelected);
     final theme = Theme.of(context);
-
     return Padding(
       padding: const EdgeInsets.all(8.0),
       child: Column(

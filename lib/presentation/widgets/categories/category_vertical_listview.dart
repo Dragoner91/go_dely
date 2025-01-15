@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:go_dely/domain/categories/categories.dart';
+import 'package:go_dely/domain/category/category.dart';
 
 class CategoryVerticalListView extends StatefulWidget {
 
-  final List<Categories> categorias;
+  final List<Category> categorias;
   //final VoidCallback? loadNextPage;
   //const CategoryVerticalListView({super.key, this.title, this.descripcion, this.loadNextPage});
   const CategoryVerticalListView({super.key, required this.categorias});
@@ -64,7 +64,7 @@ class _CategoryVerticalListViewState extends State<CategoryVerticalListView> {
 class _SlideCategorias extends StatelessWidget {
   
   
-  final Categories categorias;
+  final Category categorias;
   
 
   const _SlideCategorias({required this.categorias});
@@ -98,20 +98,6 @@ class _SlideCategorias extends StatelessWidget {
                 ],
               ),
             ),
-      subtitle: SizedBox(
-              child: Row( 
-                children: [
-                  const SizedBox(width: 5,),
-                  Text(
-                    categorias.ejemplos, 
-                    style: textStyles.bodyLarge,
-                  ),
-                  const SizedBox(width: 5,), 
-                  
-                ],
-              ),
-            ),
-      
       onTap: () {
       // Acción al tocar una categoría
         },

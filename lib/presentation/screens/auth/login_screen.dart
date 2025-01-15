@@ -2,6 +2,7 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:animate_do/animate_do.dart';
 import 'package:flutter/material.dart';
+import 'package:get_it/get_it.dart';
 import 'package:go_dely/aplication/providers/auth/auth_provider.dart';
 import 'package:go_dely/aplication/providers/auth/auth_repository_provider.dart';
 import 'package:go_dely/aplication/use_cases/auth/login.use_case.dart';
@@ -98,17 +99,10 @@ class _LogincontentState extends ConsumerState<Logincontent> {
         email = "dragoner919@gmail.com";
         password = "Matematica1";
 
-        /*
-        email = "der2600@gmail.com";
-        password = "dev123";
-        */
-
         LoginDto usuario = LoginDto(email: email, password: password);
-        print(usuario.toString());
 
-        // final response = await LoginUseCase(usuario);
-
-        var response = await ref.read(authRepositoryProvider).login(usuario);
+        final loginUseCase = GetIt.instance.get<LoginUseCase>();
+        final response = await loginUseCase.execute(usuario);
 
         Navigator.of(context).pop();
 

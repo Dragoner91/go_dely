@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 //import 'package:animate_do/animate_do.dart';
-import 'package:go_dely/domain/categories/categories.dart';
+import 'package:go_dely/domain/category/category.dart';
 
 class CategoryIconListview extends StatefulWidget {
-  final List<Categories> categories;
+  final List<Category> categories;
   const CategoryIconListview({
     super.key,
     required this.categories,
@@ -28,7 +28,7 @@ class _CategoryIconListviewState extends State<CategoryIconListview> {
         itemCount: widget.categories.length,
         itemBuilder: (context, index) {
           //final category = widget.categories[index];
-          return _SlideCategorias(categorias: widget.categories[index]);
+          return _SlideCategorias(category: widget.categories[index]);
           /*ListTile(
             title: Image.network(category.imageUrl, width: 50, height: 50),
             subtitle: Text(category.name),
@@ -45,9 +45,9 @@ class _CategoryIconListviewState extends State<CategoryIconListview> {
 class _SlideCategorias extends StatelessWidget {
   //final String name;
   //final String descripcion;
-  final Categories categorias;
+  final Category category;
 
-  const _SlideCategorias({required this.categorias});
+  const _SlideCategorias({required this.category});
 
   @override
   Widget build(BuildContext context) {
@@ -83,7 +83,7 @@ class _SlideCategorias extends StatelessWidget {
                         child: //Image.network(
                         Center(
                           child: Image.asset(
-                            categorias.imageUrl,
+                            category.imageUrl,
                             fit: BoxFit.cover,
                             height: 80,
                             width: 80,
@@ -129,7 +129,7 @@ class _SlideCategorias extends StatelessWidget {
                 width: 5,
               ),
               Text(
-                categorias.name,
+                category.name,
                 style: //const TextStyle(fontWeight: FontWeight.bold, fontSize: 16)
                 textStyles.bodyLarge,
               ),

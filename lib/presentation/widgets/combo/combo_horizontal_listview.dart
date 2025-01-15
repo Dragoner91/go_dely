@@ -1,8 +1,11 @@
 import 'package:animate_do/animate_do.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:get_it/get_it.dart';
+import 'package:go_dely/aplication/use_cases/discount/get_discount_by_id.use_case.dart';
 import 'package:go_dely/config/helpers/human_formats.dart';
 import 'package:go_dely/domain/combo/combo.dart';
+import 'package:go_dely/domain/discount/discount.dart';
 import 'package:go_dely/domain/product/product.dart';
 import 'package:go_dely/infraestructure/mappers/cart_item_mapper.dart';
 import 'package:go_dely/infraestructure/models/cart_item_local.dart';
@@ -47,7 +50,15 @@ class _ComboHorizontalListViewState extends State<ComboHorizontalListView> {
     super.dispose();
   }
   
-  
+  Future<double> checkDiscount(Combo combo) async {
+    double discount = 0;
+    if (combo.discount != "No Discount") {
+        final getDiscountByIdUseCase = GetIt.instance.get<GetDiscountByIdUseCase>();
+        final discountResult = await getDiscountByIdUseCase.execute(GetDiscountByIdDto(combo.discount));
+        discount = discountResult.unwrap().percentage;
+      }
+    return discount;
+  }
   
   @override
   Widget build(BuildContext context) {
@@ -65,7 +76,13 @@ class _ComboHorizontalListViewState extends State<ComboHorizontalListView> {
               scrollDirection: Axis.horizontal,
               physics: const BouncingScrollPhysics(),
               itemBuilder: (context, index) {
-                return _Slide(combo: widget.combos[index]);
+                return FutureBuilder<double>(
+                  future: checkDiscount(widget.combos[index]),
+                  builder: (context, snapshot) {
+                    final discount = snapshot.data ?? 0.0;
+                    return _Slide(combo: widget.combos[index], discount: discount,);
+                  },
+                );
               },
             ),
           )
@@ -79,8 +96,9 @@ class _ComboHorizontalListViewState extends State<ComboHorizontalListView> {
 class _Slide extends ConsumerStatefulWidget {
   
   final Combo combo;
+  final double discount;
 
-  const _Slide({required this.combo});
+  const _Slide({required this.combo, required this.discount});
 
   @override
   ConsumerState<_Slide> createState() => _SlideState();
@@ -188,7 +206,7 @@ class _SlideState extends ConsumerState<_Slide> {
                       ),
                     ],
                   ),
-                  widget.combo.discount > 0 
+                  widget.discount > 0 
                   ? Row(
                     children: [
                       Padding(
@@ -200,7 +218,7 @@ class _SlideState extends ConsumerState<_Slide> {
                           ),
                           child: Padding(
                             padding: const EdgeInsets.all(8.0),
-                            child: Text(HumanFormarts.percentage(widget.combo.discount), style: const TextStyle(fontWeight: FontWeight.bold),),
+                            child: Text(HumanFormarts.percentage(widget.discount), style: const TextStyle(fontWeight: FontWeight.bold),),
                           ),
                         ),
                       )
@@ -239,7 +257,7 @@ class _SlideState extends ConsumerState<_Slide> {
               children: [
 
                 const SizedBox(width: 5,),
-                if (widget.combo.discount > 0) ...[
+                if (widget.discount > 0) ...[
                   Text(
                     "${HumanFormarts.numberCurrency(widget.combo.price)} ${widget.combo.currency}",
                     style: const TextStyle(
@@ -252,7 +270,7 @@ class _SlideState extends ConsumerState<_Slide> {
                   ),
                   const SizedBox(width: 5,),
                   Text(
-                    "${HumanFormarts.numberCurrency(widget.combo.price - ( widget.combo.price * widget.combo.discount))} ${widget.combo.currency}",
+                    "${HumanFormarts.numberCurrency(widget.combo.price - ( widget.combo.price * widget.discount))} ${widget.combo.currency}",
                     style: const TextStyle(
                       fontWeight: FontWeight.bold,
                       fontSize: 16,

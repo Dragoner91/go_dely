@@ -10,7 +10,7 @@ class ProductDB {
   final String description;
   final int stock;
   final List<String> categories;
-  final double discount; 
+  final String discount; 
   final String measurement;
 
   ProductDB({
@@ -42,7 +42,7 @@ class ProductDB {
           description: json["description"], 
           stock: json["stock"] is String ? double.parse(json["stock"]).toInt() : json["stock"].toInt(),
           categories: List<String>.from(json["categories"].map((e) => e)),
-          discount: json["discount"] == null ? 0.0 : (json["discount"] is String ? double.tryParse(json["discount"]) ?? 0.0 : json["discount"].toDouble()),
+          discount: json["discount"] ?? "No Discount",
       );
     } catch (e) {
       print(e);

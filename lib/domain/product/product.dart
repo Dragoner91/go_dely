@@ -14,7 +14,7 @@ class Product extends ProductAbstract{
   final String description;
   final int stock;
   final List<String> categories;
-  final double discount; 
+  final String discount; 
   final String measurement;
 
   Product({

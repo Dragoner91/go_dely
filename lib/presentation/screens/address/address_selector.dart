@@ -1,7 +1,10 @@
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:geolocator/geolocator.dart';
+import 'package:go_dely/aplication/model/address.dart';
+import 'package:go_dely/aplication/providers/cart/address_selected_provider.dart';
 import 'package:go_dely/config/constants/enviroment.dart';
 import 'package:latlong2/latlong.dart';
 
@@ -14,15 +17,15 @@ class AddressSelector extends StatelessWidget {
   }
 }
 
-class OSMFlutterMap extends StatefulWidget {
+class OSMFlutterMap extends ConsumerStatefulWidget {
 
   const OSMFlutterMap({super.key});
 
   @override
-  State<OSMFlutterMap> createState() => _OSMFlutterMapState();
+  ConsumerState<OSMFlutterMap> createState() => _OSMFlutterMapState();
 }
 
-class _OSMFlutterMapState extends State<OSMFlutterMap> {
+class _OSMFlutterMapState extends ConsumerState<OSMFlutterMap> {
 
   MapController mapController = MapController();
   List<LatLng> routeCoordinate = [];
@@ -30,6 +33,7 @@ class _OSMFlutterMapState extends State<OSMFlutterMap> {
   LatLng start = const LatLng(10.491844819983271, -66.8748406971111);
   LatLng end = const LatLng(10.453942243889514, -66.87650053490484);
   LatLng? selectedPoint;
+  final Dio dio = Dio();
 
   @override
   void initState() {
@@ -94,15 +98,33 @@ class _OSMFlutterMapState extends State<OSMFlutterMap> {
     }
   }
 
+  Future<void> _getAddressFromCoordinates(LatLng point) async {
+    final url = 'https://nominatim.openstreetmap.org/reverse?format=json&lat=${point.latitude}&lon=${point.longitude}&addressdetails=1';
+    try {
+      final response = await dio.get(url);
+      if (response.statusCode == 200) {
+        final data = response.data;
+        final address = data['display_name'] ?? 'No address available';
+        setState(() {
+          ref.read(addressSelected.notifier).update((state) => Address(address: address, coordinates: point));
+          print(address);
+          selectedPoint = point;
+        });
+      } else {
+        throw Exception('Failed to load address');
+      }
+    } catch (e) {
+      print('Failed to get address: $e');
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return FlutterMap(
       mapController: mapController,
       options: MapOptions(
         onTap: (tapPosition, point) {
-            setState(() {
-              selectedPoint = point;
-            });
+            _getAddressFromCoordinates(point);
           },
         initialCenter: const LatLng(10.491844819983271, -66.8748406971111),
         initialZoom: 15,

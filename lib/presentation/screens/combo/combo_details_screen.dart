@@ -2,9 +2,16 @@ import 'package:animate_do/animate_do.dart';
 import 'package:card_swiper/card_swiper.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:get_it/get_it.dart';
 import 'package:go_dely/aplication/providers/products/product_repository_provider.dart';
+import 'package:go_dely/aplication/use_cases/category/get_category_by_id.use_case.dart';
+import 'package:go_dely/aplication/use_cases/combo/get_combo_by_id.use_case.dart';
+import 'package:go_dely/aplication/use_cases/discount/get_discount_by_id.use_case.dart';
+import 'package:go_dely/aplication/use_cases/product/get_product_by_id.use_case.dart';
 import 'package:go_dely/config/helpers/human_formats.dart';
+import 'package:go_dely/domain/category/category.dart';
 import 'package:go_dely/domain/combo/combo.dart';
+import 'package:go_dely/domain/discount/discount.dart';
 import 'package:go_dely/domain/product/product.dart';
 import 'package:go_dely/infraestructure/mappers/cart_item_mapper.dart';
 import 'package:go_dely/infraestructure/models/cart_item_local.dart';
@@ -32,23 +39,33 @@ class _ComboDetailsScreenState extends ConsumerState<ComboDetailsScreen> {
   final PanelController _panelController = PanelController();
   final ValueNotifier<bool> _isBottomAppBarVisible = ValueNotifier(true);
   late List<Product> products;
+  late List<Category> categories;
+  late double discount;
 
   Future<Combo> _loadCombo() async {
     products = [];
+    categories = [];
+    discount = 0;
     final comboId = ref.read(currentCombo).lastOrNull?.id;
-    final resultCombo = await ref.read(combosRepositoryProvider).getComboById(comboId!);
+    final getComboByIdUseCase = GetIt.instance.get<GetCombosByIdUseCase>();
+    final resultCombo = await getComboByIdUseCase.execute(GetComboByIdDto(comboId!));
     final combo = resultCombo.unwrap();
-    for( var productId in combo.products ) {
-      final resultProducts = await ref.read(productRepositoryProvider).getProductById(productId);
+    final getProductByIdUseCase = GetIt.instance.get<GetProductByIdUseCase>();
+    for ( var productId in combo.products ) {
+      final resultProducts = await getProductByIdUseCase.execute(GetProductByIdDto(productId));
       products.add(resultProducts.unwrap());
     }
+    final categoryByIdUseCase = GetIt.instance.get<GetCategoryByIdUseCase>();
+    for ( var categoryId in combo.categories ) {
+      final category = await categoryByIdUseCase.execute(GetCategoryByIdDto(categoryId));
+      categories.add(category.unwrap());
+    }
+    if (combo.discount != "No Discount") {
+      final getDiscountById = GetIt.instance.get<GetDiscountByIdUseCase>();
+      final discountResult = await getDiscountById.execute(GetDiscountByIdDto(combo.discount));
+      discount = discountResult.unwrap().percentage;
+    }
     return combo;
-  }
-
-  Future<Combo> _loadProduct() async {
-    final comboId = ref.read(currentCombo).lastOrNull?.id;
-    final combo = await ref.read(combosRepositoryProvider).getComboById(comboId!);
-    return combo.unwrap();
   }
 
   @override 
@@ -140,7 +157,7 @@ class _ComboDetailsScreenState extends ConsumerState<ComboDetailsScreen> {
               return const Center(child: Text('Error loading combo'),);
             }
             if (snapshot.hasData) {
-              return _Content(combo: snapshot.data as Combo, products: products, panelController: _panelController,);
+              return _Content(combo: snapshot.data as Combo, products: products, panelController: _panelController, categories: categories, discount: discount,);
             }
             return const Center(child: Text('No data available'),);
           },
@@ -240,10 +257,12 @@ class __PanelContentState extends ConsumerState<_PanelContent> {
 class _Content extends ConsumerStatefulWidget{
 
   final Combo? combo;
+  final List<Category> categories;
   final List<Product> products;
+  final double discount;
   final PanelController panelController;
 
-  const _Content({this.combo, required this.panelController, required this.products});
+  const _Content({this.combo, required this.panelController, required this.products, required this.categories, required this.discount});
 
   @override
   ConsumerState<_Content> createState() => _ContentState();
@@ -275,7 +294,7 @@ class _ContentState extends ConsumerState<_Content> {
             child: Stack(
               children: [
                 _Slider(comboImages: widget.combo!.imageUrl),
-                if(widget.combo!.discount > 0)
+                if(widget.discount > 0)
                 Row(
                     children: [
                       Padding(
@@ -288,7 +307,7 @@ class _ContentState extends ConsumerState<_Content> {
                           ),
                           child: Padding(
                             padding: const EdgeInsets.all(10.0),
-                            child: Text("${HumanFormarts.percentage(widget.combo!.discount)} OFF", style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 25),),
+                            child: Text("${HumanFormarts.percentage(widget.discount)} OFF", style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 25),),
                           ),
                         ),
                       )
@@ -305,7 +324,7 @@ class _ContentState extends ConsumerState<_Content> {
                 child: Text(widget.combo!.name, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 26),maxLines: 3,)
               ),
               const Spacer(),
-              if (widget.combo!.discount > 0) 
+              if (widget.discount > 0) 
                 Column(
                   children: [
                     Text(
@@ -320,7 +339,7 @@ class _ContentState extends ConsumerState<_Content> {
                     ),
                     const SizedBox(width: 5,),
                     Text(
-                      "${HumanFormarts.numberCurrency(widget.combo!.price - ( widget.combo!.price * widget.combo!.discount))} ${widget.combo!.currency}",
+                      "${HumanFormarts.numberCurrency(widget.combo!.price - ( widget.combo!.price * widget.discount))} ${widget.combo!.currency}",
                       style: const TextStyle(
                         fontWeight: FontWeight.bold,
                         fontSize: 24,
@@ -352,7 +371,7 @@ class _ContentState extends ConsumerState<_Content> {
                       const SizedBox(width: 20,),
                       const Text("Category: ", style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),),
                       const SizedBox(width: 5,),
-                      Text(widget.combo!.categories.toString(), style: const TextStyle(fontSize: 18),),
+                      Text(widget.categories.toString(), style: const TextStyle(fontSize: 18),),
                       const SizedBox(width: 20,),
                     ],
                   ),
