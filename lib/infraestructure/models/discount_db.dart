@@ -22,10 +22,10 @@ class DiscountDB {
       id: json['id'], 
       name: json['name'], 
       description: json['description'],
-      endDate: json['deadline'],
-      imageUrl: json['image'],
+      endDate: json['expireDate'],
+      imageUrl: json['image'] ?? "No image",
       percentage: json['percentage'],
-      startDate: json['startDate']
+      startDate: json['initDate']
     );
   }
 

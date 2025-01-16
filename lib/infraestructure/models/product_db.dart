@@ -29,6 +29,7 @@ class ProductDB {
 
   factory ProductDB.fromJson(Map<String, dynamic> json) { 
     try {
+      print(json['discount']);
       return ProductDB(
           id: json["id"], 
           name: json["name"], 
@@ -42,26 +43,26 @@ class ProductDB {
           description: json["description"], 
           stock: json["stock"] is String ? double.parse(json["stock"]).toInt() : json["stock"].toInt(),
           categories: List<String>.from(json["categories"].map((e) => e)),
-          discount: json["discount"] ?? "No Discount",
+          discount: json["discount"] == "" ? "No Discount" : json["discount"],
       );
     } catch (e) {
       print(e);
     }
     return ProductDB(
       id: json["id"], 
-          name: json["name"], 
-          price: json["price"] is String ? double.parse(json["price"]) : json["price"].toDouble(),
-          currency: json["currency"], 
-          weight: json["weight"].toString(), 
-          measurement: json['measurement'],
-          imageUrl: json["images"] != null
-            ? List<String>.from(json["images"].map((e) => e))
-            : [],
-          description: json["description"], 
-          stock: json["stock"] is String ? double.parse(json["stock"]).toInt() : json["stock"].toInt(),
-          categories: List<String>.from(json["categories"].map((e) => e)),
-          discount: json["discount"] == null ? 0.0 : (json["discount"] is String ? double.tryParse(json["discount"]) ?? 0.1 : json["discount"].toDouble()),
-  );
+      name: json["name"], 
+      price: json["price"] is String ? double.parse(json["price"]) : json["price"].toDouble(),
+      currency: json["currency"], 
+      weight: json["weight"].toString(), 
+      measurement: json['measurement'],
+      imageUrl: json["images"] != null
+        ? List<String>.from(json["images"].map((e) => e))
+        : [],
+      description: json["description"], 
+      stock: json["stock"] is String ? double.parse(json["stock"]).toInt() : json["stock"].toInt(),
+      categories: List<String>.from(json["categories"].map((e) => e)),
+      discount: json["discount"] == "" ? "No Discount" : json["discount"],
+    );
   }
 
   Map<String, dynamic> toJson() => {
