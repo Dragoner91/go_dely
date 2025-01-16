@@ -27,14 +27,13 @@ class ComboDB {
   });
 
   static ComboDB fromJson(Map<String, dynamic> json) {
-    print(json['category']);
     return ComboDB(
       id: json["id"], 
       name: json["name"], 
       price: json["price"] is String ? double.parse(json["price"]) : json["price"].toDouble(),
-      products: List<String>.from(json["productId"].map((e) => e)),
+      products: List<String>.from(json["products"].map((e) => e)),
       description: json["description"], 
-      categories: List<String>.from(json["category"].map((e) => e)),
+      categories: List<String>.from(json["categories"].map((e) => e)),
       currency: json["currency"],
       imageUrl: List<String>.from(json["images"].map((e) => e)),
       discount: json['discount'] ?? "No Discount",
