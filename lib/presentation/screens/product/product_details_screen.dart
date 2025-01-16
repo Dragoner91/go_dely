@@ -374,30 +374,39 @@ class _ContentState extends ConsumerState<_Content> {
                 mainAxisAlignment: MainAxisAlignment.start,
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
+                  const Row(
+                    children: [
+                      SizedBox(width: 20,),
+                      Text("Categories: ", style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),),
+                    ],
+                  ),
                   Row(
                     children: [
                       const SizedBox(width: 20,),
-                      const Text("Categories: ", style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),),
-                      const SizedBox(width: 5,),
                       Container(
-                        constraints: const BoxConstraints(maxWidth: 90),
+                        constraints: const BoxConstraints(maxWidth: 180),
                         child: Text(
                           widget.categories.toString(), 
                           style: const TextStyle(
                             fontSize: 18
                           ),
-                          maxLines: 2,
+                          maxLines: 4,
                           overflow: TextOverflow.clip,
                         ),
                       ),
                       const SizedBox(width: 20,),
                     ],
                   ),
+                  const SizedBox(height: 20,),
+                  const Row(
+                    children: [
+                      SizedBox(width: 20,),
+                      Text("Presentation: ", style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),),
+                    ],
+                  ),
                   Row(
                     children: [
                       const SizedBox(width: 20,),
-                      const Text("Presentation: ", style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),),
-                      const SizedBox(width: 5,),
                       Container(
                         constraints: const BoxConstraints(maxWidth: 90),
                         child: Text(

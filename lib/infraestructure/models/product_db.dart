@@ -29,7 +29,6 @@ class ProductDB {
 
   factory ProductDB.fromJson(Map<String, dynamic> json) { 
     try {
-      print(json['discount']);
       return ProductDB(
           id: json["id"], 
           name: json["name"], 

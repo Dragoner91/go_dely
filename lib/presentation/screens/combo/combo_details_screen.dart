@@ -401,7 +401,7 @@ class _ContentState extends ConsumerState<_Content> {
                           style: const TextStyle(
                             fontSize: 18
                           ),
-                          maxLines: 6,
+                          maxLines: 4,
                           overflow: TextOverflow.clip,
                         ),
                       ),
