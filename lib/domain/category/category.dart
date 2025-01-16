@@ -6,6 +6,10 @@ class Category{
 
  Category({required this.id, required this.imageUrl, required this.name});
 
+  @override
+  String toString() {
+    return name;
+  }
 }
 
 class GetCategoryByIdDto {

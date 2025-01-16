@@ -68,6 +68,7 @@ class _ProductDetailsScreenState extends ConsumerState<ProductDetailsScreen> {
     final primaryColor = theme.colorScheme.primary;
     final bottomAppBarColor = theme.colorScheme.surfaceContainer;
 
+    final productFuture = _loadProduct();
 
     return Scaffold(
       appBar: AppBar(
@@ -93,13 +94,13 @@ class _ProductDetailsScreenState extends ConsumerState<ProductDetailsScreen> {
       ),
       body: Container(
         height: MediaQuery.of(context).size.height,
-          decoration: BoxDecoration(
-            gradient: LinearGradient(
-              colors: [primaryColor.withAlpha(124), bottomAppBarColor],
-              begin: Alignment.topCenter,
-              end: Alignment.bottomCenter,
-            )
-          ),
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            colors: [primaryColor.withAlpha(124), bottomAppBarColor],
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter,
+          )
+        ),
         child: SlidingUpPanel(
           controller: _panelController,
           maxHeight: MediaQuery.of(context).size.height * 0.20,
@@ -113,7 +114,7 @@ class _ProductDetailsScreenState extends ConsumerState<ProductDetailsScreen> {
             }
           },
           panel: FutureBuilder(
-            future: _loadProduct(),
+            future: productFuture,
             builder: (context, snapshot) {
               if (snapshot.connectionState == ConnectionState.waiting) {
                 return const Center(
@@ -143,7 +144,7 @@ class _ProductDetailsScreenState extends ConsumerState<ProductDetailsScreen> {
             },
           ),
           body: FutureBuilder(
-            future: _loadProduct(),
+            future: productFuture,
             builder: (context, snapshot) {
               if (snapshot.connectionState == ConnectionState.waiting) {
                 return const Center(
@@ -373,24 +374,43 @@ class _ContentState extends ConsumerState<_Content> {
                 mainAxisAlignment: MainAxisAlignment.start,
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Row(
+                  const Row(
                     children: [
-                      const SizedBox(width: 20,),
-                      const Text("Categories: ", style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),),
-                      const SizedBox(width: 5,),
-                      Text(widget.categories.toString(), style: const TextStyle(fontSize: 18),),
-                      const SizedBox(width: 20,),
+                      SizedBox(width: 20,),
+                      Text("Categories: ", style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),),
                     ],
                   ),
                   Row(
                     children: [
                       const SizedBox(width: 20,),
-                      const Text("Presentation: ", style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),),
-                      const SizedBox(width: 5,),
+                      Container(
+                        constraints: const BoxConstraints(maxWidth: 180),
+                        child: Text(
+                          widget.categories.toString(), 
+                          style: const TextStyle(
+                            fontSize: 18
+                          ),
+                          maxLines: 4,
+                          overflow: TextOverflow.clip,
+                        ),
+                      ),
+                      const SizedBox(width: 20,),
+                    ],
+                  ),
+                  const SizedBox(height: 20,),
+                  const Row(
+                    children: [
+                      SizedBox(width: 20,),
+                      Text("Presentation: ", style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),),
+                    ],
+                  ),
+                  Row(
+                    children: [
+                      const SizedBox(width: 20,),
                       Container(
                         constraints: const BoxConstraints(maxWidth: 90),
                         child: Text(
-                          widget.product!.weight, 
+                          "${widget.product!.weight} ${widget.product!.measurement}", 
                           style: const TextStyle(
                             fontSize: 18
                           ),

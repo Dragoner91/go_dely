@@ -40,6 +40,7 @@ class _ComboDetailsScreenState extends ConsumerState<ComboDetailsScreen> {
   final ValueNotifier<bool> _isBottomAppBarVisible = ValueNotifier(true);
   late List<Product> products;
   late List<Category> categories;
+  late Combo combo;
   late double discount;
 
   Future<Combo> _loadCombo() async {
@@ -53,6 +54,7 @@ class _ComboDetailsScreenState extends ConsumerState<ComboDetailsScreen> {
     final getProductByIdUseCase = GetIt.instance.get<GetProductByIdUseCase>();
     for ( var productId in combo.products ) {
       final resultProducts = await getProductByIdUseCase.execute(GetProductByIdDto(productId));
+      print(products.toSet());
       products.add(resultProducts.unwrap());
     }
     final categoryByIdUseCase = GetIt.instance.get<GetCategoryByIdUseCase>();
@@ -74,11 +76,16 @@ class _ComboDetailsScreenState extends ConsumerState<ComboDetailsScreen> {
     final combo = ref.watch(currentCombo).lastOrNull;
     if(combo == null) return const SizedBox();
 
+    final theme = Theme.of(context);
+    final primaryColor = theme.colorScheme.primary;
+    final bottomAppBarColor = theme.colorScheme.surfaceContainer;
+    final comboFuture = _loadCombo();
 
     return Scaffold(
       appBar: AppBar(
         centerTitle: true,
         title: Text(combo.name),
+        backgroundColor: primaryColor.withAlpha(124),
         leading: IconButton(onPressed: () {
             ref.read(currentCombo.notifier).update((state) {
               state.removeLast();
@@ -96,71 +103,81 @@ class _ComboDetailsScreenState extends ConsumerState<ComboDetailsScreen> {
           return isVisible ? const BottomAppBarCustom() : const SizedBox.shrink();
         },
       ),
-      body: SlidingUpPanel(
-        controller: _panelController,
-        maxHeight: MediaQuery.of(context).size.height * 0.20,
-        minHeight: 0,
-        color: Colors.transparent,
-        onPanelSlide: (position) {
-          if (position > 0.1) {
-            _isBottomAppBarVisible.value = false;
-          } else {
-            _isBottomAppBarVisible.value = true;
-          }
-        },
-        panel: FutureBuilder(
-          future: _loadCombo(),
-          builder: (context, snapshot) {
-            if (snapshot.connectionState == ConnectionState.waiting) {
-              return const Center(
-                child: SizedBox(
-                  width: 120,
-                  height: 120,
-                  child: CircularProgressIndicator(
-                    strokeWidth: 4, 
-                    color: Color(0xFF5D9558),
-                  ),
-                )
-              );
-            }
-            if (snapshot.hasError) {
-              return const Center(child: Text('Error loading combo'),);
-            }
-            if (snapshot.hasData) {
-              return Container(
-                decoration: BoxDecoration(
-                  color: Theme.of(context).scaffoldBackgroundColor,
-                  borderRadius: const BorderRadius.only(topLeft: Radius.circular(20), topRight: Radius.circular(20))
-                ),
-                child: _PanelContent(combo: snapshot.data as Combo, panelController: _panelController,)
-              );
-            }
-            return const Center(child: Text('No data available'),);
-          },
+      body: Container(
+        height: MediaQuery.of(context).size.height,
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            colors: [primaryColor.withAlpha(124), bottomAppBarColor],
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter,
+          )
         ),
-        body: FutureBuilder(
-          future: _loadCombo(),
-          builder: (context, snapshot) {
-            if (snapshot.connectionState == ConnectionState.waiting) {
-              return const Center(
-                child: SizedBox(
-                  width: 120,
-                  height: 120,
-                  child: CircularProgressIndicator(
-                    strokeWidth: 4, 
-                    color: Color(0xFF5D9558),
-                  ),
-                )
-              );
+        child: SlidingUpPanel(
+          controller: _panelController,
+          maxHeight: MediaQuery.of(context).size.height * 0.20,
+          minHeight: 0,
+          color: Colors.transparent,
+          onPanelSlide: (position) {
+            if (position > 0.1) {
+              _isBottomAppBarVisible.value = false;
+            } else {
+              _isBottomAppBarVisible.value = true;
             }
-            if (snapshot.hasError) {
-              return const Center(child: Text('Error loading combo'),);
-            }
-            if (snapshot.hasData) {
-              return _Content(combo: snapshot.data as Combo, products: products, panelController: _panelController, categories: categories, discount: discount,);
-            }
-            return const Center(child: Text('No data available'),);
           },
+          panel: FutureBuilder(
+            future: comboFuture,
+            builder: (context, snapshot) {
+              if (snapshot.connectionState == ConnectionState.waiting) {
+                return const Center(
+                  child: SizedBox(
+                    width: 120,
+                    height: 120,
+                    child: CircularProgressIndicator(
+                      strokeWidth: 4, 
+                      color: Color(0xFF5D9558),
+                    ),
+                  )
+                );
+              }
+              if (snapshot.hasError) {
+                return const Center(child: Text('Error loading combo'),);
+              }
+              if (snapshot.hasData) {
+                return Container(
+                  decoration: BoxDecoration(
+                    color: Theme.of(context).scaffoldBackgroundColor,
+                    borderRadius: const BorderRadius.only(topLeft: Radius.circular(20), topRight: Radius.circular(20))
+                  ),
+                  child: _PanelContent(combo: snapshot.data as Combo, panelController: _panelController,)
+                );
+              }
+              return const Center(child: Text('No data available'),);
+            },
+          ),
+          body: FutureBuilder(
+            future: comboFuture,
+            builder: (context, snapshot) {
+              if (snapshot.connectionState == ConnectionState.waiting) {
+                return const Center(
+                  child: SizedBox(
+                    width: 120,
+                    height: 120,
+                    child: CircularProgressIndicator(
+                      strokeWidth: 4, 
+                      color: Color(0xFF5D9558),
+                    ),
+                  )
+                );
+              }
+              if (snapshot.hasError) {
+                return const Center(child: Text('Error loading combo'),);
+              }
+              if (snapshot.hasData) {
+                return _Content(combo: snapshot.data as Combo, products: products, panelController: _panelController, categories: categories, discount: discount,);
+              }
+              return const Center(child: Text('No data available'),);
+            },
+          ),
         ),
       ),
     );
@@ -365,13 +382,29 @@ class _ContentState extends ConsumerState<_Content> {
           Row(
             children: [
               Column(
+                mainAxisAlignment: MainAxisAlignment.start,
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
+                  const Row(
+                    children: [
+                      SizedBox(width: 20,),
+                      Text("Categories: ", style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),),
+                    ],
+                  ),
                   Row(
                     children: [
                       const SizedBox(width: 20,),
-                      const Text("Category: ", style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),),
-                      const SizedBox(width: 5,),
-                      Text(widget.categories.toString(), style: const TextStyle(fontSize: 18),),
+                      Container(
+                        constraints: const BoxConstraints(maxWidth: 180),
+                        child: Text(
+                          widget.categories.toString(), 
+                          style: const TextStyle(
+                            fontSize: 18
+                          ),
+                          maxLines: 4,
+                          overflow: TextOverflow.clip,
+                        ),
+                      ),
                       const SizedBox(width: 20,),
                     ],
                   ),
@@ -401,8 +434,8 @@ class _ContentState extends ConsumerState<_Content> {
                         :
                           const Row(
                             children: [
-                              Text("Add to Cart "),
-                              Icon(Icons.shopping_cart),
+                              Text("Add to Cart ", style: TextStyle(color: Colors.white),),
+                              Icon(Icons.shopping_cart, color: Colors.white),
                             ],
                           )
                   );
