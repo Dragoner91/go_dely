@@ -28,7 +28,7 @@ class ProductsNotifier extends StateNotifier<List<Product>>{
     if (isLoading) return;
     isLoading = true;
     currentPage++;
-    final Result<List<Product>> products = await fetchMoreProducts( GetProductsDto( page: currentPage ) );
+    final Result<List<Product>> products = await fetchMoreProducts( GetProductsDto( page: currentPage) );
     state = [...state, ...products.unwrap()];
     await Future.delayed(const Duration(milliseconds: 500));
     isLoading = false;

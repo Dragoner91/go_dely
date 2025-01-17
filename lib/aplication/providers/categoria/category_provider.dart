@@ -12,6 +12,10 @@ final CategoryProvider = StateProvider<bool>((ref){
 
 });
 
+final currentCategory = StateProvider<String> ((ref) {
+  return '';
+});
+
 /*void changeStateCategory({required bool newstate}) async {
   estadoCatalogo = newstate;
 }*/

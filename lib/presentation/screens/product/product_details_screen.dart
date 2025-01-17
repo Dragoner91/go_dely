@@ -46,7 +46,7 @@ class _ProductDetailsScreenState extends ConsumerState<ProductDetailsScreen> {
     final Product product = productResult.unwrap();
     final categoryByIdUseCase = GetIt.instance.get<GetCategoryByIdUseCase>();
     for ( var categoryId in product.categories ) {
-      final category = await categoryByIdUseCase.execute(GetCategoryByIdDto(categoryId));
+      final category = await categoryByIdUseCase.execute(GetCategoryByIdDto(id: categoryId));
       categories.add(category.unwrap());
     }
     if (product.discount != "No Discount") {

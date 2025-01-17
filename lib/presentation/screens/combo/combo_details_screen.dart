@@ -59,7 +59,7 @@ class _ComboDetailsScreenState extends ConsumerState<ComboDetailsScreen> {
     }
     final categoryByIdUseCase = GetIt.instance.get<GetCategoryByIdUseCase>();
     for ( var categoryId in combo.categories ) {
-      final category = await categoryByIdUseCase.execute(GetCategoryByIdDto(categoryId));
+      final category = await categoryByIdUseCase.execute(GetCategoryByIdDto(id: categoryId));
       categories.add(category.unwrap());
     }
     if (combo.discount != "No Discount") {
