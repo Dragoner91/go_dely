@@ -1,9 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:get_it/get_it.dart';
 import 'package:go_dely/aplication/providers/bottom_appbar_provider.dart';
 import 'package:go_dely/aplication/providers/order/current_order_provider.dart';
 import 'package:go_dely/aplication/providers/order/order_repository_provider.dart';
 import 'package:go_dely/aplication/providers/order/order_selected_provider.dart';
+import 'package:go_dely/aplication/use_cases/order/get_active_orders.use_case.dart';
+import 'package:go_dely/aplication/use_cases/order/get_past_orders.use_case.dart';
 import 'package:go_dely/domain/order/i_order_repository.dart';
 import 'package:go_dely/domain/order/order.dart';
 import 'package:go_dely/presentation/widgets/widgets.dart';
@@ -74,30 +77,40 @@ class _ContentState extends ConsumerState<_Content> {
     _loadOrders();
   }
 
-  Future<void> _loadOrders() async {
-    final ordersDto = GetOrdersDto();
-    final orders = await ref.read(orderRepositoryProvider).getOrders(ordersDto);
+  Future<void> _loadOrdersPast() async {
+    final orderDto = GetOrdersDto(perPage: 15, page: 1);
+    final orders = await GetIt.instance.get<GetPastOrdersUseCase>().execute(orderDto);
+    if(orders.isError){
+      return;
+    }
+    setState(() {
+      _ordersPast = orders.unwrap().where((order) => ((order.status == 'CANCELLED') | (order.status == 'DELIVERED'))).toList();
+    });
+  }
+
+  Future<void> _loadOrdersActives() async {
+    final orderDto = GetOrdersDto(perPage: 15, page: 1);
+    final orders = await GetIt.instance.get<GetActiveOrdersUseCase>().execute(orderDto);
     if(orders.isError){
       return;
     }
     setState(() {
       _ordersActive = orders.unwrap().where((order) => ((order.status == 'CREATED') | (order.status == 'BEING PROCESSED') | (order.status == 'SHIPPED'))).toList();
-      _ordersPast = orders.unwrap().where((order) => ((order.status == 'CANCELLED') | (order.status == 'DELIVERED'))).toList();
     });
   }
 
+  Future<void> _loadOrders() async {
+    await _loadOrdersActives();
+    await _loadOrdersPast();
+  }
+
   Future<List<Order>> getOrders() async {
-    final ordersDto = GetOrdersDto();
-    final orders = await ref.read(orderRepositoryProvider).getOrders(ordersDto);
     final selected = ref.read(orderSelectedProvider.notifier).state;
     final List<Order> ordersSelected;
-    if(orders.isError){
-      return [];
-    }
-    if(selected == "Active"){
-      ordersSelected = orders.unwrap().where((order) => ((order.status == 'CREATED') | (order.status == 'BEING PROCESSED') | (order.status == 'SHIPPED'))).toList();
+    if(selected == "Active Orders"){
+      ordersSelected = _ordersActive;
     } else {
-      ordersSelected = orders.unwrap().where((order) => ((order.status == 'CANCELLED') | (order.status == 'DELIVERED'))).toList();
+      ordersSelected = _ordersPast;
     }
     return ordersSelected;
   }
@@ -174,7 +187,7 @@ class _ContentState extends ConsumerState<_Content> {
                     return AdvancedSegment(
                       controller: controller, // AdvancedSegmentController
                       segments: { // Map<String, String>
-                        'Active': 'Active ($activeQuantity)',
+                        'Active Orders': 'Active ($activeQuantity)',
                         'Past Orders': 'Past Orders ($pastQuantity)',
                       },
                       activeStyle: const TextStyle( // TextStyle

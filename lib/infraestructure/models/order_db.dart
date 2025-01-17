@@ -87,11 +87,11 @@ class OrderDB {
       items: items,
       currency: json['currency'],
       status: json['status'],
-      paymentMethod: json['paymentMethodId'],
+      paymentMethod: json['paymentMethod'],
       total: json['total'] is String ? double.parse(json['total']) : json['total'].toDouble(), 
       uuid: json['order_id'], 
-      latitude: json['total'], 
-      longitude: json['total'],
+      latitude: json['latitude'].toString(), 
+      longitude: json['longitude'].toString(),
     );
   }
   

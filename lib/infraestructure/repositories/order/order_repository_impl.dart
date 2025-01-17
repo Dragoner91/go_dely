@@ -68,15 +68,20 @@ class OrderRepositoryImpl extends IOrderRepository{
   }
 
   @override
-  Future<Result<List<Order>>> getOrders(GetOrdersDto dto) async {
+  Future<Result<List<Order>>> getActiveOrders(GetOrdersDto dto) async {
 
     final tokenResult = await auth.getToken();
     if(tokenResult.isError) return throw tokenResult.error;
 
     petition.updateHeaders(headerKey: "Authorization", headerValue: "Bearer ${tokenResult.unwrap()}");
 
+    var queryParameters = {
+      'page': dto.page,
+      'perpage': dto.perPage
+    };
+
     final result = await petition.makeRequest(
-      urlPath: '/orders',
+      urlPath: '/order/many/active',
       httpMethod: 'GET',
       mapperCallBack: (data) {
         List<Order> orders = [];
@@ -89,6 +94,39 @@ class OrderRepositoryImpl extends IOrderRepository{
         }
         return orders;
       },
+      body: queryParameters
+    );
+    return result;
+  }
+
+  @override
+  Future<Result<List<Order>>> getPastOrders(GetOrdersDto dto) async {
+
+    final tokenResult = await auth.getToken();
+    if(tokenResult.isError) return throw tokenResult.error;
+
+    petition.updateHeaders(headerKey: "Authorization", headerValue: "Bearer ${tokenResult.unwrap()}");
+
+    var queryParameters = {
+      'page': dto.page,
+      'perpage': dto.perPage
+    };
+
+    final result = await petition.makeRequest(
+      urlPath: '/order/many/past',
+      httpMethod: 'GET',
+      mapperCallBack: (data) {
+        List<Order> orders = [];
+        for (var order in data) {
+          orders.add(
+            OrderMapper.orderToEntity(
+              OrderDB.fromJson(order)
+            )
+          );
+        }
+        return orders;
+      },
+      body: queryParameters
     );
     return result;
   }

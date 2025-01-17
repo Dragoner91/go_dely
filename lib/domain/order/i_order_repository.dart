@@ -11,6 +11,10 @@ class GetOrderByIdDto {
 }
 
 class GetOrdersDto {
+  final int page;
+  final int perPage;
+
+  GetOrdersDto({required this.page, required this.perPage});
   
 }
 
@@ -28,7 +32,9 @@ abstract class IOrderRepository {
 
   Future<Result<String>> createOrder(CreateOrderDto order);
 
-  Future<Result<List<Order>>> getOrders(GetOrdersDto dto);
+  Future<Result<List<Order>>> getActiveOrders(GetOrdersDto dto);
+
+  Future<Result<List<Order>>> getPastOrders(GetOrdersDto dto);
 
   Future<Result<Order>> getOrderById(GetOrderByIdDto dto);
 

@@ -197,7 +197,7 @@ class _PlaceOrderButtonState extends ConsumerState<_PlaceOrderButton> {
                               if (context.mounted) {
                                 Navigator.of(context).pop();
                                 context.go("/home");
-                                context.push("/orderHistory"); 
+                                await context.push("/orderHistory"); 
                               }
                             },
                           ),
