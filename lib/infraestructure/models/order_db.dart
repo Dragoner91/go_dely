@@ -68,7 +68,7 @@ class OrderDB {
 
   factory OrderDB.fromJson(Map<String, dynamic> json) {
     List<ICart> items = [];
-
+    
     if (json['combos'] != null) {
       items.addAll((json['combos'] as List)
           .map((e) => CartItemMapper.cartItemToEntity(CartLocal.fromEntity( ComboMapper.comboToEntity(ComboDB.fromJson(e)) , e['quantity'], e['images'][0], "Combo")))
@@ -77,7 +77,7 @@ class OrderDB {
 
     if (json['products'] != null) {
       items.addAll((json['products'] as List)
-          .map((e) => CartItemMapper.cartItemToEntity(CartLocal.fromEntity( ProductMapper.productToEntity(ProductDB.fromJson(e)) , e['quantity'], "", "Product")))
+          .map((e) => CartItemMapper.cartItemToEntity(CartLocal.fromEntity( ProductMapper.productToEntity(ProductDB.fromJson(e)) , e['quantity'], e['images'][0], "Product")))
           .toList());
     }
     

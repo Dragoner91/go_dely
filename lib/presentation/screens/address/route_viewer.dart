@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:math';
 
 import 'package:dio/dio.dart';
@@ -25,12 +26,35 @@ class _RouteViewerState extends State<RouteViewer> {
 
   final Dio dio = Dio();
   List<LatLng> routeCoordinate = [];
+  LatLng currentLocationMotorizado = Ubication.coordinates;
+  Timer? _timer;
+  int _currentIndex = 0;
 
   @override
   void initState() {
     super.initState();
     _fetchRoute();
   }
+
+  @override
+  void dispose() {
+    _timer?.cancel();
+    super.dispose();
+  }
+
+  Future<void> followRoute() async {
+    _timer = Timer.periodic(const Duration(milliseconds: 500), (timer) {
+      if (_currentIndex < routeCoordinate.length) {
+        setState(() {
+          currentLocationMotorizado = routeCoordinate[_currentIndex];
+          _currentIndex++;
+        });
+      } else {
+        _timer?.cancel();
+      }
+    });
+  }
+
 
   Future<void> _fetchRoute() async {
     
@@ -47,6 +71,7 @@ class _RouteViewerState extends State<RouteViewer> {
               .map<LatLng>((coord) => LatLng(coord[1], coord[0]))
               .toList();
         });
+        if(widget.isTracking) followRoute();
       } else {
         throw Exception('Failed to load route');
       }
@@ -86,7 +111,6 @@ class _RouteViewerState extends State<RouteViewer> {
         ),
         MarkerLayer(
           markers: [
-            
             Marker(
               width: 80.0,
               height: 80.0,
@@ -107,15 +131,18 @@ class _RouteViewerState extends State<RouteViewer> {
                 size: 40.0,
               ),
             ),
+            if(widget.isTracking) ...[
+              Marker(
+              point: currentLocationMotorizado, 
+              child: const Icon(Icons.local_shipping, color: Colors.black, size: 35.0,)
+              )
+            ]
           ],
         ),
       ],
     );
   }
 }
-
-
-
 
 LatLng findMidpoint(LatLng point1, LatLng point2) {
     final double lat1 = point1.latitude;

@@ -292,7 +292,7 @@ class OrderRepositoryImpl extends IOrderRepository{
     };
 
     final result = await petition.makeRequest(
-      urlPath: '/orders/${dto.id}/status',
+      urlPath: '/order/change/state/${dto.id}',
       httpMethod: 'PATCH',
       mapperCallBack: (data) {
         return data['message'];

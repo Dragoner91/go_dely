@@ -507,7 +507,7 @@ class _OrderContentState extends ConsumerState<_OrderContent> {
                                       TextButton(
                                         child: const Text("YES", style: TextStyle(color: Colors.red),),
                                         onPressed: () async {
-                                          final changeStatusDto = ChangeStatusDto(id: widget.order.id, status: 'CANCELLED');
+                                          final changeStatusDto = ChangeStatusDto(id: widget.order.uuid, status: 'CANCELLED');
                                           await ref.read(orderRepositoryProvider).changeStatus(changeStatusDto);
                                           print("cambio");
                                           widget.onRefresh();

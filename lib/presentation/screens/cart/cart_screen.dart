@@ -2,6 +2,8 @@ import 'package:animate_do/animate_do.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:get_it/get_it.dart';
+import 'package:go_dely/aplication/providers/cart/coupon_provider.dart';
+import 'package:go_dely/aplication/use_cases/coupon/get_coupon_by_id.use_case.dart';
 import 'package:go_dely/aplication/use_cases/discount/get_discount_by_id.use_case.dart';
 import 'package:go_dely/config/helpers/human_formats.dart';
 import 'package:go_dely/domain/cart/i_cart.dart';
@@ -51,7 +53,7 @@ class _CartScreenState extends ConsumerState<CartScreen> {
               if (barcode.rawValue != null) {
                 setState(() {
                   couponCode = barcode.rawValue!;
-                  print(couponCode);
+                  ref.read(couponProvider.notifier).update((state) => couponCode,);
                   isBarcodeDetected = true;
                 });
 
@@ -179,6 +181,12 @@ class _CheckoutInfoState extends ConsumerState<_CheckoutInfo> {
         total += item.price * item.quantity * (1 - discount);
       }
     }
+    final coupon = ref.read(couponProvider.notifier).state;
+    if(coupon != "") {
+      final amountResult = await GetIt.instance.get<GetCouponByIdUseCase>().execute(GetCouponByIdDto(coupon));  
+      final double amount = amountResult.unwrap();
+      total = total + amount;
+    }
     return total;
   }
 
@@ -289,10 +297,11 @@ class _CheckoutInfoState extends ConsumerState<_CheckoutInfo> {
                   return FadeIn(
                     duration: const Duration(milliseconds: 200),
                     child: Text('${HumanFormarts.numberCurrency(snapshot.data!)} USD',
-                        style: const TextStyle(
-                            fontSize:
-                                16)),
-                  ); //* Cambiar despues para que traiga el currency
+                      style: const TextStyle(
+                        fontSize: 16
+                      )
+                    ),
+                  );
                 }
               },
             ),

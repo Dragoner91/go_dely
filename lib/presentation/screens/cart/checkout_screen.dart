@@ -4,6 +4,7 @@ import 'package:get_it/get_it.dart';
 import 'package:go_dely/aplication/dto/payment_validator_dto.dart';
 import 'package:go_dely/aplication/providers/cart/address_selected_provider.dart';
 import 'package:go_dely/aplication/providers/cart/cart_items_provider.dart';
+import 'package:go_dely/aplication/providers/cart/coupon_provider.dart';
 import 'package:go_dely/aplication/providers/cart/date_selected_provider.dart';
 import 'package:go_dely/aplication/providers/cart/payment_method_selected_provider.dart';
 import 'package:go_dely/aplication/providers/cart/payment_methods/payment_methods_providers.dart';
@@ -122,7 +123,7 @@ class _PlaceOrderButtonState extends ConsumerState<_PlaceOrderButton> {
               final paymentMethod = ref.read(paymentMethodSelected.notifier).state;
               final address = ref.read(addressSelected.notifier).state;
               final total = await ref.read(cartItemsProvider.notifier).calculateTotal();
-              // final coupon = ; 
+              final coupon = ref.read(couponProvider.notifier).state; 
 
               final paymentValidator = PaymentValidatorUseCase();
 
@@ -172,7 +173,8 @@ class _PlaceOrderButtonState extends ConsumerState<_PlaceOrderButton> {
                 paymentMethod: paymentMethod, 
                 products: products, 
                 total: total,
-                status: "Active"
+                status: "Active",
+                couponCode: coupon.isNotEmpty ? coupon : null
               );
 
               final createOrderUseCase = GetIt.instance.get<CreateOrderUseCase>();

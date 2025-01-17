@@ -87,7 +87,7 @@ class _OrderDetailsScreenState extends ConsumerState<OrderDetailsScreen> {
                   child: Column(
                     children: [
                       OrderInfo(order: order),
-                      OrderMap(destination: LatLng(double.parse(order.latitude), double.parse(order.longitude)),),
+                      OrderMap(destination: LatLng(double.parse(order.latitude), double.parse(order.longitude)), isTracking: order.status == 'SHIPPED'),
                       ItemsInfo(order: order),
                     ],
                   ),
@@ -104,8 +104,9 @@ class _OrderDetailsScreenState extends ConsumerState<OrderDetailsScreen> {
 class OrderMap extends StatelessWidget {
 
   final LatLng destination;
+  final bool isTracking;
 
-  const OrderMap({super.key, required this.destination});
+  const OrderMap({super.key, required this.destination, required this.isTracking});
 
   @override
   Widget build(BuildContext context) {
@@ -123,7 +124,7 @@ class OrderMap extends StatelessWidget {
             shape: BoxShape.rectangle,
             borderRadius: const BorderRadius.all(Radius.circular(5)),
           ),
-        child: RouteViewer(end: destination, isTracking: false,)
+        child: RouteViewer(end: destination, isTracking: isTracking,)
       ),
     );
   }
@@ -172,9 +173,9 @@ class OrderInfo extends StatelessWidget {
           children: [
             Row(
               children: [
-                const Padding(
-                  padding: EdgeInsets.only(left: 10, top: 10),
-                  child: Text("Order #", style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold),),
+                Padding(
+                  padding: const EdgeInsets.only(left: 10, top: 10),
+                  child: Text("Order # ${order.id}", style: const TextStyle(fontSize: 22, fontWeight: FontWeight.bold),),
                 ), //*esperar nuevo id de orden
                 const Spacer(),
                 Padding(
@@ -232,11 +233,6 @@ class ItemsInfo extends StatelessWidget {
 
   const ItemsInfo({super.key, required this.order});
 
-
-  double subtotal() {
-    return 0;
-  }
-
   @override
   Widget build(BuildContext context) {
 
@@ -292,17 +288,17 @@ class ItemsInfo extends StatelessWidget {
                 children: [
                   const Text("Subtotal:"),
                   const Spacer(),
-                  Text("${subtotal().toString()} USD")
+                  Text("${order.total} USD")
                 ],
               ),
             ),
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 10),
+            const Padding(
+              padding: EdgeInsets.symmetric(horizontal: 10),
               child: Row(
                 children: [
-                  const Text("Delivery Fee:"),
-                  const Spacer(),
-                  Text("${subtotal().toString()} USD")
+                  Text("Delivery Fee:"),
+                  Spacer(),
+                  Text("${0} USD")
                 ],
               ),
             ),
@@ -313,7 +309,7 @@ class ItemsInfo extends StatelessWidget {
                 children: [
                   const Text("TOTAL:"),
                   const Spacer(),
-                  Text("${subtotal().toString()} USD")
+                  Text("${order.total} USD")
                 ],
               ),
             ),
@@ -344,8 +340,15 @@ class ItemsDetails extends StatelessWidget {
               width: 50,
               errorBuilder: (context, error, stackTrace) {
                 return Image.network(
-                  'https://media.istockphoto.com/id/1396814518/vector/image-coming-soon-no-photo-no-thumbnail-image-available-vector-illustration.jpg?s=612x612&w=0&k=20&c=hnh2OZgQGhf0b46-J2z7aHbIWwq8HNlSDaNp2wn_iko=',
+                  item.image,
                   fit: BoxFit.contain,
+                  errorBuilder: 
+                    (context, error, stackTrace) => Image.network(
+                      'https://media.istockphoto.com/id/1396814518/vector/image-coming-soon-no-photo-no-thumbnail-image-available-vector-illustration.jpg?s=612x612&w=0&k=20&c=hnh2OZgQGhf0b46-J2z7aHbIWwq8HNlSDaNp2wn_iko=',
+                      height: 50,
+                      width: 50,
+                      fit: BoxFit.contain,
+                    ),
                   height: 50,
                   width: 50,
                 );
