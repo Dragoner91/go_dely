@@ -40,6 +40,7 @@ class OrderRepositoryImpl extends IOrderRepository{
       'total': order.total,
       'products': order.products,
       'combos': order.combos,
+      'idPayment': "56dc5446-67c1-4a8f-b1e8-860a9293617d",
       if(order.couponCode != null) 'cupon_code': order.couponCode
     };
 
@@ -185,7 +186,7 @@ class OrderRepositoryImpl extends IOrderRepository{
     dynamic data = result.unwrap();
     List<Order> orders = [];
     if (dto.backSelected == "Team Naranja"){
-      for (var order in data) {
+      for (var order in data['orders']) {
         List<ICart> items = [];
 
         if (order['products'] != null) {

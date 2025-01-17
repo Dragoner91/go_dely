@@ -173,9 +173,12 @@ class OrderInfo extends StatelessWidget {
           children: [
             Row(
               children: [
-                Padding(
-                  padding: const EdgeInsets.only(left: 10, top: 10),
-                  child: Text("Order # ${order.id}", style: const TextStyle(fontSize: 22, fontWeight: FontWeight.bold),),
+                Container(
+                  constraints: const BoxConstraints(maxWidth: 270),
+                  child: Padding(
+                    padding: const EdgeInsets.only(left: 10, top: 10),
+                    child: Text("Order # ${order.id}", style: const TextStyle(fontSize: 22, fontWeight: FontWeight.bold),),
+                  ),
                 ), //*esperar nuevo id de orden
                 const Spacer(),
                 Padding(
