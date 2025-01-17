@@ -4,6 +4,7 @@ import 'package:get_it/get_it.dart';
 import 'package:go_dely/aplication/dto/payment_validator_dto.dart';
 import 'package:go_dely/aplication/providers/cart/address_selected_provider.dart';
 import 'package:go_dely/aplication/providers/cart/cart_items_provider.dart';
+import 'package:go_dely/aplication/providers/cart/coupon_provider.dart';
 import 'package:go_dely/aplication/providers/cart/date_selected_provider.dart';
 import 'package:go_dely/aplication/providers/cart/payment_method_selected_provider.dart';
 import 'package:go_dely/aplication/providers/cart/payment_methods/payment_methods_providers.dart';
@@ -122,7 +123,7 @@ class _PlaceOrderButtonState extends ConsumerState<_PlaceOrderButton> {
               final paymentMethod = ref.read(paymentMethodSelected.notifier).state;
               final address = ref.read(addressSelected.notifier).state;
               final total = await ref.read(cartItemsProvider.notifier).calculateTotal();
-              // final coupon = ; 
+              final coupon = ref.read(couponProvider.notifier).state; 
 
               final paymentValidator = PaymentValidatorUseCase();
 
@@ -172,12 +173,12 @@ class _PlaceOrderButtonState extends ConsumerState<_PlaceOrderButton> {
                 paymentMethod: paymentMethod, 
                 products: products, 
                 total: total,
-                status: "Active"
+                status: "Active",
+                couponCode: coupon.isNotEmpty ? coupon : null
               );
 
               final createOrderUseCase = GetIt.instance.get<CreateOrderUseCase>();
               final response = await createOrderUseCase.execute(order);
-              // final response = await ref.read(orderRepositoryProvider).createOrder(order);
 
               if(response.isError){
                 throw response.error;
@@ -197,7 +198,7 @@ class _PlaceOrderButtonState extends ConsumerState<_PlaceOrderButton> {
                               if (context.mounted) {
                                 Navigator.of(context).pop();
                                 context.go("/home");
-                                context.push("/orderHistory"); 
+                                await context.push("/orderHistory"); 
                               }
                             },
                           ),
@@ -575,6 +576,10 @@ class _PaymentMethodState extends ConsumerState<_PaymentMethod> {
   Widget build(BuildContext context) {
     final selectedMethod = ref.watch(paymentMethodSelected);
     final theme = Theme.of(context);
+
+    final allowedMethods = ["Credit Card", "Cash", "Debit Card", "Mobile Payment"];
+    final filteredPaymentMethods = widget.paymentMethods.where((method) => allowedMethods.contains(method.name)).toList();
+
     return Padding(
       padding: const EdgeInsets.all(8.0),
       child: Column(
@@ -590,24 +595,27 @@ class _PaymentMethodState extends ConsumerState<_PaymentMethod> {
           ListView.builder(
             physics: const NeverScrollableScrollPhysics(),
             shrinkWrap: true,
-            itemCount: widget.paymentMethods.length,
+            itemCount: filteredPaymentMethods.length,
             itemBuilder: (context, index) {
-              final method = widget.paymentMethods[index].name;
-              return Column(
+              final method = filteredPaymentMethods[index].name;
+              if (["Credit Card", "Cash", "Debit Card", "Mobile Payment"].contains(method)) {
+                return Column(
                 children: [
-                  RadioListTile<String>(
-                    title: Text(method),
-                    value: method,
-                    groupValue: selectedMethod,
-                    onChanged: (String? value) {
-                      setState(() {
-                        ref.read(paymentMethodSelectedId.notifier).update((state) => widget.paymentMethods[index].id);
-                        ref.read(paymentMethodSelected.notifier).update((state) => value!);
-                      });
-                    },
-                    contentPadding: const EdgeInsets.symmetric(vertical: 0.0, horizontal: 8.0),
-                    visualDensity: const VisualDensity(horizontal: 0, vertical: -4),
-                  ),
+                  
+                    ...[RadioListTile<String>(
+                      title: Text(method),
+                      value: method,
+                      groupValue: selectedMethod,
+                      onChanged: (String? value) {
+                        setState(() {
+                          ref.read(paymentMethodSelectedId.notifier).update((state) => widget.paymentMethods[index].id);
+                          ref.read(paymentMethodSelected.notifier).update((state) => value!);
+                        });
+                      },
+                      contentPadding: const EdgeInsets.symmetric(vertical: 0.0, horizontal: 8.0),
+                      visualDensity: const VisualDensity(horizontal: 0, vertical: -4),
+                    )
+                  ],
                   if (selectedMethod == method) ...[
                     if (method == 'Credit Card' || method == 'Debit Card') ...[
                       Padding(
@@ -718,6 +726,9 @@ class _PaymentMethodState extends ConsumerState<_PaymentMethod> {
                   ],
                 ],
               );
+              } else {
+                return Container();
+              }
             },
           ),
         ],

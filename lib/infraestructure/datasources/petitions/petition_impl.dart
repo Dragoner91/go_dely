@@ -20,7 +20,10 @@ class PetitionImpl extends IPetition {
       Map<String, dynamic>? queryParams, 
       body
     }) async {
-      final apiUrl = Environment.getAPI(providerContainer.read(currentBackendProvider.notifier).state);
+      String apiUrl = Environment.getAPI(providerContainer.read(currentBackendProvider.notifier).state);
+      if( urlPath == "/payment-methods") {
+        apiUrl = Environment.verdeAPI;
+      }
       try {
         final url = apiUrl + urlPath;
         print("URL: $url");
@@ -34,7 +37,7 @@ class PetitionImpl extends IPetition {
         return Result.success<T>(mapperCallBack(response.data));
       } 
       on DioException catch (e) {
-        print("EXEPTION: ${e.toString()}");
+        print("DIO EXEPTION: ${e.toString()}");
         return Result.failure<T>(handleException(e));
       } 
       catch (e) {

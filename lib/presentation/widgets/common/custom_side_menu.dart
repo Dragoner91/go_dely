@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:get_it/get_it.dart';
 import 'package:go_dely/aplication/providers/auth/auth_provider.dart';
 import 'package:go_dely/aplication/providers/auth/auth_repository_provider.dart';
+import 'package:go_dely/aplication/providers/cart/cart_items_provider.dart';
 import 'package:go_dely/aplication/providers/theme/theme_provider.dart';
 import 'package:go_dely/config/menu_items.dart';
 import 'package:go_dely/infraestructure/repositories/theme/theme_repository.dart';
@@ -71,6 +72,7 @@ class _CustomSideMenuState extends ConsumerState<CustomSideMenu> {
                         onTap: () {
                           ref.read(authProvider.notifier).update((token) => "");
                           ref.read(authRepositoryProvider).setToken("");
+                          ref.read(cartItemsProvider.notifier).cleanItems();
                           context.go("/welcome");
                         },
                         child: const Row(

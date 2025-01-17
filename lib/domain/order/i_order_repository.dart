@@ -4,13 +4,20 @@ import 'package:go_dely/domain/order/order.dart';
 
 class GetOrderByIdDto {
   final String id;
+  final String backSelected;
 
   GetOrderByIdDto({
-    required this.id
+    required this.id,
+    required this.backSelected
   });
 }
 
 class GetOrdersDto {
+  final int page;
+  final int perPage;
+  final String backSelected;
+
+  GetOrdersDto({required this.page, required this.perPage, required this.backSelected});
   
 }
 

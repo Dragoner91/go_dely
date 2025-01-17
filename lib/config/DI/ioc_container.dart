@@ -10,6 +10,7 @@ import 'package:go_dely/aplication/use_cases/auth/register.use_case.dart';
 import 'package:go_dely/aplication/use_cases/category/get_category_by_id.use_case.dart';
 import 'package:go_dely/aplication/use_cases/combo/get_combo_by_id.use_case.dart';
 import 'package:go_dely/aplication/use_cases/combo/get_combos.use_case.dart';
+import 'package:go_dely/aplication/use_cases/coupon/get_coupon_by_id.use_case.dart';
 import 'package:go_dely/aplication/use_cases/discount/get_discount_by_id.use_case.dart';
 import 'package:go_dely/aplication/use_cases/order/check_order_current_location.use_case.dart';
 import 'package:go_dely/aplication/use_cases/order/create_order.use_case.dart';
@@ -96,7 +97,7 @@ class IoCContainer {
     getIt.registerSingleton<ICartRepository>(cartRepository);
     final themeRepository = ThemeRepository(prefs: prefs);
     getIt.registerSingleton<ThemeRepository>(themeRepository);
-    final orderRepository = OrderRepositoryImpl(petition: petitions, auth: authRepository);
+    final orderRepository = OrderRepositoryImpl(petition: petitions, auth: authRepository, comboRepository: comboRepository, productRepository: productRepository);
     getIt.registerSingleton<IOrderRepository>(orderRepository);
     final paymentMethodRepository = PaymentMethodRepositoryImpl(petition: petitions);
     getIt.registerSingleton<IPaymentMethodRepository>(paymentMethodRepository);
@@ -130,6 +131,8 @@ class IoCContainer {
     getIt.registerSingleton<GetCategoryByIdUseCase>(getCategoryByIdUseCase);
     final getDiscountByIdUseCase = GetDiscountByIdUseCase(discountRepository);
     getIt.registerSingleton<GetDiscountByIdUseCase>(getDiscountByIdUseCase);
+    final getCouponByIdUseCase = GetCouponByIdUseCase(auth: authRepository, petition: petitions);
+    getIt.registerSingleton<GetCouponByIdUseCase>(getCouponByIdUseCase);
     
   }
 

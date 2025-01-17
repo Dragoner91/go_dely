@@ -68,30 +68,30 @@ class OrderDB {
 
   factory OrderDB.fromJson(Map<String, dynamic> json) {
     List<ICart> items = [];
-
+    
     if (json['combos'] != null) {
       items.addAll((json['combos'] as List)
-          .map((e) => CartItemMapper.cartItemToEntity(CartLocal.fromEntity( ComboMapper.comboToEntity(ComboDB.fromJson(e)) , e['quantity'], "", "Combo")))
+          .map((e) => CartItemMapper.cartItemToEntity(CartLocal.fromEntity( ComboMapper.comboToEntity(ComboDB.fromJson(e)) , e['quantity'], e['images'][0], "Combo")))
           .toList());
     }
 
     if (json['products'] != null) {
       items.addAll((json['products'] as List)
-          .map((e) => CartItemMapper.cartItemToEntity(CartLocal.fromEntity( ProductMapper.productToEntity(ProductDB.fromJson(e)) , e['quantity'], "", "Product")))
+          .map((e) => CartItemMapper.cartItemToEntity(CartLocal.fromEntity( ProductMapper.productToEntity(ProductDB.fromJson(e)) , e['quantity'], e['images'][0], "Product")))
           .toList());
     }
     
     return OrderDB(
-      id: json['incremental_id'] ?? json['order_id'],
+      id: json['incremental_id'].toString(),
       address: json['address'],
       items: items,
-      currency: json['currency'],
+      currency: json['currency'] ?? json['paymentMethod']['currency'],
       status: json['status'],
-      paymentMethod: json['paymentMethodId'],
-      total: json['total'] is String ? double.parse(json['total']) : json['total'].toDouble(), 
-      uuid: json['order_id'], 
-      latitude: json['total'], 
-      longitude: json['total'],
+      paymentMethod: json['paymentMethod'] ?? json['paymentMethod']['paymentMethod'],
+      total: json['total'] is String ? double.parse(json['total']) : json['total'].toDouble() ?? json['paymentMethod']['total'], 
+      uuid: json['id'], 
+      latitude: json['latitude'].toString(),
+      longitude: json['longitude'].toString(),
     );
   }
   
