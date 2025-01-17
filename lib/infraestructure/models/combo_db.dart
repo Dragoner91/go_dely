@@ -33,10 +33,10 @@ class ComboDB {
       price: json["price"] is String ? double.parse(json["price"]) : json["price"].toDouble(),
       products: List<String>.from(json["products"].map((e) => e)),
       description: json["description"], 
-      categories: List<String>.from(json["categories"].map((e) => e)),
       currency: json["currency"],
       imageUrl: List<String>.from(json["images"].map((e) => e)),
-      discount: json['discount'] ?? "No Discount",
+      categories: json['categories'] ? List<String>.from(json["categories"].map((e) => e)) : [""],
+      discount: json['discount'] != null ? json["discount"] == "" ? "No Discount" : json["discount"] : "No Discount",
     );
   }
 

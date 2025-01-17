@@ -1,11 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_dely/aplication/providers/backend_provider.dart';
 import 'package:go_dely/aplication/providers/order/current_order_provider.dart';
 import 'package:go_dely/aplication/providers/order/order_repository_provider.dart';
 import 'package:go_dely/domain/cart/i_cart.dart';
 import 'package:go_dely/domain/order/i_order_repository.dart';
 import 'package:go_dely/domain/order/order.dart';
+import 'package:go_dely/presentation/screens/address/route_viewer.dart';
 import 'package:go_router/go_router.dart';
+import 'package:latlong2/latlong.dart';
 
 class OrderDetailsScreen extends ConsumerStatefulWidget {
   const OrderDetailsScreen({super.key});
@@ -19,7 +22,7 @@ class _OrderDetailsScreenState extends ConsumerState<OrderDetailsScreen> {
   Future<Order> fetchOrder() async {
     await Future.delayed(const Duration(milliseconds: 700));
     final orderId = ref.read(currentOrderId.notifier).state;
-    final orderDto = GetOrderByIdDto(id: orderId);
+    final orderDto = GetOrderByIdDto(id: orderId, backSelected: ref.read(currentBackendProvider.notifier).state);
     final order = await ref.read(orderRepositoryProvider).getOrderById(orderDto);
     return order.unwrap();
   }
@@ -35,6 +38,7 @@ class _OrderDetailsScreenState extends ConsumerState<OrderDetailsScreen> {
       appBar: AppBar(
         title: const Text("Order Summary"),
         centerTitle: true,
+        backgroundColor: primaryColor.withAlpha(124),
         leading: IconButton(
           onPressed: () {
             context.pop();
@@ -43,6 +47,7 @@ class _OrderDetailsScreenState extends ConsumerState<OrderDetailsScreen> {
         ),
       ),
       body: Container(
+        height: MediaQuery.of(context).size.height,
         decoration: BoxDecoration(
             gradient: LinearGradient(
               colors: [primaryColor.withAlpha(124), bottomAppBarColor],
@@ -82,6 +87,7 @@ class _OrderDetailsScreenState extends ConsumerState<OrderDetailsScreen> {
                   child: Column(
                     children: [
                       OrderInfo(order: order),
+                      OrderMap(destination: LatLng(double.parse(order.latitude), double.parse(order.longitude)),),
                       ItemsInfo(order: order),
                     ],
                   ),
@@ -90,6 +96,34 @@ class _OrderDetailsScreenState extends ConsumerState<OrderDetailsScreen> {
             }
           },
         ),
+      ),
+    );
+  }
+}
+
+class OrderMap extends StatelessWidget {
+
+  final LatLng destination;
+
+  const OrderMap({super.key, required this.destination});
+
+  @override
+  Widget build(BuildContext context) {
+
+    final theme = Theme.of(context);
+    final backgroundColor = theme.scaffoldBackgroundColor;
+    final primaryColor = theme.colorScheme.primary;
+    return Padding(
+      padding: const EdgeInsets.all(8),
+      child: Container(
+        height: 300,
+        decoration: BoxDecoration(
+            color: backgroundColor,
+            border: Border.all(color: const Color.fromARGB(255, 186, 186, 186)),
+            shape: BoxShape.rectangle,
+            borderRadius: const BorderRadius.all(Radius.circular(5)),
+          ),
+        child: RouteViewer(end: destination, isTracking: false,)
       ),
     );
   }

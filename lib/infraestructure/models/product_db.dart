@@ -59,8 +59,8 @@ class ProductDB {
         : [],
       description: json["description"], 
       stock: json["stock"] is String ? double.parse(json["stock"]).toInt() : json["stock"].toInt(),
-      categories: List<String>.from(json["categories"].map((e) => e)),
-      discount: json["discount"] == "" ? "No Discount" : json["discount"],
+      categories: json['categories'] != null ? List<String>.from(json["categories"].map((e) => e)) : [""],
+      discount: json['discount'] != null ? json["discount"] == "" ? "No Discount" : json["discount"] : "No Discount",
     );
   }
 

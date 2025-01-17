@@ -38,7 +38,7 @@ class AuthRepositoryImpl extends IAuthRepository {
       var token = result.unwrap();
       var notificationToken = await FirebaseMessaging.instance.getToken();
       queryParameters = {
-        'notification_token': notificationToken!,
+        'token': notificationToken!,
       };
       petition.updateHeaders(headerKey: "Authorization", headerValue: "Bearer $token");
       final resultNotificationToken = await petition.makeRequest(

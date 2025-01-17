@@ -37,6 +37,7 @@ class PetitionImpl extends IPetition {
         return Result.success<T>(mapperCallBack(response.data));
       } 
       on DioException catch (e) {
+        print("DIO EXEPTION: ${e.toString()}");
         return Result.failure<T>(handleException(e));
       } 
       catch (e) {
