@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:go_dely/presentation/screens.dart';
+import 'package:go_dely/presentation/screens/catalog/categories_display_screen.dart';
 import 'package:go_router/go_router.dart';
 
 
@@ -186,7 +187,24 @@ final appRouter = GoRouter(
           },
         );
       },
-    ),  
+    ), 
+    GoRoute(
+      path: '/categoryView',
+      pageBuilder: (context, state) {
+        return  CustomTransitionPage(
+          transitionDuration: const Duration(seconds: 1),
+          key: state.pageKey,
+          child: const CategoriesDisplayScreen(),
+          transitionsBuilder: (context, animation, secondaryAnimation, child) {
+            return FadeTransition(
+              opacity:
+                  CurveTween(curve: Curves.easeInOutCirc).animate(animation),
+              child: child,
+            );
+          },
+        );
+      },
+    ),   
 
 
     GoRoute(

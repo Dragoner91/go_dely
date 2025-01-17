@@ -7,6 +7,7 @@ import 'package:go_dely/aplication/providers/theme/theme_provider.dart';
 import 'package:go_dely/aplication/services/i_notification_handler.dart';
 import 'package:go_dely/aplication/use_cases/auth/login.use_case.dart';
 import 'package:go_dely/aplication/use_cases/auth/register.use_case.dart';
+import 'package:go_dely/aplication/use_cases/category/get_categories.use_case.dart';
 import 'package:go_dely/aplication/use_cases/category/get_category_by_id.use_case.dart';
 import 'package:go_dely/aplication/use_cases/combo/get_combo_by_id.use_case.dart';
 import 'package:go_dely/aplication/use_cases/combo/get_combos.use_case.dart';
@@ -129,6 +130,8 @@ class IoCContainer {
     getIt.registerSingleton<RegisterUseCase>(registerUseCase);
     final getCategoryByIdUseCase = GetCategoryByIdUseCase(categoryRepository);
     getIt.registerSingleton<GetCategoryByIdUseCase>(getCategoryByIdUseCase);
+    final getCategoriesUseCase = GetCategoriesUseCase(categoryRepository);
+    getIt.registerSingleton<GetCategoriesUseCase>(getCategoriesUseCase);
     final getDiscountByIdUseCase = GetDiscountByIdUseCase(discountRepository);
     getIt.registerSingleton<GetDiscountByIdUseCase>(getDiscountByIdUseCase);
     final getCouponByIdUseCase = GetCouponByIdUseCase(auth: authRepository, petition: petitions);

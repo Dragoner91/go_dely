@@ -1,3 +1,6 @@
+import 'package:go_dely/domain/combo/i_combo_repository.dart';
+import 'package:go_dely/domain/product/i_product_repository.dart';
+
 class Category{
 
   final String id;
@@ -15,8 +18,10 @@ class Category{
 class GetCategoryByIdDto {
   
   final String id;
+  final GetCombosDto? combosDto;
+  final GetProductsDto? productsDto;
 
-  GetCategoryByIdDto(this.id);
+  GetCategoryByIdDto({required this.id, this.combosDto, this.productsDto});
 
 }
 

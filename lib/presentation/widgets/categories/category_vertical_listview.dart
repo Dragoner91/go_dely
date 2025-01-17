@@ -1,5 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_dely/aplication/providers/categoria/category_provider.dart';
+import 'package:go_dely/config/router/app_router.dart';
 import 'package:go_dely/domain/category/category.dart';
+import 'package:go_router/go_router.dart';
 
 class CategoryVerticalListView extends StatefulWidget {
 
@@ -50,7 +54,7 @@ class _CategoryVerticalListViewState extends State<CategoryVerticalListView> {
               scrollDirection: Axis.vertical,
               physics: const BouncingScrollPhysics(),
               itemBuilder: (context, index) {
-                return _SlideCategorias(categorias: widget.categorias[index]);
+                return _SlideCategorias(categoria: widget.categorias[index]);
               },
             ),
           )
@@ -61,14 +65,19 @@ class _CategoryVerticalListViewState extends State<CategoryVerticalListView> {
   }
 }
 
-class _SlideCategorias extends StatelessWidget {
+class _SlideCategorias extends ConsumerStatefulWidget {
   
   
-  final Category categorias;
+  final Category categoria;
   
 
-  const _SlideCategorias({required this.categorias});
+  const _SlideCategorias({required this.categoria});
 
+  @override
+  ConsumerState<_SlideCategorias> createState() => _SlideCategoriasState();
+}
+
+class _SlideCategoriasState extends ConsumerState<_SlideCategorias> {
   @override
   Widget build(BuildContext context) {
 
@@ -90,7 +99,7 @@ class _SlideCategorias extends StatelessWidget {
                 children: [
                   const SizedBox(width: 5,),
                   Text(
-                    categorias.name, 
+                    widget.categoria.name, 
                     
                     style: titleStyle,
                   ),
@@ -98,9 +107,10 @@ class _SlideCategorias extends StatelessWidget {
                 ],
               ),
             ),
-      onTap: () {
-      // Acción al tocar una categoría
-        },
+          onTap: () {
+            ref.read(currentCategory.notifier).update((state) => widget.categoria.id,);
+            context.push('/categoryView');
+          },
         )
       
       
